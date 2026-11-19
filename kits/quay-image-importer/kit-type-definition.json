@@ -1,0 +1,63 @@
+{
+  "schema_version": "5",
+  "kit_name": "quay-image-importer",
+  "kit_family": "importer",
+  "version": "1.1.2",
+  "display_name": "Quay.io Importer",
+  "description": "Runs a ready-made app published on Quay.io as a live jengakit app, from its quay.io name. No source code needed.",
+  "category": "importer",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Quay.io",
+    "hint": "e.g. deploy quay.io/bitnami/wordpress or quay.io/tnozicka/ttyd",
+    "description": "Pulls a pre-built Quay.io image and deploys it directly. No source code required. Port is auto-detected from image metadata."
+  },
+  "sample_prompts": [
+    "Deploy quay.io/organization/my-image",
+    "Import a Quay.io container image into jengaKIT",
+    "Deploy a Red Hat Quay image as a jengaKIT app"
+  ],
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  },
+  "user_inputs": [
+    {
+      "id": "registry_username",
+      "label": "Quay.io Username",
+      "type": "text",
+      "placeholder": "myuser",
+      "required": false,
+      "secret": false,
+      "purpose": "registry_auth",
+      "registry": "quay.io",
+      "env_var": "REGISTRY_QUAYIO_USER",
+      "hint": "Required only for private images. Leave blank for public Quay.io images."
+    },
+    {
+      "id": "registry_token",
+      "label": "Quay.io Token / Robot Account",
+      "type": "password",
+      "placeholder": "token\u2026",
+      "required": false,
+      "secret": true,
+      "purpose": "registry_auth",
+      "registry": "quay.io",
+      "env_var": "REGISTRY_QUAYIO_TOKEN",
+      "hint": "Robot account token from quay.io \u2192 Account Settings \u2192 Robot Accounts."
+    }
+  ]
+}

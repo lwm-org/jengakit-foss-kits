@@ -1,0 +1,12 @@
+WASM performance apps (app_category = "wasm-performance-app"):
+- files MUST include exactly: src/lib.rs, Cargo.toml, server.py, index.html, build.sh
+- base_image: rust:1.75-slim-bookworm
+- port: 8080
+- entrypoint: ["python3", "server.py"]
+- src/lib.rs: Rust library crate with #[wasm_bindgen] pub fn exports for the computation
+- Cargo.toml: [lib] crate-type = ["cdylib"], dependencies include wasm-bindgen = "0.2"
+- build.sh: runs wasm-pack build --target web --out-dir pkg (installs wasm-pack if missing)
+- server.py: single line — python3 -m http.server 8080 (use subprocess or exec, listen on 0.0.0.0)
+- index.html: loads pkg/<name>.js via <script type="module">, calls exported WASM functions
+- app_description must state: Rust compiled to WASM via wasm-pack, served by Python3 http.server on port 8080, plain HTML/JS frontend loading WASM module from pkg/
+- Do NOT plan app.py with Flask, do NOT use python:3.11-slim, do NOT plan requirements.txt

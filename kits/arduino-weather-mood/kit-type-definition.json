@@ -1,0 +1,73 @@
+{
+  "schema_version": "5",
+  "kit_name": "arduino-weather-mood",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "Arduino weather + mood lamp",
+  "description": "Reads a DHT11 temperature/humidity sensor and shows comfort as an RGB LED color (cool=blue, warm=red), printing readings over serial.",
+  "category": "embedded",
+  "author": "jengakit",
+  "capabilities": [
+    "embedded"
+  ],
+  "ui": {
+    "pill_label": "Arduino weather + mood l",
+    "hint": "e.g. blue when cold, red when hot, print readings",
+    "description": "Reads a DHT11 temperature/humidity sensor and shows comfort as an RGB LED color (cool=blue, warm=red), printing readings over serial."
+  },
+  "sample_prompts": [
+    "Color the room by temperature",
+    "Green when comfortable, red when hot"
+  ],
+  "kit_target": {
+    "platform": "arduino-uno",
+    "variant": "atmega328p"
+  },
+  "kit_toolchain": "platformio",
+  "kit_flash_methods": [
+    "usb-serial-web"
+  ],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    {
+      "type": "dht",
+      "pin": "D2"
+    },
+    {
+      "type": "led-rgb",
+      "pin": "D3/D5/D6"
+    }
+  ],
+  "kit_template_dir": "templates",
+  "kit_prompts": {
+    "codegen": "prompts/codegen-rules.txt"
+  },
+  "kit_required_libraries": [
+    {
+      "name": "DHT sensor library",
+      "version": "*"
+    }
+  ],
+  "kit_required_wiring": [
+    {
+      "from": "DHT11 DATA",
+      "to": "D2",
+      "note": "10k pull-up to 5V"
+    },
+    {
+      "from": "RGB R",
+      "to": "D3",
+      "note": "220\u03a9"
+    },
+    {
+      "from": "RGB G",
+      "to": "D5",
+      "note": "220\u03a9"
+    },
+    {
+      "from": "RGB B",
+      "to": "D6",
+      "note": "220\u03a9"
+    }
+  ]
+}

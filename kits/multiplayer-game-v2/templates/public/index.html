@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Game</title>
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="audio.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a1a;color:#fff;font-family:'Courier New',monospace;overflow:hidden;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#lobby{width:100%;max-width:600px;padding:40px 20px;text-align:center}
+#lobby h1{font-size:36px;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,0.5);margin-bottom:8px;letter-spacing:2px}
+#lobby p.sub{color:#888;margin-bottom:30px;font-size:14px}
+.rooms{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.room-card{background:linear-gradient(135deg,#1a1a3e,#2a2a5e);border:1px solid rgba(255,215,0,0.15);color:#fff;padding:16px 20px;border-radius:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:14px;transition:all 0.2s}
+.room-card:hover{border-color:#ffd700;box-shadow:0 0 15px rgba(255,215,0,0.15)}
+.room-card .name{font-weight:bold;color:#ffd700;font-size:16px}
+.room-card .info{color:#888;font-size:12px}
+#room-detail{display:none;background:#111;border:1px solid #333;border-radius:12px;padding:24px;text-align:left;max-width:400px;margin:0 auto}
+#room-detail h2{font-size:18px;margin-bottom:12px}
+#room-detail input{width:100%;background:#1a1a2e;border:1px solid #444;color:#fff;padding:10px 12px;border-radius:8px;font-size:14px;font-family:monospace;margin:8px 0 16px}
+.player-list{margin-bottom:16px}
+.player-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px}
+.player-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px}
+.controls-hint{font-size:11px;color:#666;margin-bottom:16px;line-height:1.6}
+.controls-hint b{color:#aaa}
+#launch-btn{width:100%;padding:14px;background:#ffd700;color:#000;border:none;border-radius:10px;font-size:16px;font-weight:bold;font-family:monospace;cursor:pointer;letter-spacing:1px}
+#launch-btn:hover{background:#ffe033}
+#launch-btn:disabled{background:#555;color:#888;cursor:default}
+#game-wrap{display:none;flex-direction:column;align-items:center}
+#top-bar{display:flex;align-items:center;gap:16px;margin-bottom:8px;font-size:14px}
+#top-bar .back{cursor:pointer;color:#888;font-size:13px}
+#top-bar .back:hover{color:#fff}
+#top-bar .room-name{color:#ffd700;font-weight:bold}
+#top-bar .fuel-wrap{display:flex;align-items:center;gap:6px}
+#top-bar .fuel-bar{width:100px;height:10px;background:#333;border-radius:5px;overflow:hidden}
+#top-bar .fuel-fill{height:100%;transition:width 0.2s;border-radius:5px}
+canvas{display:block;image-rendering:pixelated;border:1px solid #ffffff11;border-radius:4px}
+#controls-bar{margin-top:8px;font-size:11px;color:#555;text-align:center}
+#controls-bar b{color:#999}
+#sound-btn{position:fixed;top:10px;right:10px;background:none;border:1px solid #333;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:monospace}
+</style>
+</head>
+<body>
+<div id="lobby">
+  <h1 id="game-title">STAR BLASTERS</h1>
+  <p class="sub" id="game-desc">Multiplayer Aerial Combat</p>
+  <div class="rooms" id="room-list"></div>
+  <div id="room-detail">
+    <button style="background:none;border:none;color:#888;cursor:pointer;font-size:13px;margin-bottom:12px" onclick="showLobby()">← Back</button>
+    <h2 id="detail-title"></h2>
+    <label style="font-size:12px;color:#888">Your Callsign</label>
+    <input id="name-input" placeholder="Enter name..." maxlength="12">
+    <div class="player-list" id="player-list"></div>
+    <div class="controls-hint" id="controls-hint">
+      🎮 <b>Controls:</b> Arrow keys or WASD to move<br>
+      🔫 <b>Shoot:</b> Space bar<br>
+      🔥 <b>Fuel:</b> Fly over fuel depots to refuel<br>
+      ⚠️ <b>Avoid:</b> River banks, enemies, and other players' bullets
+    </div>
+    <button id="launch-btn" onclick="launchGame()" disabled>🚀 Launch Mission</button>
+  </div>
+</div>
+<div id="game-wrap">
+  <div id="top-bar">
+    <span class="back" onclick="backToLobby()">← Lobbies</span>
+    <span class="room-name" id="hud-room"></span>
+    <span id="hud-score" style="color:#ffd700;font-weight:bold">0</span>
+    <span class="fuel-wrap"><span style="font-size:11px;color:#888">FUEL</span><span class="fuel-bar"><span class="fuel-fill" id="hud-fuel" style="width:100%;background:#4c4"></span></span></span>
+  </div>
+  <canvas id="cv"></canvas>
+  <div id="controls-bar"><b>WASD / Arrow Keys</b> — Move | <b>Space</b> — Shoot | Destroy enemies & collect <span style="color:#ffd700">FUEL</span> depots</div>
+</div>
+<button id="sound-btn" onclick="this.textContent=GameAudio.toggle()?'🔊 Sound':'🔇 Muted'">🔊 Sound</button>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME INFRASTRUCTURE — Do not modify this section.
+   Provides: lobby, socket.io, input, game loop shell, HUD updates.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+// --- Socket.io ---
+var socket = typeof io !== 'undefined' ? io() : null;
+var currentRoom = null, localId = null;
+
+// --- Input ---
+var keys = {};
+document.addEventListener('keydown', function(e){
+  keys[e.code]=true;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].indexOf(e.code)>=0)e.preventDefault();
+});
+document.addEventListener('keyup', function(e){ keys[e.code]=false; });
+function K(code){ return !!keys[code]; }
+function LEFT(){ return K('ArrowLeft')||K('KeyA'); }
+function RIGHT(){ return K('ArrowRight')||K('KeyD'); }
+function UP(){ return K('ArrowUp')||K('KeyW'); }
+function DOWN(){ return K('ArrowDown')||K('KeyS'); }
+function ACTION(){ return K('Space')||K('KeyZ'); }
+
+// --- Lobby UI ---
+var GAME_TITLE = 'STAR BLASTERS';
+var GAME_DESC = 'Multiplayer Aerial Combat';
+var LOBBIES = [
+  {id:'room-1',name:'Casual Zone',flag:'🌍',difficulty:1,maxPlayers:4,bg:'from-green-900 to-yellow-900'},
+  {id:'room-2',name:'Combat Zone',flag:'⚔️',difficulty:2,maxPlayers:4,bg:'from-red-900 to-pink-900'},
+  {id:'room-3',name:'Hardcore',flag:'💀',difficulty:3,maxPlayers:2,bg:'from-blue-900 to-purple-900'}
+];
+var BOT_NAMES=['Maverick','Goose','Viper','Iceman','Merlin','Phoenix','Rooster','Hangman','Bob','Cyclone'];
+var PLAYER_COLORS=['#FFD700','#FF4444','#44FF44','#4488FF'];
+var selectedLobby=null, lobbyPlayers=[], botTimer=null;
+
+function buildLobby(){
+  document.getElementById('game-title').textContent=GAME_TITLE;
+  document.getElementById('game-desc').textContent=GAME_DESC;
+  var html='';
+  LOBBIES.forEach(function(l){
+    var stars='★'.repeat(l.difficulty)+'☆'.repeat(3-l.difficulty);
+    html+='<div class="room-card" onclick="selectRoom(\''+l.id+'\')"><span class="name">'+l.flag+' '+l.name+'</span><span class="info">'+stars+' · Max '+l.maxPlayers+'P</span></div>';
+  });
+  document.getElementById('room-list').innerHTML=html;
+}
+
+function selectRoom(id){
+  selectedLobby=LOBBIES.find(function(l){return l.id===id});
+  if(!selectedLobby)return;
+  document.getElementById('room-list').style.display='none';
+  document.getElementById('room-detail').style.display='block';
+  document.getElementById('detail-title').textContent=selectedLobby.flag+' '+selectedLobby.name;
+  lobbyPlayers=[];
+  // Spawn bots
+  var numBots=Math.min(selectedLobby.maxPlayers-1, 2+Math.floor(Math.random()*2));
+  var usedNames=[];
+  for(var i=0;i<numBots;i++){
+    var bn=BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)];
+    while(usedNames.indexOf(bn)>=0)bn=BOT_NAMES[Math.floor(Math.random()*BOT_NAMES.length)];
+    usedNames.push(bn);
+    lobbyPlayers.push({name:bn,isBot:true,ready:Math.random()>0.3,color:PLAYER_COLORS[(i+1)%PLAYER_COLORS.length]});
+  }
+  updatePlayerList();
+  document.getElementById('name-input').focus();
+  document.getElementById('name-input').oninput=function(){
+    document.getElementById('launch-btn').disabled=!this.value.trim();
+  };
+  if(socket)socket.emit('join_room',id);
+}
+
+function updatePlayerList(){
+  var name=document.getElementById('name-input').value.trim()||'You';
+  var all=[{name:name,isBot:false,ready:true,color:PLAYER_COLORS[0],you:true}].concat(lobbyPlayers);
+  var html='<div style="font-size:12px;color:#888;margin-bottom:6px">Players in lobby ('+all.length+'/'+selectedLobby.maxPlayers+')</div>';
+  all.forEach(function(p){
+    html+='<div class="player-row"><span><span class="player-dot" style="background:'+p.color+'"></span>'+p.name+(p.you?' <span style="color:#ffd700;font-size:10px">YOU</span>':'')+'</span>'+(p.isBot?'<span style="color:#4c4;font-size:11px">'+(p.ready?'✅ Ready':'⏳')+'</span>':'')+'</div>';
+  });
+  document.getElementById('player-list').innerHTML=html;
+}
+
+function showLobby(){
+  document.getElementById('room-list').style.display='flex';
+  document.getElementById('room-detail').style.display='none';
+  selectedLobby=null;
+}
+
+function launchGame(){
+  var name=document.getElementById('name-input').value.trim();
+  if(!name||!selectedLobby)return;
+  currentRoom=selectedLobby;
+  document.getElementById('lobby').style.display='none';
+  document.getElementById('game-wrap').style.display='flex';
+  document.getElementById('hud-room').textContent=selectedLobby.flag+' '+selectedLobby.name;
+  if(socket)socket.emit('join_room',selectedLobby.id);
+  startGame(name, selectedLobby, lobbyPlayers);
+}
+
+function backToLobby(){
+  document.getElementById('lobby').style.display='block';
+  document.getElementById('game-wrap').style.display='none';
+  showLobby();
+  if(typeof stopGame==='function')stopGame();
+}
+
+function updateHUD(score,fuel){
+  document.getElementById('hud-score').textContent=score;
+  var fb=document.getElementById('hud-fuel');
+  fb.style.width=Math.max(0,fuel)+'%';
+  fb.style.background=fuel>30?'#4c4':fuel>15?'#ca0':'#c33';
+}
+
+buildLobby();
+setInterval(updatePlayerList,2000);
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME LOGIC — This section defines the actual game.
+   LLM: Rewrite everything below to create the requested game.
+   Keep: Canvas setup, requestAnimationFrame loop, GameAudio.play() calls,
+         updateHUD() calls, socket.emit() calls, keyboard input via
+         LEFT()/RIGHT()/UP()/DOWN()/ACTION().
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+var CW=480, CH=700;
+var canvas, ctx, animFrame;
+var gameState={};
+
+function rand(a,b){return Math.random()*(b-a)+a}
+
+function startGame(playerName, lobby, bots){
+  canvas=document.getElementById('cv');
+  canvas.width=CW; canvas.height=CH;
+  ctx=canvas.getContext('2d');
+
+  // === STATE ===
+  var S={
+    player:{x:CW/2-14,y:CH-80,w:28,h:32,score:0,fuel:100,alive:true,name:playerName,color:'#FFD700',bullets:[],tilt:0,speed:0},
+    bots:bots.map(function(b,i){return{x:CW/2-14+(i%2===0?-60:60),y:CH-120-i*40,w:28,h:32,score:0,fuel:100,alive:true,name:b.name,color:b.color,bullets:[]}}),
+    enemies:[],
+    fuel:[],
+    river:[],
+    explosions:[],
+    scroll:0,
+    spawnT:0,
+    fuelT:0,
+    difficulty:lobby.difficulty,
+    over:false,
+    lastShot:0
+  };
+
+  // Generate river
+  var lB=60,rB=CW-60;
+  for(var y=0;y<CH+200;y+=4){
+    lB+=rand(-2,2); rB+=rand(-2,2);
+    lB=Math.max(20,Math.min(CW/2-60,lB));
+    rB=Math.min(CW-20,Math.max(CW/2+60,rB));
+    if(rB-lB<120){lB-=2;rB+=2}
+    S.river.push({l:lB,r:rB,y:y});
+  }
+
+  gameState=S;
+  GameAudio.startEngine();
+
+  // === GAME LOOP ===
+  function loop(){
+    if(S.over){renderFrame(S);return}
+    var spd=2+S.difficulty*0.3;
+    S.scroll+=spd;
+
+    // River generation
+    while(S.river.length<CH/4+100){
+      var last=S.river[S.river.length-1];
+      var l=last.l+rand(-3,3),r=last.r+rand(-3,3);
+      var n=S.difficulty*0.001*S.scroll;
+      l=Math.max(20,Math.min(CW/2-40+n,l));
+      r=Math.min(CW-20,Math.max(CW/2+40-n,r));
+      if(r-l<100){l-=3;r+=3}
+      S.river.push({l:l,r:r,y:last.y-4});
+    }
+    S.river.forEach(function(s){s.y+=spd});
+    S.river=S.river.filter(function(s){return s.y<CH+50});
+
+    // Spawn enemies
+    S.spawnT++;
+    var rate=Math.max(20,80-S.difficulty*15-S.scroll*0.005);
+    if(S.spawnT>rate){spawnEnemy(S);S.spawnT=0}
+
+    // Spawn fuel
+    S.fuelT++;
+    if(S.fuelT>200){spawnFuel(S);S.fuelT=0}
+
+    // Player movement + tilt
+    var p=S.player;
+    if(p.alive){
+      var dx=0,dy=0;
+      if(LEFT()){p.x-=4;dx=-1} if(RIGHT()){p.x+=4;dx=1}
+      if(UP()){p.y-=4;dy=-1} if(DOWN()){p.y+=4;dy=1}
+      p.x=Math.max(0,Math.min(CW-p.w,p.x));
+      p.y=Math.max(40,Math.min(CH-p.h-10,p.y));
+      // Smooth tilt: bank toward movement direction, return to center
+      var targetTilt=dx*0.25; // ~14 degrees max bank
+      p.tilt+=(targetTilt-p.tilt)*0.15;
+      // Speed for engine audio (0=idle, 1=full thrust)
+      p.speed=Math.abs(dy)<0.1?0.4:(dy<0?0.9:0.2); // up=fast, down=slow, neutral=cruise
+      if(dx!==0)p.speed=Math.min(1,p.speed+0.15);
+      GameAudio.setEngineSpeed(p.speed);
+
+      // Shoot
+      var now=Date.now();
+      if(ACTION()&&now-S.lastShot>150&&p.bullets.length<5){
+        p.bullets.push({x:p.x+p.w/2-2,y:p.y,pid:p.name});
+        GameAudio.play('shoot');
+        S.lastShot=now;
+        if(socket)socket.emit('game_event',{type:'shoot',x:p.x,y:p.y});
+      }
+
+      // Fuel drain
+      p.fuel-=0.06;
+      if(p.fuel<=0){p.alive=false;S.over=true;GameAudio.stopEngine();GameAudio.play('lose')}
+
+      // River collision
+      var seg=S.river.find(function(r){return Math.abs(r.y-(p.y+p.h/2))<6});
+      if(seg&&(p.x<seg.l||p.x+p.w>seg.r)){
+        p.alive=false;S.over=true;
+        S.explosions.push({x:p.x+p.w/2,y:p.y+p.h/2,f:0,max:25});
+        GameAudio.stopEngine();GameAudio.play('explode');GameAudio.play('lose');
+      }
+
+      // Enemy collision
+      S.enemies.forEach(function(e){
+        if(p.x<e.x+e.w&&p.x+p.w>e.x&&p.y<e.y+e.h&&p.y+p.h>e.y){
+          p.alive=false;S.over=true;
+          S.explosions.push({x:p.x+p.w/2,y:p.y+p.h/2,f:0,max:25});
+          GameAudio.play('explode');GameAudio.play('lose');
+        }
+      });
+    }
+
+    // Bullets vs enemies
+    p.bullets=p.bullets.filter(function(b){
+      b.y-=7;
+      var hit=-1;
+      S.enemies.forEach(function(e,i){if(b.x>e.x&&b.x<e.x+e.w&&b.y>e.y&&b.y<e.y+e.h)hit=i});
+      if(hit>=0){var e=S.enemies[hit];p.score+=e.pts;S.explosions.push({x:e.x+e.w/2,y:e.y+e.h/2,f:0,max:15});S.enemies.splice(hit,1);GameAudio.play('hit');return false}
+      return b.y>-10;
+    });
+
+    // Update enemies
+    S.enemies.forEach(function(e){
+      e.y+=spd+e.spd;
+      if(e.type==='boat'||e.type==='heli'){
+        e.x+=e.dir*(e.type==='heli'?1.2:0.6);
+        var seg=S.river.find(function(r){return Math.abs(r.y-e.y)<8});
+        if(seg&&(e.x<seg.l+10||e.x+e.w>seg.r-10))e.dir*=-1;
+      }
+    });
+    S.enemies=S.enemies.filter(function(e){return e.y<CH+50});
+
+    // Fuel pickups
+    S.fuel.forEach(function(f){
+      f.y+=spd;
+      if(f.active&&p.alive&&p.x<f.x+f.w&&p.x+p.w>f.x&&p.y<f.y+f.h&&p.y+p.h>f.y){
+        p.fuel=Math.min(100,p.fuel+25);f.active=false;GameAudio.play('collect');
+      }
+    });
+    S.fuel=S.fuel.filter(function(f){return f.y<CH+50});
+
+    // Explosions
+    S.explosions=S.explosions.filter(function(e){e.f++;return e.f<e.max});
+
+    // Bots
+    updateBots(S,spd);
+
+    // Score
+    p.score+=Math.floor(spd*0.1);
+    updateHUD(p.score,Math.max(0,p.fuel));
+    if(socket)socket.emit('player_update',{x:p.x,y:p.y,score:p.score});
+
+    renderFrame(S);
+    animFrame=requestAnimationFrame(loop);
+  }
+  animFrame=requestAnimationFrame(loop);
+}
+
+function stopGame(){cancelAnimationFrame(animFrame);GameAudio.stopEngine()}
+
+function spawnEnemy(S){
+  var seg=S.river[0];if(!seg)return;
+  var types=['boat','heli','jet','tank'];
+  var t=types[Math.floor(Math.random()*types.length)];
+  var w=t==='boat'?30:t==='heli'?26:t==='jet'?24:28;
+  var h=t==='boat'?18:t==='heli'?22:t==='jet'?28:16;
+  var pts=t==='boat'?30:t==='heli'?60:t==='jet'?100:50;
+  var spd=t==='heli'?1.5:t==='jet'?2.5:0.5;
+  S.enemies.push({type:t,x:rand(seg.l+20,seg.r-20-w),y:-30,w:w,h:h,spd:spd,dir:Math.random()>0.5?1:-1,pts:pts});
+}
+
+function spawnFuel(S){
+  var seg=S.river[0];if(!seg)return;
+  S.fuel.push({x:rand(seg.l+30,seg.r-60),y:-30,w:30,h:20,active:true});
+}
+
+function updateBots(S,spd){
+  S.bots.forEach(function(bot){
+    if(!bot.alive)return;
+    var seg=S.river.find(function(r){return Math.abs(r.y-bot.y)<8});
+    if(seg){var c=(seg.l+seg.r)/2;if(bot.x<c-30)bot.x+=1.5;else if(bot.x>c+30)bot.x-=1.5;bot.x+=rand(-1,1)}
+    var near=S.enemies.find(function(e){return Math.abs(e.x-bot.x)<40&&e.y>bot.y-80&&e.y<bot.y});
+    if(near)bot.x+=near.x>bot.x?-3:3;
+    if(Math.random()>0.96&&bot.bullets.length<3)bot.bullets.push({x:bot.x+bot.w/2,y:bot.y,pid:bot.name});
+    bot.bullets=bot.bullets.filter(function(b){
+      b.y-=7;var hit=-1;
+      S.enemies.forEach(function(e,i){if(b.x>e.x&&b.x<e.x+e.w&&b.y>e.y&&b.y<e.y+e.h)hit=i});
+      if(hit>=0){var e=S.enemies[hit];bot.score+=e.pts;S.explosions.push({x:e.x+e.w/2,y:e.y+e.h/2,f:0,max:15});S.enemies.splice(hit,1);return false}
+      return b.y>-10;
+    });
+    bot.fuel-=0.048;
+    S.fuel.forEach(function(f){if(f.active&&bot.x<f.x+f.w&&bot.x+bot.w>f.x&&bot.y<f.y+f.h&&bot.y+bot.h>f.y){bot.fuel=Math.min(100,bot.fuel+30);f.active=false}});
+    if(seg&&(bot.x<seg.l||bot.x+bot.w>seg.r)){bot.alive=false;S.explosions.push({x:bot.x+bot.w/2,y:bot.y+bot.h/2,f:0,max:20})}
+    if(bot.fuel<=0){bot.alive=false;S.explosions.push({x:bot.x+bot.w/2,y:bot.y+bot.h/2,f:0,max:20})}
+  });
+}
+
+// === RENDER ===
+function renderFrame(S){
+  var p=S.player;
+  // Background
+  ctx.fillStyle='#0a1628';ctx.fillRect(0,0,CW,CH);
+
+  // River & banks
+  for(var i=1;i<S.river.length;i++){
+    var c=S.river[i],pr=S.river[i-1];
+    ctx.fillStyle='#1a3a5c';ctx.beginPath();ctx.moveTo(pr.l,pr.y);ctx.lineTo(pr.r,pr.y);ctx.lineTo(c.r,c.y);ctx.lineTo(c.l,c.y);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#2d5a1e';ctx.fillRect(0,c.y,c.l,5);ctx.fillRect(c.r,c.y,CW-c.r,5);
+  }
+
+  // Fuel depots
+  S.fuel.forEach(function(f){
+    if(!f.active)return;
+    ctx.fillStyle='#FF6600';ctx.fillRect(f.x,f.y,f.w,f.h);
+    ctx.fillStyle='#FFD700';ctx.font='bold 10px monospace';ctx.fillText('FUEL',f.x+2,f.y+13);
+  });
+
+  // Enemies
+  S.enemies.forEach(function(e){
+    if(e.type==='boat'){ctx.fillStyle='#888';ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillStyle='#666';ctx.fillRect(e.x+e.w/2-2,e.y-4,4,6)}
+    else if(e.type==='heli'){ctx.fillStyle='#aa4444';ctx.fillRect(e.x+4,e.y+6,e.w-8,e.h-8);ctx.fillStyle='#cc6666';ctx.fillRect(e.x,e.y,e.w,5);ctx.fillRect(e.x+e.w/2-1,e.y+e.h-6,3,6)}
+    else if(e.type==='jet'){ctx.fillStyle='#cc3333';ctx.beginPath();ctx.moveTo(e.x+e.w/2,e.y);ctx.lineTo(e.x,e.y+e.h);ctx.lineTo(e.x+e.w,e.y+e.h);ctx.closePath();ctx.fill()}
+    else{ctx.fillStyle='#556b2f';ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillStyle='#6b8e23';ctx.fillRect(e.x+e.w/2-2,e.y-6,4,10)}
+  });
+
+  // Bots
+  S.bots.forEach(function(b){
+    if(!b.alive)return;
+    ctx.fillStyle=b.color;ctx.beginPath();ctx.moveTo(b.x+b.w/2,b.y);ctx.lineTo(b.x,b.y+b.h);ctx.lineTo(b.x+b.w/2,b.y+b.h-8);ctx.lineTo(b.x+b.w,b.y+b.h);ctx.closePath();ctx.fill();
+    ctx.fillStyle=b.color;ctx.font='9px sans-serif';ctx.textAlign='center';ctx.fillText(b.name,b.x+b.w/2,b.y-6);
+    ctx.fillStyle=b.color;b.bullets.forEach(function(bl){ctx.fillRect(bl.x,bl.y,3,8)});
+  });
+
+  // Player jet (with tilt banking)
+  if(p.alive){
+    ctx.save();
+    ctx.translate(p.x+p.w/2, p.y+p.h/2);
+    ctx.rotate(p.tilt);
+    // Fuselage
+    ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.moveTo(0,-p.h/2);ctx.bezierCurveTo(-5,-p.h/3,-6,p.h/3,-4,p.h/2);ctx.lineTo(4,p.h/2);ctx.bezierCurveTo(6,p.h/3,5,-p.h/3,0,-p.h/2);ctx.fill();
+    // Cockpit canopy
+    var cg=ctx.createRadialGradient(0,-6,1,0,-6,5);cg.addColorStop(0,'#aef');cg.addColorStop(1,'#258');
+    ctx.fillStyle=cg;ctx.beginPath();ctx.ellipse(0,-6,4,6,0,0,Math.PI*2);ctx.fill();
+    // Wings
+    ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.moveTo(-5,2);ctx.lineTo(-22,12);ctx.lineTo(-18,14);ctx.lineTo(-5,8);ctx.fill();
+    ctx.beginPath();ctx.moveTo(5,2);ctx.lineTo(22,12);ctx.lineTo(18,14);ctx.lineTo(5,8);ctx.fill();
+    // Tail fins
+    ctx.beginPath();ctx.moveTo(-3,13);ctx.lineTo(-10,19);ctx.lineTo(-3,16);ctx.fill();
+    ctx.beginPath();ctx.moveTo(3,13);ctx.lineTo(10,19);ctx.lineTo(3,16);ctx.fill();
+    // Engine exhaust glow
+    var exLen=4+p.speed*6+Math.random()*4;
+    ctx.shadowBlur=8;ctx.shadowColor='#f80';
+    ctx.fillStyle='#fa0';ctx.fillRect(-2,p.h/2-2,4,exLen);
+    ctx.fillStyle='#ff6';ctx.fillRect(-1,p.h/2-1,2,exLen*0.7);
+    ctx.shadowBlur=0;
+    ctx.restore();
+    // Name above (not rotated)
+    ctx.fillStyle='#FFD700';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText(p.name,p.x+p.w/2,p.y-10);
+  }
+
+  // Player bullets
+  ctx.fillStyle='#FFD700';ctx.textAlign='left';
+  p.bullets.forEach(function(b){ctx.fillRect(b.x,b.y,3,10)});
+
+  // Explosions
+  S.explosions.forEach(function(ex){
+    var pr=ex.f/ex.max,rad=8+pr*25,al=1-pr;
+    ctx.beginPath();ctx.arc(ex.x,ex.y,rad,0,Math.PI*2);ctx.fillStyle='rgba(255,'+Math.floor(120-pr*120)+',0,'+al+')';ctx.fill();
+    ctx.beginPath();ctx.arc(ex.x,ex.y,rad*0.5,0,Math.PI*2);ctx.fillStyle='rgba(255,255,100,'+al*0.8+')';ctx.fill();
+  });
+
+  // HUD
+  ctx.textAlign='left';ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,CW,36);
+  ctx.fillStyle='#FFD700';ctx.font='bold 14px monospace';ctx.fillText('SCORE: '+p.score,10,24);
+  var fw=120,fx=CW-fw-10;
+  ctx.fillStyle='#333';ctx.fillRect(fx,12,fw,12);
+  ctx.fillStyle=p.fuel>30?'#4c4':p.fuel>15?'#ca0':'#c33';ctx.fillRect(fx,12,(p.fuel/100)*fw,12);
+  ctx.fillStyle='#fff';ctx.font='bold 9px monospace';ctx.fillText('FUEL',fx-32,22);
+
+  // Scoreboard
+  var all=[{name:p.name,score:p.score,color:p.color,alive:p.alive}].concat(S.bots.map(function(b){return{name:b.name,score:b.score,color:b.color,alive:b.alive}})).sort(function(a,b){return b.score-a.score});
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(CW-110,36,110,all.length*16+6);
+  all.forEach(function(pl,i){ctx.fillStyle=pl.alive?pl.color:'#555';ctx.font='10px monospace';ctx.fillText(pl.name+': '+pl.score,CW-105,52+i*16)});
+
+  // Game Over overlay
+  if(S.over){
+    ctx.fillStyle='rgba(0,0,0,0.8)';ctx.fillRect(0,0,CW,CH);
+    ctx.fillStyle='#ff3333';ctx.font='bold 36px monospace';ctx.textAlign='center';ctx.fillText('GAME OVER',CW/2,CH/2-30);
+    ctx.fillStyle='#ffd700';ctx.font='bold 24px monospace';ctx.fillText(p.score+' pts',CW/2,CH/2+10);
+    ctx.fillStyle='#fff';ctx.font='14px monospace';ctx.fillText('Press SPACE to restart',CW/2,CH/2+50);
+    ctx.fillText('ESC for lobbies',CW/2,CH/2+70);
+    ctx.textAlign='left';
+  }
+}
+
+// Restart / back handlers
+document.addEventListener('keydown',function(e){
+  if(gameState.over&&e.code==='Space'){gameState.over=false;backToLobby();setTimeout(function(){selectRoom(currentRoom.id);document.getElementById('name-input').value=gameState.player.name;document.getElementById('launch-btn').disabled=false},100)}
+  if(gameState.over&&e.code==='Escape')backToLobby();
+});
+</script>
+</body>
+</html>

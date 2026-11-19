@@ -1,0 +1,100 @@
+{
+  "board_id": "esp32-devkit-v1",
+  "display_name": "ESP32 DevKit V1",
+  "kind": "microcontroller",
+  "connection_kind": "ota",
+
+  "provider_id": "esp32",
+  "provider_primary": true,
+  "provider_display_name": "ESP32 DevKit",
+
+  "manufacturer": "Espressif",
+  "chip": "ESP32",
+  "variants": ["esp32dev", "esp32-s3", "esp32-c3", "esp32-wroom-32"],
+  "toolchain": "esphome",
+
+  "flash": {
+    "method": "ota-esphome",
+    "protocol": "esphome-ota",
+    "baud": 921600,
+    "format": "bin"
+  },
+
+  "capabilities": {
+    "mcu": "ESP32",
+    "clock_mhz": 240,
+    "sram_bytes": 520192,
+    "flash_bytes": 4194304,
+    "max_sketch_size_bytes": 1310720,
+    "digital_pins": [0, 2, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33],
+    "analog_pins": ["A0", "A3", "A4", "A5", "A6", "A7"],
+    "pwm_pins": [0, 2, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33],
+    "onboard_led_pin": 2,
+    "gpio": 34,
+    "pwm": 16,
+    "onboard_led": 2,
+    "sram": 520192,
+    "flash": 4194304,
+    "has_wifi": true,
+    "has_bluetooth": true,
+    "has_filesystem": true,
+    "serial_baud_default": 115200,
+    "language": "C++",
+    "fqbn": "esp32:esp32:esp32",
+    "notes": [
+      "Dual-core Xtensa LX6; WiFi + Bluetooth on board.",
+      "Firmware is authored as ESPHome YAML, not a raw Arduino sketch.",
+      "WiFi / OTA secrets are injected via !secret at compile time — never inline them."
+    ]
+  },
+
+  "config_schema": [
+    {
+      "name": "ip_address",
+      "kind": "text",
+      "type": "string",
+      "required": true,
+      "required_message": "ip_address is required (use the ESP32's IP on your LAN)"
+    },
+    {
+      "name": "wifi_ssid",
+      "kind": "text",
+      "type": "string",
+      "required": true,
+      "required_message": "wifi_ssid is required so the firmware can join your network"
+    },
+    {
+      "name": "wifi_password",
+      "kind": "password",
+      "type": "string",
+      "required": true,
+      "min_length": 8,
+      "deny_list": ["12345678", "password", "00000000"],
+      "min_length_message": "wifi_password must be at least 8 characters",
+      "deny_list_message": "wifi_password '{value}' is a deny-listed default — pick something stronger"
+    },
+    {
+      "name": "ota_password",
+      "kind": "password",
+      "type": "string",
+      "required": true,
+      "min_length": 8,
+      "deny_list": ["admin", "esp32", "password", "passw0rd", "1234", "12345678", "default", "esphome"],
+      "min_length_message": "ota_password must be at least 8 characters",
+      "deny_list_message": "ota_password '{value}' is a deny-listed default — pick something stronger. OTA without strong auth lets anyone on your LAN flash anything."
+    },
+    {
+      "name": "board_variant",
+      "kind": "variant",
+      "type": "string",
+      "required": false,
+      "default": "esp32dev",
+      "enum": ["esp32dev", "esp32-s3", "esp32-c3", "esp32-wroom-32"],
+      "enum_message": "board_variant {value} is not supported. Allowed: {allowed}"
+    }
+  ],
+
+  "kit_platform_ids": ["esp32-devkit-v1"],
+  "resolver_keywords": ["esp32"],
+  "default_peripherals": []
+}

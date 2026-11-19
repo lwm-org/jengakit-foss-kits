@@ -1,0 +1,87 @@
+{
+  "schema_version": "5",
+  "kit_name": "static-website",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Static Website",
+  "description": "Modern multi-page or single-page static websites. Pure HTML/CSS/JS served by nginx. Portable — download and host anywhere.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_template_overlay_force": [
+    "nginx.conf"
+  ],
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Website",
+    "hint": "e.g. a portfolio site, landing page, restaurant website, or company brochure",
+    "description": "Pure HTML/CSS/JS served by nginx:alpine. Choose a CSS framework. Download and host anywhere."
+  },
+  "sample_prompts": [
+    "A portfolio website for a photographer with a gallery grid and contact form",
+    "A restaurant landing page with menu, hours, location map, and reservation link",
+    "A startup landing page with hero section, feature cards, pricing, and CTA"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "nginx.conf",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Build a modern, responsive static website using HTML and CSS. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  },
+  "user_inputs": [
+    {
+      "id": "css_framework",
+      "label": "CSS Framework",
+      "type": "select",
+      "required": false,
+      "secret": false,
+      "purpose": "runtime_env",
+      "group": "Design",
+      "env_var": "CSS_FRAMEWORK",
+      "hint": "Choose a CSS framework for styling",
+      "options": [
+        {
+          "value": "tailwind",
+          "label": "Tailwind CSS"
+        },
+        {
+          "value": "bootstrap",
+          "label": "Bootstrap 5"
+        },
+        {
+          "value": "bulma",
+          "label": "Bulma"
+        },
+        {
+          "value": "none",
+          "label": "Plain HTML/CSS"
+        }
+      ],
+      "default": "tailwind"
+    }
+  ]
+}

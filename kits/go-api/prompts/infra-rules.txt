@@ -1,0 +1,5 @@
+Dockerfile for Go API apps:
+- Use a two-stage build EXACTLY as shown:
+    FROM golang:1.22-alpine AS builder\nWORKDIR /app\nCOPY . .\nRUN go build -o main .\n\nFROM alpine:latest\nWORKDIR /app\nCOPY --from=builder /app/main .\nEXPOSE 5000\nCMD ["./main"]
+- Do NOT use a single-stage Go build — the final image must be alpine:latest, not golang
+- The COPY --from=builder line is required — do not omit it

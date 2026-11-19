@@ -1,0 +1,3 @@
+# Itchy Kit — Code Generation Rules
+# Kid-friendly visual programming studio
+# Template-first: all code is from templates, no LLM generation needed

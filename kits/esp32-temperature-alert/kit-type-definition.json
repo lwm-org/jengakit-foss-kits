@@ -1,0 +1,39 @@
+{
+  "schema_version": "5",
+  "kit_name": "esp32-temperature-alert",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "ESP32 temperature alert (Signal)",
+  "description": "The Day-10 demo kit. ESP32 + DHT22 sensor + Signal Integration: when the workshop temp crosses a threshold inferred from the user's prompt, the device fires an HTTP POST to the user's signal-cli-rest-api endpoint. Demo uses Signal (not WhatsApp) — WhatsApp Cloud API's 24-hour-window restriction breaks ad-hoc messaging.",
+  "category": "embedded",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.5.4",
+  "capabilities": ["embedded", "sensor", "temperature", "alerting", "signal", "ota"],
+  "ui": {
+    "pill_label": "ESP32 + DHT22",
+    "hint": "e.g. alert my Signal when temp drops below 5°C, ping me at 30°C, send a notification when humidity exceeds 80%",
+    "description": "Wires a DHT22 to GPIO 5 and the onboard LED to GPIO 2. ESPHome generates the YAML; on threshold-cross it POSTs to your Signal Integration. Requires JENGAKIT_ESPHOME_ENABLED=true."
+  },
+  "sample_prompts": [
+    "Alert my Signal when workshop temp drops below 5°C",
+    "Ping me on Signal when the room exceeds 30°C",
+    "Send me a Signal message when humidity is over 80%"
+  ],
+  "kit_target": {
+    "platform": "esp32-devkit-v1",
+    "variant": "esp32dev"
+  },
+  "kit_toolchain": "esphome",
+  "kit_flash_methods": ["usb-serial-web", "ota-esphome"],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    { "type": "dht", "pin": "GPIO5", "model": "DHT22" },
+    { "type": "led-onboard", "pin": "GPIO2" }
+  ],
+  "kit_required_libraries": [],
+  "kit_required_env": [
+    "JENGAKIT_SIGNAL_API_URL",
+    "JENGAKIT_SIGNAL_NUMBER"
+  ],
+  "kit_template_dir": "templates"
+}

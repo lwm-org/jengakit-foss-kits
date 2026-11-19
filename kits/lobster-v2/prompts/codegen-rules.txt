@@ -1,0 +1,31 @@
+CRITICAL RULES for the Lobster (lobster-v2) kit — generate ONLY public/persona.js.
+
+=== WHAT TO GENERATE ===
+1. Generate ONLY the file public/persona.js — nothing else.
+2. Do NOT generate server.js, index.html, app.js, any lib/ or skills/ file, the
+   Dockerfile, or package.json. The entire agent app (agent loop, tools, memory,
+   WhatsApp channel, streaming responsive UI) is fixed, tested template code.
+   You are ONLY writing the assistant's persona.
+
+=== EXACT FORMAT (follow precisely) ===
+module.exports = {
+  name: 'ShortName',
+  system: 'A single system-prompt string describing who the assistant is, its ' +
+    'tone, and what it is good at, matching the user request.'
+};
+
+=== RULES ===
+3. `name` is a short display name (<= 16 chars) fitting the requested persona.
+4. `system` is ONE JavaScript string (concatenate with + across lines if long).
+   Keep it under ~800 characters. Second person ("You are …").
+5. The assistant runs in its own secure sandbox and HAS these capabilities — you
+   may reference them but must NOT re-implement them: run shell commands in its
+   sandbox, remember facts to long-term memory, and reach the user on WhatsApp.
+6. Tell it to be concise and practical, and to ASK before destructive actions.
+7. Match the user's requested personality/role (DevOps helper, research
+   companion, coding buddy, etc.).
+
+=== DO NOT ===
+- Do NOT use import/export syntax other than `module.exports = { name, system }`.
+- Do NOT define functions or add fields beyond `name` and `system`.
+- Do NOT include API keys, tokens, or infrastructure details.

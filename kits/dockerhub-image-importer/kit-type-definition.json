@@ -1,0 +1,63 @@
+{
+  "schema_version": "5",
+  "kit_name": "dockerhub-image-importer",
+  "kit_family": "importer",
+  "version": "1.2.2",
+  "display_name": "Docker Hub Importer",
+  "description": "Runs a ready-made app published to a public app hub as a live jengakit app, from its hub link or name. No source code needed.",
+  "category": "importer",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Docker Hub",
+    "hint": "e.g. pengbai/docker-supermario, alpine:3.22.4, or any https://hub.docker.com/r/, /_/, /layers/ URL",
+    "description": "Pulls a pre-built Docker Hub image and deploys it directly. No source code required. Accepts Hub URLs (/r/<owner>/<repo>, /_/<image>, /layers/<owner>/<repo>/<tag>) or plain image refs (name:tag, owner/repo:tag). Port is auto-detected from image metadata; 80 / 8080 / 3000 / 8000 / 5000 / 4000 win when multiple ports are exposed. Base-OS images without a service (alpine, ubuntu, debian) are rejected up-front. linuxserver/* and kasmweb/* images get --shm-size=1gb and seccomp=unconfined automatically."
+  },
+  "sample_prompts": [
+    "Deploy https://hub.docker.com/r/nginx/nginx-unprivileged",
+    "Deploy https://hub.docker.com/r/httpd/httpd",
+    "Deploy a Docker Hub image as a jengaKIT app"
+  ],
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  },
+  "user_inputs": [
+    {
+      "id": "registry_username",
+      "label": "Docker Hub Username",
+      "type": "text",
+      "placeholder": "myusername",
+      "required": false,
+      "secret": false,
+      "purpose": "registry_auth",
+      "registry": "docker.io",
+      "env_var": "REGISTRY_DOCKERIO_USER",
+      "hint": "Required only for private images. Leave blank for public Docker Hub images."
+    },
+    {
+      "id": "registry_token",
+      "label": "Docker Hub Token / PAT",
+      "type": "password",
+      "placeholder": "dckr_pat_\u2026",
+      "required": false,
+      "secret": true,
+      "purpose": "registry_auth",
+      "registry": "docker.io",
+      "env_var": "REGISTRY_DOCKERIO_TOKEN",
+      "hint": "Personal Access Token from hub.docker.com \u2192 Account Settings \u2192 Security."
+    }
+  ]
+}

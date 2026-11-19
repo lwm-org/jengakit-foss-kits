@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0f1a">
+<link rel="icon" href="data:,">
+<title>Block Drop</title>
+<style>
+:root{--bg:#0b0f1a;--panel:#161d2e;--line:#2a3548;--fg:#e0e8f0;--muted:#8892a8;--accent:#31c7ef;--accent2:#7c3aed}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:'Segoe UI',system-ui,sans-serif;min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden;-webkit-tap-highlight-color:transparent;touch-action:none}
+button{font-family:inherit;cursor:pointer}
+.title{font-size:clamp(30px,8vw,72px);font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,var(--accent),#ff6ec7,var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.sub{color:var(--muted);font-size:clamp(11px,2.6vw,18px);text-align:center;margin-bottom:1rem}
+.btn{border:none;border-radius:10px;padding:clamp(10px,1.6vh,16px) clamp(18px,5vw,32px);font-size:clamp(14px,2.4vw,20px);font-weight:700;margin:4px}
+.btn-solo{background:#2a3548;color:var(--fg)}.btn-multi{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:clamp(12px,2.5vw,22px);width:min(94vw,520px);margin:8px auto}
+input[type=text]{background:#0a0e18;border:1px solid var(--line);color:#fff;padding:10px 14px;border-radius:10px;font-size:clamp(14px,2.4vw,20px);width:100%;max-width:340px}
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;margin:8px 0}
+.diff .focusable,.mode .focusable{padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);font-size:clamp(12px,2.2vw,18px)}
+.diff .focusable.active,.mode .focusable.active{background:var(--accent);color:#000;border-color:var(--accent)}
+h4{color:var(--accent);font-size:clamp(12px,2.4vw,18px);margin-bottom:6px}
+.lb-row,.ros-row{display:flex;justify-content:space-between;gap:8px;font-size:clamp(11px,2.2vw,17px);padding:3px 0;border-bottom:1px solid #1e2738}
+.lb-rank{color:var(--accent);width:2.2em}.lb-name{flex:1}.lb-score{color:#ff6ec7}.lb-empty{color:#556;font-size:clamp(11px,2vw,15px)}
+.ros-row .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
+.chip{padding:6px 12px;border-radius:8px;background:#1a2636;border:1px solid var(--line);color:var(--fg);font-size:clamp(11px,2.2vw,16px)}
+
+#waiting,#game,#gameover{display:none}
+#lobby,#waiting,#gameover{width:100%;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:1rem}
+#waiting,#gameover{position:fixed;inset:0;background:rgba(8,12,20,.96);z-index:50;display:none;flex-direction:column}
+
+/* Game */
+#game{width:100%;flex:1;flex-direction:column;align-items:center;padding:6px}
+#hud{display:flex;gap:clamp(10px,3vw,26px);align-items:center;justify-content:center;font-size:clamp(12px,2.4vw,20px);margin-bottom:4px;flex-wrap:wrap}
+#hud b{color:var(--accent)}
+#play{display:flex;gap:clamp(6px,2vw,16px);align-items:flex-start;justify-content:center;width:100%}
+.side{display:flex;flex-direction:column;gap:8px;align-items:center}
+.side.left{order:0}.side.right{order:2}#board-col{order:1}
+.mini{background:#0a0e18;border:1px solid var(--line);border-radius:6px;padding:4px}
+.mini h4{font-size:10px;text-align:center;color:var(--muted);margin-bottom:2px}
+canvas#board{background:#0b0f1a;border:2px solid var(--line);border-radius:6px;display:block;touch-action:none}
+#stats{font-size:clamp(11px,2vw,16px);color:var(--muted);text-align:center;margin-top:6px}
+#opp-wrap{display:none;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.opp{background:#0a0e18;border:1px solid var(--line);border-radius:6px;padding:3px}
+.opp-name{font-size:9px;text-align:center;color:var(--muted);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opp-empty{color:#556;font-size:11px}
+#mute-btn{position:fixed;top:calc(env(safe-area-inset-top) + 6px);left:calc(env(safe-area-inset-left) + 6px);z-index:60;background:rgba(0,0,0,.5);border:1px solid var(--line);color:#fff;border-radius:8px;padding:6px 10px;font-size:16px}
+
+/* On-screen D-pad (touch) */
+.osd{display:none;position:fixed;left:0;right:0;bottom:0;z-index:70;justify-content:space-between;align-items:flex-end;padding:8px calc(10px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));pointer-events:none}
+body.is-touch .osd,body.is-coarse .osd{display:flex}
+.osd-pad,.osd-act{display:flex;gap:8px;pointer-events:auto}
+.osd-b{width:clamp(52px,15vw,74px);height:clamp(52px,15vw,74px);border-radius:14px;border:none;background:rgba(42,53,72,.85);color:#fff;font-size:clamp(20px,5vw,28px);display:flex;align-items:center;justify-content:center}
+.osd-b:active{background:var(--accent);color:#000}
+.osd-rot{background:rgba(124,58,237,.7)}.osd-drop{background:rgba(49,199,239,.7)}
+body.is-touch #game,body.is-coarse #game{padding-bottom:110px}
+
+/* TV / focus */
+.focus-cur{outline:3px solid var(--accent) !important;outline-offset:2px}
+body.is-tv{font-size:1.25em}
+@media (orientation:portrait){#hud{gap:14px}}
+/* Narrow screens: hold + next in a compact row ABOVE a full-width board */
+@media (max-width:560px){
+  #play{flex-wrap:wrap;justify-content:center;gap:8px}
+  .side{flex-direction:row}
+  .side.left{order:0}.side.right{order:1}
+  #board-col{order:2;flex-basis:100%;display:flex;justify-content:center}
+  .mini{display:flex;align-items:center;gap:6px;padding:4px 8px}
+  .mini h4{margin:0}
+}
+</style>
+</head>
+<body>
+<button id="mute-btn" aria-label="mute">🔊</button>
+
+<div id="lobby">
+  <div class="title" id="title-el">BLOCK DROP</div>
+  <div class="sub">Solo &amp; 2–4 player Versus — send garbage, last one standing wins</div>
+  <div class="card">
+    <div class="row"><input id="pname" type="text" placeholder="Your name" maxlength="16"></div>
+    <div class="row diff"><button class="focusable" onclick="setDiff('easy',this)">Easy</button><button class="focusable active" onclick="setDiff('medium',this)">Medium</button><button class="focusable" onclick="setDiff('hard',this)">Hard</button></div>
+    <div class="row mode"><button class="focusable active" onclick="setMode('solo',this)">Solo</button><button class="focusable" onclick="setMode('versus',this)">Versus</button></div>
+    <div class="row"><button class="btn btn-solo focusable" onclick="playSolo()">Play Solo</button></div>
+    <div id="mp-panel" style="display:none">
+      <div class="row"><input id="room-id" type="text" placeholder="Room code (share it)" maxlength="24"></div>
+      <div class="row"><button class="btn btn-multi focusable" onclick="joinRoom()">Join / Create Room</button></div>
+      <div class="row"><button class="chip focusable" id="voice-btn">Voice</button><button class="chip focusable" id="video-btn">Video</button></div>
+    </div>
+  </div>
+  <div class="card"><h4>Leaderboard</h4><div id="lb-list"></div></div>
+</div>
+
+<div id="waiting">
+  <div class="title" style="font-size:clamp(22px,5vw,40px)">Waiting Room</div>
+  <div class="card"><div id="roster"></div></div>
+  <div class="row"><button class="btn btn-multi focusable" id="start-btn" onclick="hostStart()" style="display:none">Start Battle</button><button class="chip focusable" onclick="leaveRoom()">Leave</button></div>
+</div>
+
+<div id="game">
+  <div id="hud"><span>Score <b id="score">0</b></span><span>Lines <b id="lines">0</b></span><span>Lv <b id="level">1</b></span><span id="mode-tag">Solo</span></div>
+  <div id="play">
+    <div class="side left"><div class="mini"><h4>Hold</h4><canvas id="hold" width="60" height="60"></canvas></div></div>
+    <div id="board-col"><canvas id="board" width="240" height="480"></canvas></div>
+    <div class="side right"><div class="mini"><h4>Next</h4><canvas id="next" width="60" height="180"></canvas></div></div>
+  </div>
+  <div id="opp-wrap"></div>
+</div>
+
+<div id="gameover">
+  <div class="title" id="go-title">Game Over</div>
+  <div class="sub" id="go-stats"></div>
+  <div class="card"><h4>Top Scores</h4><div id="go-lb"></div></div>
+  <button class="btn btn-multi focusable" onclick="playAgain()">Play Again</button>
+</div>
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="audio.js"></script>
+<script src="input.js"></script>
+<script src="net.js"></script>
+<script src="rtc.js"></script>
+<script src="leaderboard.js"></script>
+<script src="block-core.js"></script>
+<script src="theme.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

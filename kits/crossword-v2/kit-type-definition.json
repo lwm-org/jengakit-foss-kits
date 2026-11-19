@@ -1,0 +1,69 @@
+{
+  "schema_version": "5",
+  "kit_name": "crossword-v2",
+  "kit_family": "codegen",
+  "version": "1.0.2",
+  "display_name": "Crossword",
+  "description": "A real crossword you solve from clues, alone, together or head to head. Plays on phone, tablet, desktop and TV, with in-room voice and video chat, timed scoring and a leaderboard.",
+  "category": "game",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "websocket"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "websocket",
+    "ingress",
+    "lobby",
+    "keyboard-input",
+    "touch-input",
+    "gamepad-input",
+    "responsive",
+    "voice-chat",
+    "video-chat",
+    "leaderboard"
+  ],
+  "ui": {
+    "pill_label": "Crossword",
+    "hint": "e.g. a space-exploration crossword, a world-capitals crossword, a 90s-movies trivia crossword",
+    "description": "Real crossword — solo / co-op / versus. Responsive (phone → TV), voice + video chat, leaderboard."
+  },
+  "sample_prompts": [
+    "A space-exploration crossword with planets, rockets, and astronauts",
+    "A world-geography crossword with capitals, rivers, and mountain ranges",
+    "A 90s-movies trivia crossword with classic titles, actors, and directors",
+    "A biology crossword covering cells, organs, and ecosystems"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "server.js",
+    "package.json",
+    "Dockerfile",
+    "lib/jengakit_db.js",
+    "public/index.html",
+    "public/game.js",
+    "public/crossword-core.js",
+    "public/net.js",
+    "public/rtc.js",
+    "public/input.js",
+    "public/audio.js",
+    "public/leaderboard.js",
+    "public/content.js"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "interpret_hints": "prompts/interpret-hints.txt"
+  },
+  "estimate": {
+    "cpu_m": 200,
+    "mem_mb": 256
+  }
+}

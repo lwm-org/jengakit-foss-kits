@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Game</title>
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="audio.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a1a;color:#eee;font-family:'Courier New',monospace;overflow:hidden;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#lobby{padding:40px 20px;text-align:center;max-width:500px;width:100%}
+#lobby h1{font-size:28px;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,0.4);margin-bottom:6px}
+#lobby .sub{color:#888;font-size:13px;margin-bottom:24px}
+.room-card{background:#1a1a3e;border:1px solid #333;padding:14px 18px;border-radius:10px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color 0.2s}
+.room-card:hover{border-color:#ffd700}
+.room-card .rn{color:#ffd700;font-weight:bold}
+.room-card .ri{color:#888;font-size:12px}
+#name-input{width:100%;background:#111;border:1px solid #444;color:#fff;padding:10px;border-radius:8px;font-size:14px;font-family:monospace;margin:16px 0}
+#launch-btn{width:100%;padding:14px;background:#ffd700;color:#000;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer}
+#launch-btn:hover{background:#ffe033}
+canvas{display:none;border:1px solid #222;border-radius:4px}
+#sound-btn{position:fixed;top:10px;right:10px;background:none;border:1px solid #333;color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:monospace}
+</style>
+</head>
+<body>
+<div id="lobby">
+  <h1>Game Lobby</h1>
+  <p class="sub">Choose a room or create one</p>
+  <div id="room-list"></div>
+  <div id="name-row" style="display:none">
+    <input id="name-input" placeholder="Your name..." maxlength="16">
+    <button id="launch-btn">Join Game</button>
+  </div>
+</div>
+<canvas id="cv" width="480" height="700"></canvas>
+<button id="sound-btn" onclick="this.textContent=GameAudio.toggle()?'Sound ON':'Sound OFF'">Sound ON</button>
+<script src="net.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   GAME CODE — LLM generates this entire <script> block.
+
+   Globals from net.js (already loaded):
+     myId, myName, myColor    — local player identity
+     remotePlayers             — {playerId: {x, y, score, state, extra:{name,color}}}
+     remoteEvents              — [{playerId, type, data, time}]
+     inGame                    — true after joining a room
+     LEFT() RIGHT() UP() DOWN() ACTION()  — input helpers
+     emitGameEvent(type, data) — broadcast shoot/collect/die to other players
+     GameAudio.play(name)      — play sound effect
+
+   Must define: getMyState() → {x, y, score, state}
+   Must render: ALL entries in remotePlayers alongside local player
+   ═══════════════════════════════════════════════════════════════ */
+
+var canvas = document.getElementById('cv');
+var ctx = canvas.getContext('2d');
+var px = 240, py = 600, pscore = 0;
+
+function getMyState() { return {x:px, y:py, score:pscore, state:'alive'}; }
+
+function gameLoop() {
+  if (!inGame) { requestAnimationFrame(gameLoop); return; }
+  if (LEFT()) px = Math.max(12, px - 4);
+  if (RIGHT()) px = Math.min(468, px + 4);
+  if (UP()) py = Math.max(12, py - 4);
+  if (DOWN()) py = Math.min(688, py + 4);
+
+  ctx.fillStyle = '#0a0a1a'; ctx.fillRect(0, 0, 480, 700);
+  for (var pid in remotePlayers) {
+    var rp = remotePlayers[pid];
+    ctx.fillStyle = (rp.extra && rp.extra.color) || '#888';
+    ctx.beginPath(); ctx.arc(rp.x, rp.y, 12, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = '10px monospace';
+    ctx.fillText((rp.extra && rp.extra.name) || pid, rp.x - 16, rp.y - 16);
+  }
+  ctx.fillStyle = myColor; ctx.beginPath(); ctx.arc(px, py, 12, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = '10px monospace'; ctx.fillText(myName, px - 16, py - 16);
+  ctx.fillStyle = '#ffd700'; ctx.font = '14px monospace';
+  ctx.fillText('Score: ' + pscore + '  Players: ' + (Object.keys(remotePlayers).length + 1), 10, 20);
+  requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
+</script>
+</body></html>

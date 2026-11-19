@@ -1,0 +1,48 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-music-maker",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Beat Box",
+  "description": "Simple music and sound maker with instrument buttons, drum pads, loop recording, and playback",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Beat Box",
+    "hint": "e.g. a drum pad with loops, a piano keyboard with recording and playback",
+    "description": "Simple music and sound maker with instrument buttons, drum pads, loop recording, and playback"
+  },
+  "sample_prompts": [
+    "A music maker app with piano keys and drum pads for kids",
+    "A beat-making tool where kids create songs with loops",
+    "A sound explorer with animal sounds and musical instruments"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate a single index.html file for a kids app. Static HTML only \u2014 no backend, no server, no Python, no Node.js. Use Tailwind CSS CDN and inline JavaScript. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

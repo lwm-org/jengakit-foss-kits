@@ -1,0 +1,9 @@
+# Overleaf CE — a self-contained compose kit. Unlike compose-repo-importer
+# (which clones a user-supplied repo), this kit SHIPS its own curated,
+# CE-ready compose in templates/docker-compose.yml; the importer's compose
+# ingest reads it from there (no repo URL needed in the prompt). The stack is
+# batteries-included: the single-member MongoDB replica set self-initializes
+# via a one-shot mongo-init service, so a plain "Deploy Overleaf" just works.
+registry:
+  protocol: compose
+  auth: none

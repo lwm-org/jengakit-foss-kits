@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F5F5DC;
+  --bg-card: #FFFFFF;
+  --text: #1A1A1A;
+  --text-muted: #6B7280;
+  --border: #E8E8D0;
+  --accent: #2563EB;
+  --bookmark: #FEF3C7;
+  --bookmark-border: #F59E0B;
+}
+
+.dark {
+  --bg: #1A1A2E;
+  --bg-card: #16213E;
+  --text: #E0E0E0;
+  --text-muted: #9CA3AF;
+  --border: #2A2A4A;
+  --accent: #60A5FA;
+  --bookmark: #422006;
+  --bookmark-border: #D97706;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+}

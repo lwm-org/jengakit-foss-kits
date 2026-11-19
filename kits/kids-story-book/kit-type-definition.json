@@ -1,0 +1,48 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-story-book",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Story Time",
+  "description": "Interactive picture story book with page navigation, illustrations, and read-along text highlighting",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Story Time",
+    "hint": "e.g. an interactive fairy tale with page turns, a choose-your-own-adventure story",
+    "description": "Interactive picture story book with page navigation, illustrations, and read-along text highlighting"
+  },
+  "sample_prompts": [
+    "An interactive fairy tale book with animated page turns",
+    "A bedtime story app with illustrations and read-along highlighting",
+    "A choose-your-own-adventure story book for kids"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate a single index.html file for a kids app. Static HTML only \u2014 no backend, no server, no Python, no Node.js. Use Tailwind CSS CDN and inline JavaScript. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

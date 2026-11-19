@@ -1,0 +1,53 @@
+{
+  "schema_version": "5",
+  "kit_name": "gatsby-app",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Gatsby App",
+  "description": "Static site generated with Gatsby 5, React 18, and Tailwind CSS. Builds to static HTML served by Gatsby serve.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Gatsby",
+    "hint": "e.g. a marketing site, a blog, a portfolio - static site generation with React",
+    "description": "Gatsby 5 + React + Tailwind. Static site generation with React components and Gatsby plugins."
+  },
+  "sample_prompts": [
+    "A marketing landing page for a SaaS product with pricing tiers and feature comparison",
+    "A photography portfolio with gallery grid and lightbox viewer",
+    "A company about page with team profiles, timeline, and contact form"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "package.json",
+    "gatsby-config.js",
+    "postcss.config.cjs",
+    "tailwind.config.cjs",
+    "tsconfig.json",
+    "src/styles/global.css",
+    "src/pages/index.tsx"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

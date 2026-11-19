@@ -1,0 +1,25 @@
+# Phase F8: declarative replacement for the legacy `if app_type ==
+# "github-docker-repo-importer"` branches in write_files.py
+# (_step2f_pre_clone + _step2d_plus_plus_git_clone).
+#
+# This kit uses the git-clone protocol — the kit's templates/Dockerfile
+# is the load-bearing build artifact (multi-stage build with
+# `RUN git clone` baked in). The importer pipeline copies that
+# Dockerfile into the workspace and substitutes the placeholder URL
+# with the actual one parsed from the user's prompt.
+registry:
+  protocol: git-clone
+  base_url: github.com
+  auth: none
+
+parser:
+  url_patterns:
+    - "https://github.com/{owner}/{repo}"
+
+ports:
+  # Falls back to spec.ports.priority when GitCloneAdapter.inspect can't
+  # detect EXPOSE from the cloned repo (network failure, no Dockerfile
+  # at the root, etc.). Default favours common HTTP service ports.
+  priority: [8080, 80, 3000, 8000, 5000, 4000]
+
+guards: {}

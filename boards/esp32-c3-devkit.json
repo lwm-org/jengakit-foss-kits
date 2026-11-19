@@ -1,0 +1,101 @@
+{
+  "board_id": "esp32-c3-devkit",
+  "display_name": "ESP32-C3 DevKit",
+  "kind": "microcontroller",
+  "connection_kind": "ota",
+
+  "provider_id": "esp32-c3",
+  "provider_primary": true,
+  "provider_display_name": "ESP32-C3 DevKit",
+
+  "manufacturer": "Espressif",
+  "chip": "ESP32-C3",
+  "variants": ["esp32-c3"],
+  "toolchain": "esphome",
+
+  "flash": {
+    "method": "ota-esphome",
+    "protocol": "esphome-ota",
+    "baud": 921600,
+    "format": "bin"
+  },
+
+  "capabilities": {
+    "mcu": "ESP32-C3",
+    "clock_mhz": 160,
+    "sram_bytes": 409600,
+    "flash_bytes": 4194304,
+    "max_sketch_size_bytes": 1310720,
+    "digital_pins": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 18, 19, 20, 21],
+    "analog_pins": ["A0", "A1", "A2", "A3", "A4"],
+    "pwm_pins": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "onboard_led_pin": 8,
+    "gpio": 15,
+    "pwm": 6,
+    "onboard_led": 8,
+    "sram": 409600,
+    "flash": 4194304,
+    "has_wifi": true,
+    "has_bluetooth": true,
+    "has_filesystem": true,
+    "serial_baud_default": 115200,
+    "language": "C++",
+    "fqbn": "esp32:esp32:esp32c3",
+    "pio_board": "esp32-c3-devkitm-1",
+    "notes": [
+      "Single-core RISC-V; WiFi + BLE 5 on board.",
+      "Firmware is authored as ESPHome YAML, not a raw Arduino sketch.",
+      "WiFi / OTA secrets are injected via !secret at compile time — never inline them."
+    ]
+  },
+
+  "config_schema": [
+    {
+      "name": "ip_address",
+      "kind": "text",
+      "type": "string",
+      "required": true,
+      "required_message": "ip_address is required (use the ESP32-C3's IP on your LAN)"
+    },
+    {
+      "name": "wifi_ssid",
+      "kind": "text",
+      "type": "string",
+      "required": true,
+      "required_message": "wifi_ssid is required so the firmware can join your network"
+    },
+    {
+      "name": "wifi_password",
+      "kind": "password",
+      "type": "string",
+      "required": true,
+      "min_length": 8,
+      "deny_list": ["12345678", "password", "00000000"],
+      "min_length_message": "wifi_password must be at least 8 characters",
+      "deny_list_message": "wifi_password '{value}' is a deny-listed default — pick something stronger"
+    },
+    {
+      "name": "ota_password",
+      "kind": "password",
+      "type": "string",
+      "required": true,
+      "min_length": 8,
+      "deny_list": ["admin", "esp32", "password", "passw0rd", "1234", "12345678", "default", "esphome"],
+      "min_length_message": "ota_password must be at least 8 characters",
+      "deny_list_message": "ota_password '{value}' is a deny-listed default — OTA without strong auth lets anyone on your LAN flash anything."
+    },
+    {
+      "name": "board_variant",
+      "kind": "variant",
+      "type": "string",
+      "required": false,
+      "default": "esp32-c3",
+      "enum": ["esp32-c3"],
+      "enum_message": "board_variant {value} is not supported. Allowed: {allowed}"
+    }
+  ],
+
+  "kit_platform_ids": ["esp32-c3-devkit"],
+  "resolver_keywords": ["esp32-c3", "esp32c3", "c3"],
+  "default_peripherals": []
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "jengaKIT Board Descriptor (v1)",
+  "description": "A single declarative descriptor for one physical board / SBC. The whole devices stack (providers, resolver, schema validation, codegen capability table, frontend catalog) derives from these files instead of hand-edited Python literals. One descriptor file lives at lib/boards/<board_id>.json and is validated against this schema at registry-load time. Only board_id/display_name/kind/connection_kind are required; everything else is optional so a minimal descriptor still registers.",
+
+  "definitions": {
+    "config_field": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name":     { "type": "string", "minLength": 1 },
+        "type":     { "type": "string", "enum": ["string", "int"] },
+        "kind":     { "type": "string", "enum": ["text", "note", "variant", "password", "port"] },
+        "required": { "type": "boolean" },
+        "default":  {},
+        "enum":     { "type": "array" },
+        "min":      { "type": "integer" },
+        "max":      { "type": "integer" },
+        "min_length": { "type": "integer", "minimum": 0 },
+        "deny_list": { "type": "array", "items": { "type": "string" } },
+        "range":    { "type": "array", "items": { "type": "integer" } },
+        "required_message":   { "type": "string" },
+        "type_message":       { "type": "string" },
+        "enum_message":       { "type": "string" },
+        "min_length_message": { "type": "string" },
+        "deny_list_message":  { "type": "string" },
+        "range_message":      { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "required": ["board_id", "display_name", "kind", "connection_kind"],
+  "properties": {
+    "board_id":     { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "kind":         { "type": "string", "minLength": 1 },
+    "connection_kind": { "type": "string", "enum": ["usb-serial", "ota", "ssh"] },
+
+    "provider_id":           { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "provider_primary":      { "type": "boolean" },
+    "provider_display_name": { "type": "string" },
+
+    "manufacturer": { "type": "string" },
+    "chip":         { "type": "string" },
+    "variants":     { "type": "array", "items": { "type": "string" } },
+    "toolchain":    { "type": "string" },
+
+    "flash": {
+      "type": "object",
+      "properties": {
+        "method":   { "type": "string" },
+        "protocol": { "type": "string" },
+        "baud":     { "type": "integer" },
+        "format":   { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": true
+    },
+
+    "config_schema":     { "type": "array", "items": { "$ref": "#/definitions/config_field" } },
+    "kit_platform_ids":  { "type": "array", "items": { "type": "string" } },
+    "resolver_keywords": { "type": "array", "items": { "type": "string" } },
+    "default_peripherals": { "type": "array" }
+  },
+  "additionalProperties": false
+}

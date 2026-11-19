@@ -1,0 +1,79 @@
+CRITICAL RULES for public/index.html generation:
+
+FILE STRUCTURE:
+1. Generate ONLY public/index.html — nothing else
+2. The HTML MUST include these scripts in <head> in this order:
+   <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+   <script src="audio.js"></script>
+3. The HTML MUST include <script src="net.js"></script> BEFORE the game <script> block
+4. ALL game code in ONE inline <script> tag at the bottom of <body>, AFTER the net.js script tag
+5. NO import statements, NO ES modules, NO require()
+
+NETWORKING — ALREADY HANDLED BY net.js:
+net.js is a template file that provides ALL multiplayer networking. It is already loaded.
+DO NOT create your own socket connection. DO NOT write socket.on() listeners.
+DO NOT write lobby UI code — the lobby HTML and room selection is in the template.
+
+net.js provides these globals that your game code MUST use:
+  myId        — your player ID (set after joining)
+  myName      — player display name
+  myColor     — player color (random hex)
+  remotePlayers — object of OTHER players: {playerId: {x, y, score, state, extra:{name,color}}}
+  remoteEvents  — array of recent events from other players: [{playerId, type, data, time}]
+  inGame      — boolean, true after player joins a room
+  LEFT() RIGHT() UP() DOWN() ACTION() — input helpers (arrow keys + WASD + space)
+  emitGameEvent(type, data) — broadcast a game event (shoot, collect, die) to other players
+  GameAudio.play(name)      — play sound: 'shoot','explode','hit','collect','lose','jump','coin','powerup','bounce'
+
+YOUR GAME CODE MUST:
+6. Define function getMyState() returning {x, y, score, state} — net.js calls this 20x/sec to broadcast your position
+7. In your render loop, draw ALL entries in remotePlayers using the SAME sprite draw functions as the local player
+8. Use remotePlayers[pid].extra.color for each remote player's color
+9. Use remotePlayers[pid].extra.name to label each remote player
+10. Process remoteEvents array for other players' bullets, explosions, and effects
+11. Call emitGameEvent('shoot', {x, y, dir}) when local player fires
+12. Call emitGameEvent('explode', {x, y}) on death/explosion
+
+LOBBY HTML — ALREADY IN TEMPLATE:
+The template index.html has a lobby div with room-list, name-input, and launch-btn.
+DO NOT regenerate lobby HTML. Keep the existing lobby div and #name-row div as-is.
+Your game code starts running after inGame becomes true.
+
+GAME LOOP:
+13. Canvas element: id="cv", 480x700 pixels (already in template HTML)
+14. requestAnimationFrame loop — check inGame before updating
+15. Movement with LEFT()/RIGHT()/UP()/DOWN(), action with ACTION()
+16. Include 2-3 local bot players with simple AI — bots use the SAME sprite draw functions
+
+=== SPRITE QUALITY — THIS IS THE MOST IMPORTANT RULE ===
+
+17. NEVER draw ANY entity as a plain rectangle (ctx.fillRect) or single triangle
+18. Every entity MUST have a dedicated draw function using 10+ Canvas 2D calls combining:
+    - ctx.arc() for heads, wheels, eyes, circles
+    - ctx.ellipse() for bodies, clouds, organic shapes
+    - ctx.beginPath()/ctx.lineTo()/ctx.bezierCurveTo() for complex outlines
+    - ctx.createRadialGradient() for metallic/glossy surfaces
+    - ctx.shadowBlur/ctx.shadowColor for glow effects
+    - ctx.roundRect() for vehicle bodies with rounded edges
+    - ctx.rotate() for propellers, spinning objects
+
+19. CHARACTERS MUST have: head, eyes with pupils, mouth, body, arms, legs, clothing
+20. VEHICLES MUST have: aerodynamic body, windshield with gradient, wheels/engine, headlights with glow, exhaust flame
+21. OBJECTS MUST have: 3D gradient appearance, surface detail, distinct shape
+
+22. EFFECTS MUST include:
+    - Explosions: expanding concentric circles with alpha fade
+    - Engine trails: small particles with glow
+    - Pickup glow: pulsing shadowBlur with Math.sin
+    - Screen shake on collision
+    - Score popups: floating "+100" text that rises and fades
+
+AUDIO:
+23. GameAudio.play('shoot') for firing, GameAudio.play('explode') for destruction
+24. GameAudio.play('hit') for hits, GameAudio.play('collect') for pickups
+25. GameAudio.play('lose') for game over, GameAudio.play('coin') for score items
+26. NEVER create your own AudioContext
+
+GAME OVER:
+27. Show overlay with final score and "Press SPACE to restart"
+28. On restart, reset local state but stay in the room (don't return to lobby)

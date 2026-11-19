@@ -1,0 +1,14 @@
+{
+  "name": "Hello World",
+  "sprites": [
+    {
+      "id": "1",
+      "name": "Itchy Cat",
+      "x": 0,
+      "y": 0,
+      "direction": 90,
+      "costumes": [],
+      "scripts": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"event_whenflagclicked\" id=\"start\"><next><block type=\"motion_move\"><field name=\"STEPS\">10</field></block></next></block></xml>"
+    }
+  ]
+}

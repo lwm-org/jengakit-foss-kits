@@ -1,0 +1,37 @@
+# Phase F8: declarative replacement for write_files.py::_step2g_dockerhub_pull.
+# The OCI HTTPS adapter or the docker socket adapter (per host capability)
+# does the actual fetch + inspect. This spec only declares WHERE to look
+# and HOW to interpret the user's prompt.
+registry:
+  protocol: oci-distribution
+  base_url: registry-1.docker.io
+  auth: bearer-anonymous-fallback
+
+parser:
+  url_patterns:
+    - "https://hub.docker.com/r/{owner}/{repo}"
+    - "https://hub.docker.com/_/{image}"
+    - "https://hub.docker.com/layers/{owner}/{repo}/{tag}"
+  # Kept for parity with the legacy URL_IMPORT_PATTERNS resolver in
+  # lib/services/kit_resolver.py — anchored matches that the dockerhub
+  # parser path picks up via lib.pipeline.dockerhub_ref.
+  plain_ref_regex: "^[a-z0-9._-]+(/[a-z0-9._-]+)?(:[\\w.-]+)?$"
+
+ports:
+  # Common HTTP service ports preferred over arbitrary ones (B7 from the
+  # v0.4.0 dockerhub-importer hardening).
+  priority: [80, 8080, 3000, 8000, 5000, 4000]
+
+run_flags:
+  # B8 from v0.4.0: linuxserver/* and kasmweb/* desktop images need
+  # extra resources; without --shm-size and seccomp=unconfined the
+  # browser inside fails opaquely.
+  - when:
+      image_prefix: ["linuxserver/", "lscr.io/linuxserver/", "kasmweb/"]
+    add: ["--shm-size=1gb", "--security-opt=seccomp=unconfined"]
+
+guards:
+  # B6: refuse base-OS images (alpine/ubuntu/debian-only refs with no
+  # EXPOSE and no service Cmd/Entrypoint). Returns a clear error rather
+  # than spinning up an idle container.
+  reject_no_service: true

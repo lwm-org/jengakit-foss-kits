@@ -1,0 +1,30 @@
+CRITICAL: Generate ONLY src/App.tsx — nothing else.
+
+This is a Vite + React app. Do NOT use Next.js imports (no next/link, next/router, next/image, no 'use client' directive).
+
+DO NOT generate: package.json, Dockerfile, vite.config.ts, main.tsx, index.css, index.html, nginx.conf, tailwind.config, postcss.config, or any config file.
+
+=== src/App.tsx RULES ===
+
+Structure:
+- One default export: export default function App() { ... }
+- ALL application logic in this single component
+- Use useState for tab/page switching, form data, modals
+- Use react-router-dom for routing if needed (already in package.json)
+
+Imports (all pre-installed):
+- import { useState } from 'react';
+- import { IconName } from 'lucide-react';
+- import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+
+Layout:
+- Left sidebar (w-56) with business name and navigation items
+- Main content area with page title and content
+- Tailwind CSS classes for ALL styling
+
+Content:
+- Stat cards (3-4 per section)
+- Data tables with 8-15 realistic sample rows
+- Charts using Recharts with sample data
+- Forms with inputs, selects, action buttons
+- Theme colors via Tailwind utility classes

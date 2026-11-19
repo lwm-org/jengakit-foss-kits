@@ -1,0 +1,13 @@
+## Detection
+- IMPORTANT: if the user asks for a crossword, crossword puzzle, word puzzle,
+  clue/trivia grid, fill-in puzzle, or any across-and-down word game — with or
+  without multiplayer/co-op/versus — set app_category to "crossword".
+- Keywords: "crossword", "word puzzle", "clue", "across", "down", "trivia grid",
+  "fill in", "vocabulary puzzle", "themed crossword".
+- Examples: "space crossword", "geography crossword", "movie trivia crossword",
+  "science vocabulary crossword", "multiplayer crossword", "co-op word puzzle".
+
+## normalized_description note
+- The game engine is fixed; only the themed word list (public/content.js) is
+  generated. Capture the THEME (topic + difficulty flavour) — everything else
+  (solo/co-op/versus, responsive, voice/video, leaderboard) is built in.

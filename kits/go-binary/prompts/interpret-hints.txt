@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for a Go binary, CLI tool, executable, command-line program, or any Go program that is NOT an HTTP server, set framework to "go", runtime to "go", app_category to "go-binary"
+
+## normalized_description note
+- For go-binary apps: specify it must use only stdlib packages (fmt, os, math, strings, strconv, time, etc.), print output to stdout with fmt.Println, have no HTTP server, and use a multi-stage Docker build (golang:1.22-alpine to build, alpine:latest to run)

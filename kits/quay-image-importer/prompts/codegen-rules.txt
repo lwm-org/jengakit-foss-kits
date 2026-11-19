@@ -1,0 +1,30 @@
+quay-image-importer apps — generate EXACTLY these three files:
+
+Dockerfile:
+  FROM <FULL_QUAY_IMAGE_REF>:<TAG>
+  LABEL jengakit.source="quay.io://<IMAGE_REF>:<TAG>"
+
+  Rules:
+  - Always use the full quay.io/ prefixed image reference (e.g. quay.io/bitnami/wordpress:latest).
+  - Use "latest" as the tag if none was specified.
+  - Do NOT add any RUN, COPY, EXPOSE, ENV, or CMD instructions.
+  - Do NOT add any application source code.
+  - The image's own CMD/ENTRYPOINT is used at runtime.
+  - IMPORTANT: jengakit will verify and overwrite this file before build.
+    The only requirement is a syntactically valid FROM line with the correct image.
+
+provenance.json — generate exactly this structure:
+  {
+    "quay_ref": "<FULL_QUAY_IO_IMAGE_REF>",
+    "image_ref": "<USER_IMAGE_PART_WITHOUT_QUAY_IO_PREFIX>",
+    "tag": "<TAG>",
+    "detected_port": null,
+    "port_override": false,
+    "import_time": "<ISO8601_TIMESTAMP>",
+    "status": "pending-port-detection"
+  }
+
+README.md — one short paragraph:
+  State the app was imported from Quay.io image <IMAGE_REF>.
+  State the image is pulled directly and re-tagged for the local jengakit registry.
+  Note that no application source code was generated.

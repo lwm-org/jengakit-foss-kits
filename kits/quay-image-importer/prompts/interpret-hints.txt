@@ -1,0 +1,27 @@
+## Detection — quay-image-importer
+- IMPORTANT: if the user prompt contains a Quay.io image reference in any of these forms:
+    - quay.io/user/image
+    - quay.io/user/image:tag
+    - quay.io/org/image
+    - quay.io/org/image:tag
+  AND the request is to deploy, run, host, launch, or import it,
+  THEN set:
+    framework: "quay"
+    runtime: "dockerfile"
+    app_category: "quay-image-importer"
+
+- Do NOT classify this as python3, node, go, or any language runtime.
+  The runtime is the image itself — not a language jengakit generates code for.
+
+- Do NOT match Docker Hub references (plain user/image or hub.docker.com URLs without a quay.io domain).
+  Those belong to dockerhub-image-importer.
+
+- Do NOT match GitHub URLs (https://github.com/...) — those are github-docker-repo-importer.
+
+- Do NOT match other registries (gcr.io, ghcr.io, ecr., azurecr.io).
+  Only match references that explicitly contain quay.io.
+
+## normalized_description
+- Extract and include the full Quay.io image reference verbatim (including the quay.io/ prefix).
+- Format: "Quay.io deployment of <IMAGE_REF>. Pull and deploy pre-built image."
+- Include the tag if specified; otherwise assume :latest.

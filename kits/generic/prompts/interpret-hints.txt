@@ -1,0 +1,6 @@
+## Detection
+- If the user request does not clearly match any other app type, set app_category to "generic"
+- Generic is the catch-all fallback for Flask/Python apps with no special requirements
+
+## normalized_description note
+- For generic apps: specify it must use Flask>=2.3.0, listen on 0.0.0.0:5000, return JSON or HTML from GET /, and use mock/hardcoded data unless explicitly stated otherwise

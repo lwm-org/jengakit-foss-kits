@@ -1,0 +1,24 @@
+github-docker-repo-importer apps (app_category = "github-docker-repo-importer"):
+
+MANDATORY file list — output EXACTLY these three files, no others:
+  files: ["Dockerfile", "provenance.json", "README.md"]
+
+Do NOT include app.py, requirements.txt, server.js, package.json, index.js, or any
+application source file. The source code comes from the cloned GitHub repository — do
+not regenerate it.
+
+base_image: "alpine/git"
+  (This is the first stage of a two-stage build. The second stage uses an inferred image.)
+
+port: detect from repository context or description; default to 8080 if unknown.
+
+entrypoint: infer from the repository's likely technology:
+  - Node.js repos  → ["node", "server.js"] or ["node", "index.js"]
+  - Python repos   → ["python", "app.py"] or ["gunicorn", "app:app"]
+  - Hugo/static    → ["nginx", "-g", "daemon off;"]
+  - Go repos       → ["./main"]
+  - Unknown        → ["sh", "-c", "echo started"]
+
+dependencies: ["git"]
+
+app_description: "Git-clone deployment of <GITHUB_URL> using a two-stage Dockerfile build. Inferred stack: <STACK>."

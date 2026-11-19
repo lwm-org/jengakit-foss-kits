@@ -1,0 +1,23 @@
+{
+  "schema_version": "5",
+  "kit_name": "services-demo",
+  "kit_family": "codegen",
+  "kit_language": "python3",
+  "version": "1.0.1",
+  "display_name": "Services Demo (postgres + redis)",
+  "description": "A reference app whose home page shows a live check of its own data store and cache connections. It shows how a kit declares the backing services it needs.",
+  "category": "example",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.7.0",
+  "capabilities": ["http"],
+  "kit_network": { "ingress_variant": "standard" },
+  "kit_deploy": { "method": "deployment", "validate_method": "http-check" },
+  "kit_template_dir": "templates",
+  "kit_required_files": ["app.py", "Dockerfile", "requirements.txt"],
+  "kit_port": 5000,
+  "sample_prompts": ["Deploy the services demo", "Show me an app with postgres and redis"],
+  "services": [
+    { "kind": "postgres", "version": "16", "db_name_hint": "app" },
+    { "kind": "redis" }
+  ]
+}

@@ -1,0 +1,48 @@
+name: Publish kits
+
+# Runs only on main (a dev to main release merge, or a manual run from main).
+# Releases every kit whose <kit>-v<version> tag has no release yet (and
+# republishes a release whose content changed without a version bump), then
+# rebuilds index.json on the rolling registry-latest release.
+on:
+  push:
+    branches: [main]
+    paths: ["kits/**", "scripts/**", "tools/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write     # create releases, tags and the index asset (repo default is read)
+
+concurrency:
+  group: publish-kits
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish kits
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install jsonschema pyyaml requests
+
+      - name: Validate every kit
+        run: python scripts/validate-kits.py
+
+      - name: Release each kit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/publish-kits.py
+
+      - name: Refresh registry-latest index.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/refresh-registry-index.py

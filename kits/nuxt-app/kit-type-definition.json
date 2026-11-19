@@ -1,0 +1,51 @@
+{
+  "schema_version": "5",
+  "kit_name": "nuxt-app",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Nuxt App",
+  "description": "A full-stack Nuxt 3 web app styled with Tailwind CSS. Pages render ahead of the browser for fast first loads, and each file in the pages folder becomes a route.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Nuxt",
+    "hint": "e.g. a blog, an e-commerce storefront, a business app with SSR",
+    "description": "Nuxt 3 + Tailwind. Server-side rendered Vue 3 app with file-based routing and API routes."
+  },
+  "sample_prompts": [
+    "A recipe sharing site with categories, search, and detailed recipe pages",
+    "A real estate listing portal with property cards and filter sidebar",
+    "A team directory app with employee profiles and department views"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "package.json",
+    "nuxt.config.ts",
+    "tailwind.config.cjs",
+    "app.vue",
+    "pages/index.vue"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

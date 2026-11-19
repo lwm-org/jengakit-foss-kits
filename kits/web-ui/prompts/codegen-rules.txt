@@ -1,0 +1,18 @@
+Web UI apps (React via CDN with JSX):
+- app.py must return the complete HTML as a Python string — do NOT use render_template, render_template_string, send_from_directory, or any Jinja2 function
+- CRITICAL: Never use render_template_string() — React JSX uses {{ }} syntax which conflicts with Jinja2 and causes 500 errors. Always return the HTML string directly.
+- Store the full HTML page using SINGLE triple-quotes: HTML = '''...''' and return: return HTML, 200, {'Content-Type': 'text/html'}
+- IMPORTANT: always use ''' (single triple-quotes) NOT """ (double triple-quotes) for the HTML string — double triple-quotes conflict with JSON encoding
+- Do NOT use an f-string for the HTML variable — the HTML is static, no Python interpolation needed
+- The ONLY Flask import needed is: from flask import Flask — do NOT import render_template_string, render_template, or Markup
+- The HTML must be a complete self-contained page inside app.py
+- Load React 18, ReactDOM 18, and Babel standalone via CDN in the <head>:
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+- Write all React components using JSX inside a <script type="text/babel"> tag
+- Mount with: ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+- Use React.useState, React.useEffect, and other hooks directly (React is a global)
+- Do NOT use React.createElement — use JSX
+- Do NOT generate a separate templates/ directory or index.html file — everything must be in app.py
+- Do NOT generate a package.json or any Node files for web-ui apps

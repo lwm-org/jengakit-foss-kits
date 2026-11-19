@@ -1,0 +1,11 @@
+{
+  "dockerhub_url": "",
+  "image_ref": "",
+  "tag": "latest",
+  "full_image": "",
+  "digest": "",
+  "detected_port": null,
+  "port_override": false,
+  "import_time": "",
+  "status": "pending"
+}

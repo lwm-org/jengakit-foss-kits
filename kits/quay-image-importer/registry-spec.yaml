@@ -1,0 +1,19 @@
+# Phase F8: declarative replacement for write_files.py::_step2h_quay_pull.
+# Quay.io public images don't need a bearer-token round-trip — the OCI
+# Distribution endpoint is reachable anonymously. The registry adapter
+# (OCI HTTPS or docker socket per host) does the rest.
+registry:
+  protocol: oci-distribution
+  base_url: quay.io
+  auth: none
+
+parser:
+  url_patterns:
+    - "https://quay.io/repository/{owner}/{repo}"
+  plain_ref_regex: "^quay\\.io/[a-z0-9._-]+/[a-z0-9._-]+(:[\\w.-]+)?$"
+
+ports:
+  priority: [80, 8080, 3000, 8000, 5000, 4000]
+
+guards:
+  reject_no_service: true

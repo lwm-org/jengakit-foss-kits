@@ -1,0 +1,2 @@
+# Itchy Kit — Plan Mode Rules
+# Template-first kit: no plan mode needed

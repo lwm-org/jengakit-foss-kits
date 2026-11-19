@@ -1,0 +1,23 @@
+MANDATORY Dockerfile structure — copy exactly:
+
+  FROM rust:1.75-slim-bookworm AS builder
+  WORKDIR /app
+  RUN apt-get update && apt-get install -y curl pkg-config libssl-dev
+  RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+  COPY . .
+  RUN wasm-pack build --target web
+
+  FROM python:3.11-slim
+  WORKDIR /app
+  COPY --from=builder /app/pkg ./pkg
+  COPY . .
+  RUN if [ -s requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
+  EXPOSE 8080
+  CMD ["python3", "server.py"]
+
+Rules:
+1. Stage 1 MUST use rust:1.75-slim-bookworm to compile WASM with wasm-pack.
+2. Stage 2 MUST use python:3.11-slim (NOT rust image) — the runtime only needs Python to serve static files.
+3. pip install MUST be conditional: only run if requirements.txt is non-empty.
+4. EXPOSE 8080. CMD runs python3 server.py.
+5. Kubernetes Service and Ingress MUST use port 8080 (not 5000). Set both port and targetPort to 8080.

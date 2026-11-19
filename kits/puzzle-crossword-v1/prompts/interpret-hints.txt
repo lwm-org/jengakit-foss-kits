@@ -1,0 +1,4 @@
+## Detection
+- IMPORTANT: if the user asks for a crossword, crossword puzzle, word puzzle, word game, trivia puzzle, fill-in puzzle, clue-based puzzle, themed crossword, or any grid-based word game with across and down clues, set app_category to "puzzle-crossword-v1"
+- Keywords: "crossword", "word puzzle", "clue", "across", "down", "trivia", "word game", "fill in", "vocabulary"
+- Examples: "tech crossword", "geography crossword", "animal crossword puzzle", "movie trivia crossword", "programming word puzzle", "science vocabulary crossword"

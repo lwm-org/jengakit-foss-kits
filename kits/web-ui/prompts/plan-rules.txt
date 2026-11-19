@@ -1,0 +1,11 @@
+Web UI apps (app_category = "web-ui"):
+- files MUST include exactly: app.py, requirements.txt, Dockerfile
+- dependencies MUST include: flask>=2.3.0
+- base_image: python:3.11-slim
+- port: 5000
+- entrypoint: ["python", "app.py"]
+- app.py: Flask app with HTML stored as a Python string variable, returned directly with Content-Type: text/html
+- NEVER use render_template_string, render_template, or any Jinja2 function — React JSX {{ }} syntax breaks Jinja2
+- The only Flask import needed is: from flask import Flask
+- HTML must be a self-contained page with React 18 + Babel via CDN, all in a <script type="text/babel"> tag
+- Use mock/hardcoded data unless explicitly stated otherwise

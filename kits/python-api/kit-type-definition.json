@@ -1,0 +1,52 @@
+{
+  "schema_version": "5",
+  "kit_name": "python-api",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Python API",
+  "description": "Minimal Flask REST API returning JSON. Single-file, no frontend.",
+  "category": "api",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "python3",
+  "kit_base_image": "python:3.11-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Python API",
+    "hint": "e.g. a REST API that returns weather data as JSON",
+    "description": "Flask REST API \u2014 Python 3.11, returns JSON, port 5000. Single container."
+  },
+  "sample_prompts": [
+    "A REST API that returns current weather data for any city as JSON",
+    "A bookmarks API with CRUD endpoints that stores links in memory",
+    "A unit conversion API that converts between metric and imperial units"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "app.py",
+    "requirements.txt",
+    "Dockerfile"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Build a minimal Python Flask REST API.",
+  "estimate": {
+    "cpu_m": 250,
+    "mem_mb": 256
+  }
+}

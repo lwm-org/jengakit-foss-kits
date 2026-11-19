@@ -1,0 +1,25 @@
+quay-image-importer apps (app_category = "quay-image-importer"):
+
+MANDATORY file list — output EXACTLY these three files, no others:
+  files: ["Dockerfile", "provenance.json", "README.md"]
+
+Do NOT include app.py, requirements.txt, server.js, package.json, main.go, or any
+application source file. The container image is pre-built on Quay.io — jengakit does
+not generate any application code for this type.
+
+base_image: extract the full Quay.io image reference from the user prompt.
+  - Always preserve the quay.io/ prefix: e.g. "quay.io/bitnami/wordpress"
+  - From plain ref quay.io/user/image:tag  → "quay.io/user/image:tag"
+  - Default tag to "latest" if not specified.
+
+port: 80
+  (The actual port is determined by jengakit at build time via docker inspect.
+   Emit 80 as a placeholder — it will be overridden before manifests are written.)
+
+entrypoint: []
+  (The image defines its own entrypoint.)
+
+dependencies: []
+
+app_description: "Quay.io deployment of <IMAGE_REF>. Pulls and re-tags the pre-built
+image for jengakit-managed deployment."

@@ -1,0 +1,52 @@
+{
+  "schema_version": "5",
+  "kit_name": "rust-low-mem-api",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Rust Low-Memory API",
+  "description": "High-performance Rust API using Axum, optimized for minimal memory footprint and fast startup.",
+  "category": "api",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "rust",
+  "kit_base_image": "alpine:latest",
+  "kit_port": 8080,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Rust (Low Mem)",
+    "hint": "e.g. a high-concurrency microservice for data processing",
+    "description": "Rust 1.75 with Axum and Tokio \u2014 Compiled to a tiny static binary, port 8080."
+  },
+  "sample_prompts": [
+    "Build a URL shortener API that stores mappings in memory",
+    "Create a high-throughput JSON validation microservice",
+    "Make an API that computes Fibonacci numbers and caches results"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "Cargo.toml",
+    "src/main.rs"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Create a high-performance, low-memory Rust API using Axum.",
+  "estimate": {
+    "cpu_m": 100,
+    "mem_mb": 64
+  }
+}
