@@ -1,4 +1,4 @@
 Dockerfile for Streamlit apps:
 - Structure: FROM python:3.11-slim, WORKDIR /app, COPY . ., RUN pip install --no-cache-dir -r requirements.txt, EXPOSE 5000, CMD ["streamlit", "run", "app.py", "--server.port=5000", "--server.headless=true", "--server.address=0.0.0.0", "--server.enableCORS=false"]
 - Do NOT use CMD ["python", "app.py"] for Streamlit — it must use the streamlit CLI
-- Do NOT set rewrite-target annotation in the ingress.yaml for Streamlit — omit it entirely; add proxy timeout annotations instead (nginx.ingress.kubernetes.io/proxy-read-timeout: "3600", nginx.ingress.kubernetes.io/proxy-send-timeout: "3600")
+- Do NOT rewrite the request path in the reverse proxy in front of Streamlit; pass paths through unchanged and set long proxy timeouts instead (read timeout 3600 seconds, send timeout 3600 seconds)

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "jengaKIT Kit Type Definition (v5)",
-  "description": "v5 schema. Superset of v4 (any valid v4 kit is a valid v5 kit modulo the schema_version const). Adds the portable `services` block (a kit DECLARES the backing services it needs — postgres, redis, object-storage, email, cron, ai, auth — instead of the platform inferring them; the docker runtime materializes them, the cloud platform provisions per-app slices) and a single opaque `x-jengakit-cloud` extension object for cloud-only realization detail (never authored by FOSS/docker kits). The embedded/hardware family is unchanged from v4. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
+  "description": "v5 schema. Superset of v4 (any valid v4 kit is a valid v5 kit modulo the schema_version const). Adds the portable `services` block (a kit DECLARES the backing services it needs, namely postgres, redis, object-storage, email, cron, ai and auth, instead of the platform inferring them; the docker runtime materializes them as containers) and a single opaque extension object for host-specific realization detail (never authored by docker kits). The embedded/hardware family is unchanged from v4. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
   "definitions": {
     "kit_name_string": {
       "type": "string",
@@ -237,7 +237,7 @@
       "required": [
         "kind"
       ],
-      "description": "A backing service the kit declares it needs. INTENT-level and portable: the docker runtime materializes it as a container on the app's project network with standard connection env injected; the cloud platform provisions a per-app slice of a shared platform service. Only portable hint keys are allowed — no replica counts, no k8s mechanics.",
+      "description": "A backing service the kit declares it needs. INTENT-level and portable: the docker runtime materializes it as a container on the app's project network with standard connection env injected. Only portable hint keys are allowed: no replica counts, no orchestration mechanics.",
       "properties": {
         "kind": {
           "type": "string",
@@ -436,7 +436,7 @@
     "x-jengakit-cloud": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Cloud-only realization detail (k8s workloads/bindings, Kit-Factory depth slots, auth_provider, etc.). ABSENT in docker/FOSS-authored kits; the FOSS validator treats it as opaque and never authors it. The cloud platform populates and reads it."
+      "description": "Host-specific realization detail (workload bindings, generation depth slots, auth_provider, etc.). ABSENT in docker-authored kits; the validator treats it as opaque and never authors it."
     },
     "kit_target": {
       "$ref": "#/definitions/kit_target_object"

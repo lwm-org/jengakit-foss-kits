@@ -12,5 +12,5 @@ MANDATORY:
   - Do NOT switch to any language-specific base image (python:3.11-slim, node:20-slim, etc.).
   - Always use the full quay.io/ prefixed image reference in the FROM line.
   - The image defines its own runtime — jengakit provides only the re-tag layer.
-  - service.yaml and ingress.yaml port values are NOT hardcoded 5000 — they are set by
-    jengakit from the port detected via docker inspect. Do not override them.
+  - The published port and the public route port are NOT hardcoded 5000. jengakit sets
+    them from the port detected via docker inspect. Do not override them.

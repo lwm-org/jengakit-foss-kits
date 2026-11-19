@@ -9,7 +9,7 @@ generated per deploy, so every deploy just works.
 **Doctrine:** everything runs in the browser + this one container (which the
 platform already isolates — no docker-in-docker). All infrastructure is behind
 vendored SDKs (`lib/jengakit_llm`, `lib/jengakit_db`, `lib/jengakit_agent`). The
-kit ships **zero cloud/infra code**.
+kit ships **zero hosting/infra code**.
 
 ## What it does
 

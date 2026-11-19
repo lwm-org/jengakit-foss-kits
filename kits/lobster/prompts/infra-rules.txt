@@ -12,14 +12,14 @@ DOCKERFILE:
 - HEALTHCHECK --interval=30s --timeout=10s --start-period=30s CMD curl -f http://localhost:3000/health || exit 1
 - CMD ["node", "server.js"]
 
-KUBERNETES:
-- Deployment with 1 replica
+CONTAINER:
+- One running instance
 - Port 3000
-- readinessProbe httpGet /health port 3000 initialDelaySeconds 20
-- livenessProbe httpGet /health port 3000 initialDelaySeconds 30
-- Resources: requests cpu 250m memory 256Mi, limits cpu 500m memory 512Mi
-- Service port 3000 targetPort 3000
-- Ingress standard nip.io pattern
+- Ready check: HTTP GET /health on port 3000, first check after 20 seconds
+- Alive check: HTTP GET /health on port 3000, first check after 30 seconds
+- Resources: reserve 0.25 CPU and 256 MiB memory, cap at 0.5 CPU and 512 MiB memory
+- Publish port 3000 (container port 3000)
+- Standard public route
 
 ENV VARS to pass through:
 - JENGAKIT_LLM_URL (from system)

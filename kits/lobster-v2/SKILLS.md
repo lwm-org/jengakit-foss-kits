@@ -92,5 +92,5 @@ for integrating any other HTTP-addressable OpenClaw app.
 
 Skills are kit code and MUST stay infra-free: talk to the model via
 `lib/jengakit_llm`, to storage via `lib/jengakit_db`, and reuse the agent loop via
-`lib/jengakit_agent`. No cloud, orchestration, or infra plumbing — the platform
+`lib/jengakit_agent`. No hosting, orchestration, or infra plumbing; the platform
 already gives the kit its own isolated container.

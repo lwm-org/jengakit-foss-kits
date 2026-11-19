@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "puzzle-crossword-v1",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Crossword Puzzle",
   "description": "Crossword puzzle with single-player and up to 5-player cooperative/competitive multiplayer. Timer-based scoring, 3 difficulty levels, leaderboard.",
   "category": "game",

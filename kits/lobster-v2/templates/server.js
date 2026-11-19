@@ -5,7 +5,7 @@
  * jengaKIT platform already isolates — no docker-in-docker). All infra is behind
  * vendored platform SDKs: the model via jengakit_llm, persistence via jengakit_db,
  * the agent loop via jengakit_agent. Tools + channels are added as SKILLS without
- * editing core (nanoclaw's model). The kit ships ZERO cloud/infra-selection code.
+ * editing core (nanoclaw's model). The kit ships ZERO hosting/infra-selection code.
  *
  * Multi-user: every deploy requires login (PBKDF2 users in jengakit_db); memory,
  * chat sessions, and the audit trail are all per-user. Web requests are guarded by

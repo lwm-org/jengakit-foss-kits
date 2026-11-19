@@ -11,5 +11,5 @@ MANDATORY:
   - Do NOT add RUN, COPY, ENV, CMD, or EXPOSE instructions.
   - Do NOT switch to any language-specific base image (python:3.11-slim, node:20-slim, etc.).
   - The image defines its own runtime — jengakit provides only the re-tag layer.
-  - service.yaml and ingress.yaml port values are NOT hardcoded 5000 — they are set by
-    jengakit from the port detected via docker inspect. Do not override them.
+  - The published port and the public route port are NOT hardcoded 5000. jengakit sets
+    them from the port detected via docker inspect. Do not override them.
