@@ -2,13 +2,13 @@
 # source of record; update these copies in a pull request here after the engine
 # change merges, and record the new engine commit below.
 engine_repo: lwm-org/jengakit
-engine_commit: 246ee7156c78fd5afed0cd95e7a8a45860b3e275
+engine_commit: e8f64dabfd4e7239fb6f66547972215d84644365
 engine_release: v0.8.1
 
 # repo path                        <- engine path (identical unless noted)
 schema/board-descriptor.v1.json    <- lib/schema/board-descriptor.v1.json
 schema/kit-type-definition.v4.json <- lib/schema/kit-type-definition.v4.json
-schema/kit-type-definition.v5.json <- lib/schema/kit-type-definition.v5.json (descriptions reworded in Docker terms; keys and enums identical)
+schema/kit-type-definition.v5.json <- lib/schema/kit-type-definition.v5.json
 schema/persona-spec.v1.json        <- lib/schema/persona-spec.v1.json
 schema/registry-spec.v1.json       <- lib/schema/registry-spec.v1.json
 boards/*.json                      <- lib/boards/*.json

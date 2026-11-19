@@ -38,7 +38,7 @@ publishes nothing. It needs no token.
 Env (not needed for --dry-run):
   GITHUB_TOKEN        auth (the workflow's own token, contents: write)
   GITHUB_REPOSITORY   `<owner>/<repo>` (provided by Actions)
-  BUNDLE_URL_MODE     auto (default) | download | api
+  BUNDLE_URL_MODE     download (default) | auto | api
 """
 
 from __future__ import annotations
@@ -327,7 +327,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="build from local definitions, publish nothing")
     parser.add_argument("--out", help="with --dry-run, write index.json here instead of stdout")
     args = parser.parse_args()
-    mode = os.environ.get("BUNDLE_URL_MODE", "auto")
+    mode = os.environ.get("BUNDLE_URL_MODE", "download")
 
     definitions = load_kit_definitions()
 
