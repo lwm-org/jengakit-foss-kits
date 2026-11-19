@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "dockerhub-image-importer",
   "kit_family": "importer",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "display_name": "Docker Hub Importer",
   "description": "Runs a ready-made app published to a public app hub as a live jengakit app, from its hub link or name. No source code needed.",
   "category": "importer",

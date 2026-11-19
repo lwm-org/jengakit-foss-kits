@@ -8,10 +8,10 @@
  *     puzzle / piece sequence), a host, ready-up, and a play phase;
  *   - opaque state/event relay (the game defines the payloads);
  *   - WebRTC signaling relay for in-room voice/video;
- *   - a leaderboard (SQLite by default; Postgres via DATABASE_URL for k8s).
+ *   - a leaderboard (SQLite by default; Postgres via DATABASE_URL when scaled out).
  *
- * k8s: defaults to single-replica (in-memory rooms + local SQLite). A multi-
- * replica path is documented — set REDIS_URL (socket.io adapter, requires the
+ * Scaling: defaults to one container (in-memory rooms + local SQLite). A multi-
+ * container path is documented: set REDIS_URL (socket.io adapter, requires the
  * optional `@socket.io/redis-adapter`+`redis` deps) and DATABASE_URL (Postgres,
  * requires `pg`); both are lazily required so the lean default image is fast.
  * Needs a websocket-capable ingress + sticky sessions when scaled out.
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h' }));
 app.get('/health', (_req, res) => res.json({ status: 'ok', game: GAME }));
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-// ── Optional multi-replica socket.io adapter (k8s scale-out) ────────────────
+// ── Optional multi-container socket.io adapter (scale-out) ──────────────────
 if (process.env.REDIS_URL) {
   try {
     const { createAdapter } = require('@socket.io/redis-adapter');

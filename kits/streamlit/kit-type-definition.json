@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "streamlit",
   "kit_family": "codegen",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "display_name": "Streamlit",
   "description": "A Streamlit data dashboard in Python that turns data into interactive charts and tables.",
   "category": "ai",

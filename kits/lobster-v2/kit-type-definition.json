@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "lobster-v2",
   "kit_family": "codegen",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "display_name": "Lobster",
   "description": "A personal AI assistant in its own secure sandbox, with sign-in, multiple users, streaming chat and per-user memory. It runs commands, fetches the web, sets reminders, reaches allowlisted hosts over SSH, creates designs in a connected Open-Design editor, and messages you on WhatsApp, Telegram, Discord, Slack or any webhook. It keeps saved sessions and an audit trail, grows with skills, and runs on the platform model, a local Ollama or any OpenAI-compatible endpoint.",
   "category": "ai",

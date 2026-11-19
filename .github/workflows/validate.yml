@@ -32,6 +32,9 @@ jobs:
       - name: Install
         run: pip install jsonschema pyyaml requests
 
+      - name: No hosting platform references
+        run: python scripts/check-forbidden-words.py
+
       - name: Validate every kit
         run: python scripts/validate-kits.py
 

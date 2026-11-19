@@ -2,7 +2,7 @@
 """Regenerate index.json from the per-kit releases and publish it on the
 rolling `registry-latest` release.
 
-The marketplace runtime (engine and cloud foss-gh adapter) fetches `index.json`
+The marketplace runtime (the engine and any client of the same index) fetches `index.json`
 from the `registry-latest` release of this repo. This script:
 
   1. Lists every release tagged `<kit>-v<version>` and groups by kit.

@@ -12,10 +12,10 @@
  *
  * Doctrine: this kit ships ZERO infra/backend-selection code. Rooms live in this
  * single container's own in-memory socket.io (the kit gets its own container from
- * the platform for free — no docker-in-docker, no cluster wiring here). The
+ * the platform for free; no docker-in-docker, no orchestration wiring here). The
  * leaderboard goes through the jengakit_db SDK, which decides the storage backend
  * from platform-injected env entirely on its own. The kit stays portable across
- * FOSS-local and any cloud host without carrying a line of platform internals.
+ * FOSS-local and any container host without carrying a line of platform internals.
  */
 'use strict';
 
@@ -39,7 +39,7 @@ app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'public', 'index.h
 
 // ── Leaderboard via the jengakit_db SDK ─────────────────────────────────────
 // The kit ships ZERO backend-selection code: jengakit_db decides SQLite (local,
-// the default here) vs a cloud DB entirely from platform-injected env. Rooms are
+// the default here) vs a hosted Postgres DB entirely from platform-injected env. Rooms are
 // this container's own in-memory socket.io — the kit gets its container for free.
 const db = require('./lib/jengakit_db');
 db.exec("CREATE TABLE IF NOT EXISTS scores (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, score INTEGER NOT NULL, game TEXT DEFAULT '', mode TEXT DEFAULT '', created_at TEXT DEFAULT CURRENT_TIMESTAMP)")

@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "block-drop-v2",
   "kit_family": "codegen",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "display_name": "Block Drop",
   "description": "A falling-block puzzle with solo high scores and a fair 2 to 4 player versus mode. Everyone gets the same pieces, cleared lines send garbage rows to rivals, and the last one standing wins. Plays on phone, tablet, desktop and TV, with in-room voice and video and a leaderboard.",
   "category": "game",

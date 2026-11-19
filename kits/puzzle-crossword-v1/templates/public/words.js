@@ -40,7 +40,7 @@ var WORD_LISTS = {
     {word:'ROUTE',clue:'URL path mapping'}
   ],
   hard: [
-    {word:'KUBERNETES',clue:'Container orchestration'},
+    {word:'CONTAINERS',clue:'Isolated app runtimes'},
     {word:'ALGORITHM',clue:'Step-by-step procedure'},
     {word:'TERRAFORM',clue:'Infrastructure as code'},
     {word:'WEBSOCKET',clue:'Full-duplex protocol'},
