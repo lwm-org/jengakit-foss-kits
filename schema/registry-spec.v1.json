@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "jengaKIT Registry Spec (v1)",
+  "description": "registry-spec.yaml schema for Family B (importer) kits. Replaces hardcoded Step 2g/2h/etc. logic. Declarative description of how to fetch + run an OCI image OR (protocol: compose) a multi-service repo. Validates against a frozen, bounded set of registry protocols and auth schemes.",
+
+  "definitions": {
+    "url_pattern": { "type": "string", "minLength": 1 },
+    "image_prefix": { "type": "string", "minLength": 1 }
+  },
+
+  "type": "object",
+  "required": ["registry"],
+  "properties": {
+    "registry": {
+      "type": "object",
+      "required": ["protocol", "auth"],
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": ["oci-distribution", "ecr-sigv4", "acr-aad", "git-clone", "compose"]
+        },
+        "base_url": {
+          "type": "string",
+          "format": "hostname",
+          "minLength": 3
+        },
+        "auth": {
+          "type": "string",
+          "enum": ["bearer-anonymous-fallback", "basic", "aws-sigv4", "azure-aad", "none"]
+        },
+        "clone_url": {
+          "type": "string",
+          "description": "Optional fixed repo URL for a git-clone / compose kit that always deploys its own repo (no URL needed in the deploy prompt)."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "comment": "Single-image protocols address a registry host; compose addresses a git repo instead, so base_url is not required for it.",
+          "if": {
+            "properties": { "protocol": { "not": { "const": "compose" } } },
+            "required": ["protocol"]
+          },
+          "then": { "required": ["base_url"] }
+        }
+      ]
+    },
+    "parser": {
+      "type": "object",
+      "properties": {
+        "url_patterns":    { "type": "array", "items": { "$ref": "#/definitions/url_pattern" } },
+        "plain_ref_regex": { "type": "string", "minLength": 1 }
+      },
+      "anyOf": [
+        { "required": ["url_patterns"] },
+        { "required": ["plain_ref_regex"] }
+      ],
+      "additionalProperties": false
+    },
+    "ports": {
+      "type": "object",
+      "required": ["priority"],
+      "properties": {
+        "priority": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1, "maximum": 65535 },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "run_flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["when", "add"],
+        "properties": {
+          "when": {
+            "type": "object",
+            "properties": {
+              "image_prefix": { "type": "array", "items": { "$ref": "#/definitions/image_prefix" } }
+            },
+            "additionalProperties": false
+          },
+          "add": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "guards": {
+      "type": "object",
+      "properties": {
+        "reject_no_service":     { "type": "boolean" },
+        "reject_image_prefixes": { "type": "array", "items": { "$ref": "#/definitions/image_prefix" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "comment": "OCI-image protocols need a prompt parser + a port-priority list. A compose kit derives services + ports from the repo's compose file, so neither is required for it.",
+      "if": {
+        "properties": {
+          "registry": {
+            "properties": { "protocol": { "const": "compose" } },
+            "required": ["protocol"]
+          }
+        },
+        "required": ["registry"]
+      },
+      "then": { "required": ["registry"] },
+      "else": { "required": ["registry", "parser", "ports"] }
+    }
+  ]
+}

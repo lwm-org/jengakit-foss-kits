@@ -1,0 +1,20 @@
+# Engine files vendored into this repo. The engine (lwm-org/jengakit) is the
+# source of record; update these copies in a pull request here after the engine
+# change merges, and record the new engine commit below.
+engine_repo: lwm-org/jengakit
+engine_commit: 246ee7156c78fd5afed0cd95e7a8a45860b3e275
+engine_release: v0.8.1
+
+# repo path                        <- engine path (identical unless noted)
+schema/board-descriptor.v1.json    <- lib/schema/board-descriptor.v1.json
+schema/kit-type-definition.v4.json <- lib/schema/kit-type-definition.v4.json
+schema/kit-type-definition.v5.json <- lib/schema/kit-type-definition.v5.json
+schema/persona-spec.v1.json        <- lib/schema/persona-spec.v1.json
+schema/registry-spec.v1.json       <- lib/schema/registry-spec.v1.json
+boards/*.json                      <- lib/boards/*.json
+tools/kit_bundler.py               <- lib/services/kit_bundler.py
+tools/schema_versions.py           <- lib/schema_versions.py
+tools/board_registry.py            <- lib/services/devices/board_registry.py (paths rewritten, missing boards fatal)
+scripts/validate-kits.py           <- scripts/validate-kits.py (adapted)
+scripts/publish-kits.py            <- scripts/publish-kits.py (adapted)
+scripts/refresh-registry-index.py  <- scripts/refresh-registry-index.py (adapted)

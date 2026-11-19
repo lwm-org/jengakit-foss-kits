@@ -1,0 +1,54 @@
+{
+  "board_id": "esp8266-nodemcu",
+  "display_name": "ESP8266 NodeMCU",
+  "kind": "microcontroller",
+  "connection_kind": "ota",
+
+  "provider_id": "esp32",
+  "provider_primary": false,
+
+  "manufacturer": "Espressif",
+  "chip": "ESP8266",
+  "variants": ["nodemcuv2"],
+  "toolchain": "esphome",
+
+  "flash": {
+    "method": "ota-esphome",
+    "protocol": "esphome-ota",
+    "baud": 921600,
+    "format": "bin"
+  },
+
+  "capabilities": {
+    "mcu": "ESP8266",
+    "clock_mhz": 80,
+    "sram_bytes": 81920,
+    "flash_bytes": 4194304,
+    "max_sketch_size_bytes": 1044464,
+    "digital_pins": [0, 2, 4, 5, 12, 13, 14, 15, 16],
+    "analog_pins": ["A0"],
+    "pwm_pins": [0, 2, 4, 5, 12, 13, 14, 15],
+    "onboard_led_pin": 2,
+    "gpio": 11,
+    "pwm": 8,
+    "onboard_led": 2,
+    "sram": 81920,
+    "flash": 4194304,
+    "has_wifi": true,
+    "has_bluetooth": false,
+    "has_filesystem": true,
+    "serial_baud_default": 115200,
+    "language": "C++",
+    "fqbn": "esp8266:esp8266:nodemcuv2",
+    "notes": [
+      "Single-core; WiFi on board, no Bluetooth.",
+      "Firmware is authored as ESPHome YAML, not a raw Arduino sketch.",
+      "Only one usable ADC pin (A0)."
+    ]
+  },
+
+  "config_schema": [],
+  "kit_platform_ids": ["esp8266-nodemcu"],
+  "resolver_keywords": ["esp8266", "nodemcu"],
+  "default_peripherals": []
+}
