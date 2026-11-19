@@ -1,0 +1,47 @@
+name: Validate kits
+
+# Every pull request: schema and file checks on all kits, a dry-run pack of
+# every bundle, a dry-run index build, and the node suites the kits carry
+# (run from each kit's own directory). Nothing here touches releases.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate kits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install
+        run: pip install jsonschema pyyaml requests
+
+      - name: Validate every kit
+        run: python scripts/validate-kits.py
+
+      - name: Pack every kit (dry run)
+        run: python scripts/publish-kits.py --dry-run
+
+      - name: Build the index (dry run)
+        run: python scripts/refresh-registry-index.py --dry-run --out "$RUNNER_TEMP/index.json"
+
+      - name: Kit node suites and tool tests
+        env:
+          KITS_REQUIRE_NODE: "1"
+        run: python -m unittest discover -s tests -t . -v
