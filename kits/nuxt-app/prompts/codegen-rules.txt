@@ -1,0 +1,24 @@
+CRITICAL: Generate ONLY pages/index.vue — nothing else.
+
+This is a Nuxt 3 app with Vue 3. Do NOT use React imports, JSX, or Next.js imports.
+
+DO NOT generate: package.json, Dockerfile, nuxt.config.ts, app.vue, tailwind.config, or any config file.
+
+=== pages/index.vue RULES ===
+
+Structure:
+- Use <script setup lang="ts">, <template>, and <style scoped> sections
+- ALL application logic in this single component
+- Nuxt auto-imports ref, reactive, computed — no need to import from vue
+- Use NuxtLink for navigation if needed
+
+Layout:
+- Left sidebar (w-56) with business name and navigation items
+- Main content area with page title and content
+- Tailwind CSS classes for ALL styling
+
+Content:
+- Stat cards (3-4 per section)
+- Data tables with 8-15 realistic sample rows
+- Forms with inputs, selects, action buttons
+- Theme colors via Tailwind utility classes

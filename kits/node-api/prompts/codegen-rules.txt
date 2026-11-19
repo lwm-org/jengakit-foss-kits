@@ -1,0 +1,5 @@
+Node/Express apps:
+- require('express') and set up routes
+- listen on port 5000: app.listen(5000)
+- package.json must use plain JSON (no markdown fences), with "main": "server.js" and "start": "node server.js"
+- do NOT include react or react-dom in package.json dependencies unless generating actual React source

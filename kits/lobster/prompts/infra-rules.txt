@@ -1,0 +1,32 @@
+INFRA RULES for lobster kit:
+
+DOCKERFILE:
+- Base: node:20-slim
+- Install build deps: RUN apt-get update && apt-get install -y python3 make g++ curl && rm -rf /var/lib/apt/lists/*
+- WORKDIR /app
+- COPY package*.json ./
+- RUN npm ci --omit=dev
+- COPY . .
+- RUN mkdir -p /data
+- EXPOSE 3000
+- HEALTHCHECK --interval=30s --timeout=10s --start-period=30s CMD curl -f http://localhost:3000/health || exit 1
+- CMD ["node", "server.js"]
+
+KUBERNETES:
+- Deployment with 1 replica
+- Port 3000
+- readinessProbe httpGet /health port 3000 initialDelaySeconds 20
+- livenessProbe httpGet /health port 3000 initialDelaySeconds 30
+- Resources: requests cpu 250m memory 256Mi, limits cpu 500m memory 512Mi
+- Service port 3000 targetPort 3000
+- Ingress standard nip.io pattern
+
+ENV VARS to pass through:
+- JENGAKIT_LLM_URL (from system)
+- JENGAKIT_LLM_TOKEN (from system)
+- LOBSTER_ADMIN_PASSWORD
+- LOBSTER_TELEGRAM_BOT_TOKEN
+- LOBSTER_DISCORD_BOT_TOKEN
+- DEPLOY_LLM_API_KEY
+- DB_PATH=/data/lobster.db
+- NODE_ENV=production

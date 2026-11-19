@@ -1,0 +1,91 @@
+# Overleaf Community Edition — batteries-included, jengaKIT-ready.
+#
+# Differences from Overleaf's upstream compose (which is a template with
+# required values left commented out) that make this deploy hands-off:
+#   * OVERLEAF_INVITE_TOKEN_SECRET is set (upstream ships it commented → the
+#     app refuses to start without it). Change it for a real deployment.
+#   * SANDBOXED_COMPILES=false so LaTeX compiles run in-container — Community
+#     Edition can't do sandboxed (sibling-container) compiles without mounting
+#     the docker socket, which the jengaKIT compose safety guard rejects.
+#   * A one-shot `mongo-init` service initiates the single-member replica set
+#     (`rs.initiate`) that Overleaf requires for Mongo transactions. Upstream
+#     relies on a docker-entrypoint-initdb.d script, which does NOT reliably
+#     run against a `--replSet` mongod; the sidecar is deterministic, and
+#     `sharelatex` waits for it via `service_completed_successfully`.
+#   * Named volumes (jengaKIT namespaces them per deployment) instead of the
+#     upstream `~/…` host binds.
+services:
+  sharelatex:
+    image: sharelatex/sharelatex
+    restart: unless-stopped
+    stop_grace_period: 60s
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    ports:
+      - "80:80"
+    environment:
+      OVERLEAF_APP_NAME: Overleaf Community Edition
+      OVERLEAF_MONGO_URL: "mongodb://mongo/sharelatex"
+      OVERLEAF_REDIS_HOST: redis
+      REDIS_HOST: redis
+      ENABLED_LINKED_FILE_TYPES: "project_file,project_output_file"
+      ENABLE_CONVERSIONS: "true"
+      EMAIL_CONFIRMATION_DISABLED: "true"
+      SANDBOXED_COMPILES: "false"
+      # OVERLEAF_INVITE_TOKEN_SECRET is REQUIRED by Overleaf and is minted +
+      # persisted per-deployment by jengaKIT (see x-jengakit.secrets below) —
+      # not baked here, so no two deployments share a secret.
+    volumes:
+      - overleaf-data:/var/lib/overleaf
+    x-jengakit:
+      web: true
+      secrets:
+        - OVERLEAF_INVITE_TOKEN_SECRET
+
+  mongo:
+    image: mongo:8.0
+    restart: unless-stopped
+    command: ["--replSet", "overleaf", "--bind_ip_all"]
+    # So the replica-set member host "mongo" resolves to this container itself.
+    extra_hosts:
+      - "mongo:127.0.0.1"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+
+  # One-shot: initiate the single-member replica set, then exit. Idempotent
+  # (a re-run against an already-initiated set is a no-op). `restart: "no"` so
+  # jengaKIT's default restart policy doesn't resurrect it after it completes.
+  mongo-init:
+    image: mongo:8.0
+    restart: "no"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint:
+      - bash
+      - -c
+      - >
+        mongosh --host mongo --quiet --eval
+        'try { rs.status() } catch (e) { rs.initiate({_id:"overleaf",members:[{_id:0,host:"mongo:27017"}]}) }';
+        until mongosh --host mongo --quiet --eval 'rs.status().myState' | grep -q '^1$'; do
+        echo "waiting for replica-set primary..."; sleep 2; done;
+        echo "replica set ready"
+
+  redis:
+    image: redis:6.2
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+volumes:
+  overleaf-data:
+  mongo-data:
+  redis-data:

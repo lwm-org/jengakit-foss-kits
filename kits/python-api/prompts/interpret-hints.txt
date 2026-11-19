@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for a Python Flask API, REST API, Python web API, Python HTTP server, or any backend API built with Python, set framework to "flask", runtime to "python3", app_category to "python-api"
+
+## normalized_description note
+- For python-api apps: specify it must use Flask>=2.3.0, listen on 0.0.0.0:5000, return JSON from GET /, and use mock/hardcoded data unless the app_description explicitly states live external API calls

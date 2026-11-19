@@ -1,0 +1,55 @@
+{
+  "schema_version": "5",
+  "kit_name": "vite-react-app",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "React App (Vite)",
+  "description": "Static React SPA using Vite, Tailwind CSS, Lucide Icons, and Recharts. Builds to static files served by nginx.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "React (Vite)",
+    "hint": "e.g. a portfolio site, a dashboard, a business app - all client-side",
+    "description": "Vite + React + Tailwind. Builds to static HTML/CSS/JS served by nginx. No server-side rendering."
+  },
+  "sample_prompts": [
+    "A project management dashboard with kanban board and team overview",
+    "An invoicing app for a plumbing business with customer tracking",
+    "A personal finance tracker with charts and expense categories"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "package.json",
+    "vite.config.ts",
+    "postcss.config.cjs",
+    "tailwind.config.cjs",
+    "nginx.conf",
+    "index.html",
+    "src/main.tsx",
+    "src/index.css",
+    "src/App.tsx"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 300,
+    "mem_mb": 256
+  }
+}

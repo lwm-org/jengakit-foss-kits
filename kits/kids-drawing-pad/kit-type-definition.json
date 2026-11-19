@@ -1,0 +1,48 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-drawing-pad",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Art Studio",
+  "description": "Simple drawing canvas with colors, brushes, shapes, stamps, and an eraser. Save and share drawings",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Art Studio",
+    "hint": "e.g. a rainbow painting canvas with stamps, a coloring book with patterns",
+    "description": "Simple drawing canvas with colors, brushes, shapes, stamps, and an eraser. Save and share drawings"
+  },
+  "sample_prompts": [
+    "A drawing app for kids with rainbow colors and stickers",
+    "A finger painting canvas with fun brushes and stamps",
+    "An art pad where kids can draw and color pictures"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate a single index.html file for a kids app. Static HTML only \u2014 no backend, no server, no Python, no Node.js. Use Tailwind CSS CDN and inline JavaScript. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-typing-game",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Type Racer Jr",
+  "description": "Typing practice game with fun words, speed tracking, and achievements. Helps kids learn keyboard skills",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Type Racer Jr",
+    "hint": "e.g. a spaceship typing race, a spelling bee with timed rounds",
+    "description": "Typing practice game with fun words, speed tracking, and achievements. Helps kids learn keyboard skills"
+  },
+  "sample_prompts": [
+    "A typing game for kids learning to type with fun words",
+    "A keyboard practice game with racing cars that move as you type",
+    "A spelling bee typing challenge for elementary school kids"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate a single index.html file for a kids app. Static HTML only \u2014 no backend, no server, no Python, no Node.js. Use Tailwind CSS CDN and inline JavaScript. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

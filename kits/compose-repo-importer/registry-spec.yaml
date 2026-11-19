@@ -1,0 +1,14 @@
+# Compose importer kit. Unlike the single-image importer protocols
+# (oci-distribution / git-clone), `protocol: compose` deploys a WHOLE repo:
+# the importer clones a repo that ships a docker-compose file, the compose
+# ingest normalizes + safety-checks it, and the DeploymentEngine brings the
+# stack up as one app (`docker compose -p jengakit-<slug> up`) with only the
+# single web service published.
+#
+# base_url / parser / ports are intentionally omitted — the schema's compose
+# conditional makes them optional. The repo URL comes from the deploy prompt
+# (or `clone_url` below for a fixed-repo kit); services + ports are derived
+# from the repo's compose file, not declared here.
+registry:
+  protocol: compose
+  auth: none

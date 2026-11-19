@@ -1,0 +1,53 @@
+{
+  "board_id": "rpi-zero-w",
+  "display_name": "Raspberry Pi Zero W",
+  "kind": "single-board-computer",
+  "connection_kind": "ssh",
+
+  "provider_id": "raspberry-pi",
+  "provider_primary": false,
+
+  "manufacturer": "Raspberry Pi Foundation",
+  "chip": "BCM2835",
+  "variants": ["rpi-zero-w"],
+  "toolchain": "ssh-python",
+
+  "flash": {
+    "method": "ssh-rsync",
+    "protocol": "ssh-rsync",
+    "format": "python-program"
+  },
+
+  "capabilities": {
+    "mcu": "BCM2835",
+    "clock_mhz": 1000,
+    "sram_bytes": 536870912,
+    "flash_bytes": 0,
+    "max_sketch_size_bytes": 0,
+    "digital_pins": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
+    "analog_pins": [],
+    "pwm_pins": [12, 13, 18, 19],
+    "onboard_led_pin": null,
+    "gpio": 40,
+    "pwm": 4,
+    "onboard_led": null,
+    "sram": 536870912,
+    "flash": 0,
+    "has_wifi": true,
+    "has_bluetooth": true,
+    "has_filesystem": true,
+    "serial_baud_default": 115200,
+    "language": "Python",
+    "fqbn": "",
+    "notes": [
+      "Full Linux host — kits deliver a program over SSH that runs on the Pi (system python3, no Docker on the board), not firmware bytes.",
+      "Single-core; keep the delivered workload light.",
+      "GPIO addressed by BCM number."
+    ]
+  },
+
+  "config_schema": [],
+  "kit_platform_ids": ["rpi-zero-w"],
+  "resolver_keywords": [],
+  "default_peripherals": []
+}

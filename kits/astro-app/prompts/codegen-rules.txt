@@ -1,0 +1,67 @@
+This is an Astro 4 app with React islands enabled (@astrojs/react is in
+package.json and configured in astro.config.mjs). Generate the user's page
+plus any interactive React components needed.
+
+WHAT TO GENERATE
+- src/pages/index.astro — required, the user's main page
+- src/components/<Name>.jsx — one file per interactive React component
+  (only when the page needs interactivity that uses React state/effects)
+- Additional pages under src/pages/ if the user explicitly asks for them
+
+WHAT NOT TO GENERATE
+- Config / infra files: package.json, Dockerfile, astro.config.mjs,
+  nginx.conf, tailwind.config.cjs, postcss.config.cjs, jsconfig.json
+- src/layouts/Layout.astro (the kit ships its own)
+
+=== src/pages/index.astro RULES ===
+
+Structure:
+- Frontmatter (---) at the top for imports and server-side logic only.
+  Frontmatter runs at build time on Node — NO React hooks, NO browser APIs.
+- Import the layout: import Layout from '../layouts/Layout.astro';
+- Wrap page content in <Layout title="Page Title">…</Layout>
+- Below the frontmatter, write static HTML/Astro markup with Tailwind classes.
+
+Static content:
+- Use Astro component syntax (plain HTML + JSX-style expressions in {…}).
+- Hero sections, feature cards, content grids, data tables, copy.
+- Tailwind utility classes for ALL styling.
+- Semantic HTML elements.
+
+=== INTERACTIVITY RULES (CRITICAL) ===
+
+Astro frontmatter is server-side. React hooks (useState, useEffect, etc.)
+DO NOT WORK in .astro files — they will fail at build time.
+
+If the page needs interactive React state:
+
+1. Put the interactive component in its OWN file under src/components/,
+   e.g. src/components/ContactForm.jsx — a plain React component using
+   hooks normally.
+
+2. Import it in the .astro frontmatter:
+       import ContactForm from '../components/ContactForm.jsx';
+
+3. Render it in the Astro template with a client directive so it hydrates
+   in the browser:
+       <ContactForm client:load />
+
+   Use client:load (hydrate immediately) for above-the-fold interactivity,
+   client:visible (hydrate when scrolled into view) for everything else.
+
+NEVER:
+- Define a React component inline in the .astro frontmatter.
+- Import or call useState / useEffect / any React hook in a .astro file.
+- Use document, window, localStorage, or other browser APIs in frontmatter.
+
+If interactivity isn't needed (purely static page), don't generate any
+React components — keep everything in the single .astro file.
+
+=== LAYOUT + CONTENT GUIDELINES ===
+
+- Full-page layout with semantic sections.
+- Tailwind utility classes for ALL styling — no inline style attributes,
+  no separate CSS files.
+- Realistic sample data (named items, prices, counts) — not "Lorem ipsum".
+- Forms must include the React island pattern above if they need state.
+- Theme colors via Tailwind utility classes.

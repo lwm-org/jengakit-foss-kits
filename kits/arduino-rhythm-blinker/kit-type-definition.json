@@ -1,0 +1,41 @@
+{
+  "schema_version": "5",
+  "kit_name": "arduino-rhythm-blinker",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "Arduino rhythm blinker",
+  "description": "Plays rhythmic blink patterns (heartbeat, strobe, breathing-style pulses, custom BPM) on the onboard LED. No wiring.",
+  "category": "embedded",
+  "author": "jengakit",
+  "capabilities": [
+    "embedded"
+  ],
+  "ui": {
+    "pill_label": "Arduino rhythm blinker",
+    "hint": "e.g. heartbeat pulse, fast strobe, 90 BPM metronome",
+    "description": "Plays rhythmic blink patterns (heartbeat, strobe, breathing-style pulses, custom BPM) on the onboard LED. No wiring."
+  },
+  "sample_prompts": [
+    "Heartbeat double-pulse",
+    "Fast strobe for 5 blinks then pause",
+    "Blink at 120 BPM"
+  ],
+  "kit_target": {
+    "platform": "arduino-uno",
+    "variant": "atmega328p"
+  },
+  "kit_toolchain": "platformio",
+  "kit_flash_methods": [
+    "usb-serial-web"
+  ],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    {
+      "type": "led-onboard"
+    }
+  ],
+  "kit_template_dir": "templates",
+  "kit_prompts": {
+    "codegen": "prompts/codegen-rules.txt"
+  }
+}

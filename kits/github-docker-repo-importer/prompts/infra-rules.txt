@@ -1,0 +1,19 @@
+github-docker-repo-importer apps — Dockerfile rules:
+
+The Dockerfile was already generated correctly in the code generation stage using a
+two-stage git clone pattern. Do NOT regenerate it from scratch.
+
+Output the same Dockerfile that was produced in the codegen stage:
+  Stage 1: FROM alpine/git AS source — clones the GitHub repository
+  Stage 2: <inferred base image> — copies cloned source and runs the application
+
+MANDATORY — do NOT do any of the following:
+  - Do NOT switch the base image to python:3.11-slim unless the target is a confirmed Python project
+  - Do NOT add CMD ["python", "app.py"] unless the repo is a Python application
+  - Do NOT change or remove the RUN git clone line
+  - Do NOT substitute a placeholder URL for the real GitHub URL
+  - EXPOSE must match the port from the plan
+
+Add these two LABELs to the final stage:
+  LABEL jengakit.imported="true"
+  LABEL jengakit.source="<GITHUB_URL>"

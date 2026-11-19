@@ -1,0 +1,38 @@
+{
+  "schema_version": "5",
+  "kit_name": "arduino-uno-blink-onboard-led",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "Arduino Uno onboard LED blinker",
+  "description": "Canonical Phase 1 embedded kit. Generates an Arduino sketch that blinks the Uno's built-in LED (pin 13) at an interval inferred from the user's prompt. Flashes via Web Serial in the browser — no installer required.",
+  "category": "embedded",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.5.3",
+  "capabilities": ["embedded", "led-onboard", "blink"],
+  "ui": {
+    "pill_label": "Arduino blink",
+    "hint": "e.g. blink the onboard LED every 500ms, slow heartbeat blink, fast burst then long pause",
+    "description": "Generates a single-file Arduino sketch + flashes it onto your Uno via Web Serial in the browser. No installer, no admin access, no native agent — Chrome/Edge/Opera + a USB cable is the whole stack."
+  },
+  "sample_prompts": [
+    "Blink the onboard LED every 500ms",
+    "Slow heartbeat pulse on the onboard LED",
+    "Three quick blinks then a one-second pause, repeating"
+  ],
+  "kit_target": {
+    "platform": "arduino-uno",
+    "variant": "atmega328p"
+  },
+  "kit_toolchain": "platformio",
+  "kit_flash_methods": ["usb-serial-web"],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    { "type": "led-onboard" }
+  ],
+  "kit_required_libraries": [],
+  "kit_required_env": [],
+  "kit_template_dir": "templates",
+  "kit_prompts": {
+    "codegen": "prompts/codegen-rules.txt"
+  }
+}

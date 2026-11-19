@@ -1,0 +1,55 @@
+{
+  "schema_version": "5",
+  "kit_name": "wasm-performance-app",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "WASM Performance App",
+  "description": "High-performance browser application using Rust-compiled WebAssembly for intensive computations.",
+  "category": "creative",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "rust",
+  "kit_base_image": "rust:1.75-slim-bookworm",
+  "kit_port": 8080,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "WASM + Rust",
+    "hint": "e.g. an image processor or heavy data cruncher using WebAssembly",
+    "description": "Rust-powered WASM backend with HTML5 frontend for near-native browser performance."
+  },
+  "sample_prompts": [
+    "Build a Mandelbrot set renderer that computes fractals in WASM",
+    "Create an image grayscale converter that processes pixels using WebAssembly",
+    "Make a sorting algorithm visualizer that benchmarks performance in WASM vs JS"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "Cargo.toml",
+    "src/lib.rs",
+    "index.html",
+    "main.js",
+    "server.py"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Create a high-performance WebAssembly application using Rust.",
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

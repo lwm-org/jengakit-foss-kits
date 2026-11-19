@@ -1,0 +1,649 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "jengaKIT Kit Type Definition (v5)",
+  "description": "v5 schema. Superset of v4 (any valid v4 kit is a valid v5 kit modulo the schema_version const). Adds the portable `services` block (a kit DECLARES the backing services it needs — postgres, redis, object-storage, email, cron, ai, auth — instead of the platform inferring them; the docker runtime materializes them, the cloud platform provisions per-app slices) and a single opaque `x-jengakit-cloud` extension object for cloud-only realization detail (never authored by FOSS/docker kits). The embedded/hardware family is unchanged from v4. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
+  "definitions": {
+    "kit_name_string": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,62}$"
+    },
+    "version_string": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+"
+    },
+    "ui_object": {
+      "type": "object",
+      "properties": {
+        "pill_label": {
+          "type": "string"
+        },
+        "hint": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "kit_network_object": {
+      "type": "object",
+      "required": [
+        "ingress_variant"
+      ],
+      "properties": {
+        "ingress_variant": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "websocket",
+            "streaming-long-poll",
+            "grpc",
+            "sse",
+            "tcp",
+            "udp",
+            "job"
+          ]
+        },
+        "proxy_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "rewrite_target": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "kit_deploy_object": {
+      "type": "object",
+      "required": [
+        "method",
+        "validate_method"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "deployment",
+            "job"
+          ]
+        },
+        "validate_method": {
+          "type": "string",
+          "enum": [
+            "http-check",
+            "logs"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "kit_prompts_object": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "estimate_object": {
+      "type": "object",
+      "properties": {
+        "cpu_m": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mem_mb": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "user_inputs_array": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "password",
+              "checkbox",
+              "select"
+            ]
+          },
+          "placeholder": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "secret": {
+            "type": "boolean"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "runtime_env",
+              "registry_auth"
+            ]
+          },
+          "registry": {
+            "type": "string"
+          },
+          "env_var": {
+            "type": "string"
+          },
+          "hint": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "kit_target_object": {
+      "type": "object",
+      "required": [
+        "platform",
+        "variant"
+      ],
+      "properties": {
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A board_id from the board-descriptor registry (lib/boards/*.json). Validated at load time against the registry rather than a static enum, so a board added as a descriptor file needs no schema change."
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "kit_peripheral_object": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pin": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "config": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "kit_library_object": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "kit_wiring_object": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "service_object": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "description": "A backing service the kit declares it needs. INTENT-level and portable: the docker runtime materializes it as a container on the app's project network with standard connection env injected; the cloud platform provisions a per-app slice of a shared platform service. Only portable hint keys are allowed — no replica counts, no k8s mechanics.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "postgres",
+            "redis",
+            "object-storage",
+            "email",
+            "cron",
+            "ai",
+            "auth"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "Major version hint, e.g. \"16\"."
+        },
+        "db_name_hint": {
+          "type": "string"
+        },
+        "bucket_hint": {
+          "type": "string"
+        },
+        "optional": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kit_name",
+    "kit_family",
+    "version",
+    "display_name",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "5"
+    },
+    "kit_name": {
+      "$ref": "#/definitions/kit_name_string"
+    },
+    "kit_family": {
+      "type": "string",
+      "enum": [
+        "codegen",
+        "importer",
+        "stamped",
+        "embedded"
+      ]
+    },
+    "kit_language": {
+      "type": "string",
+      "enum": [
+        "python3",
+        "node",
+        "go",
+        "rust",
+        "ruby",
+        "java",
+        "dotnet",
+        "php",
+        "dockerfile-only"
+      ]
+    },
+    "version": {
+      "$ref": "#/definitions/version_string"
+    },
+    "kit_min_jengakit_version": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "tier_min": {
+      "type": "string",
+      "enum": [
+        "free",
+        "business",
+        "enterprise"
+      ]
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "tenant"
+      ]
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "docker",
+          "k8s"
+        ]
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "ui": {
+      "$ref": "#/definitions/ui_object"
+    },
+    "sample_prompts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "kit_network": {
+      "$ref": "#/definitions/kit_network_object"
+    },
+    "kit_deploy": {
+      "$ref": "#/definitions/kit_deploy_object"
+    },
+    "kit_template_dir": {
+      "type": "string"
+    },
+    "kit_template_overlay_force": {
+      "description": "Template paths, relative to kit_template_dir, whose kit bytes replace generated code at the same path. Existence is an authoring gate, not a deploy-time one.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "kit_template_overlay_exclude": {
+      "description": "Template paths, relative to kit_template_dir, whose template copy never lands in the generated app. A path listed here and in kit_required_files must be written by the generation itself; the pipeline refuses to ship the template copy in its place.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "kit_required_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "kit_prompts": {
+      "$ref": "#/definitions/kit_prompts_object"
+    },
+    "kit_prompt_prefix": {
+      "type": "string"
+    },
+    "kit_port": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "kit_strip_expose": {
+      "type": "boolean"
+    },
+    "kit_base_image": {
+      "type": "string"
+    },
+    "estimate": {
+      "$ref": "#/definitions/estimate_object"
+    },
+    "user_inputs": {
+      "$ref": "#/definitions/user_inputs_array"
+    },
+    "deprecated": {
+      "type": "boolean"
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/service_object"
+      }
+    },
+    "x-jengakit-cloud": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Cloud-only realization detail (k8s workloads/bindings, Kit-Factory depth slots, auth_provider, etc.). ABSENT in docker/FOSS-authored kits; the FOSS validator treats it as opaque and never authors it. The cloud platform populates and reads it."
+    },
+    "kit_target": {
+      "$ref": "#/definitions/kit_target_object"
+    },
+    "kit_toolchain": {
+      "type": "string",
+      "enum": [
+        "esphome",
+        "platformio",
+        "ssh-python"
+      ]
+    },
+    "kit_flash_methods": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "usb-serial-web",
+          "ota-esphome",
+          "ssh-rsync",
+          "remote-gpio"
+        ]
+      },
+      "minItems": 1
+    },
+    "kit_safety_class": {
+      "type": "string",
+      "enum": [
+        "benign",
+        "actuator",
+        "mains",
+        "safety-critical"
+      ]
+    },
+    "kit_required_peripherals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/kit_peripheral_object"
+      }
+    },
+    "kit_required_libraries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/kit_library_object"
+      }
+    },
+    "kit_required_env": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "kit_required_wiring": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/kit_wiring_object"
+      }
+    },
+    "kit_emits_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "topic_suffix"
+        ],
+        "properties": {
+          "topic_suffix": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schema": {
+            "type": "object"
+          },
+          "ha_component": {
+            "type": "string",
+            "enum": [
+              "sensor",
+              "binary_sensor",
+              "switch",
+              "light",
+              "cover",
+              "fan"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "kit_subscribes_to": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "topic_suffix",
+          "on_event_action"
+        ],
+        "properties": {
+          "topic_suffix": {
+            "type": "string",
+            "minLength": 1
+          },
+          "on_event_action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kit_family": {
+            "const": "codegen"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kit_language",
+          "kit_network",
+          "kit_deploy"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kit_family": {
+            "const": "importer"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kit_network",
+          "kit_deploy"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kit_family": {
+            "const": "stamped"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kit_network",
+          "kit_deploy"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kit_family": {
+            "const": "embedded"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kit_target",
+          "kit_toolchain",
+          "kit_flash_methods",
+          "kit_safety_class"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kit_safety_class": {
+            "enum": [
+              "mains",
+              "safety-critical"
+            ]
+          }
+        },
+        "required": [
+          "kit_safety_class"
+        ]
+      },
+      "then": {
+        "properties": {
+          "kit_safety_class": {
+            "not": {
+              "enum": [
+                "mains",
+                "safety-critical"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

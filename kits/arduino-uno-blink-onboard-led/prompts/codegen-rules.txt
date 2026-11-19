@@ -1,0 +1,28 @@
+Per-kit codegen overrides for arduino-uno-blink-onboard-led.
+
+The system prompt + capability table already tell the LLM the
+fundamentals. The rules below are kit-specific constraints that the
+codegen context layer surfaces ON TOP of the platform-level prompt.
+
+1. The only pin the firmware should touch is digital pin 13 (the
+   onboard LED on a Uno Rev3). Don't initialise Serial, SPI, I2C, or
+   any analog input — this kit is intentionally minimal.
+
+2. Infer the interval from the user's prompt:
+   - "every Nms" / "every N seconds" / "fast" / "slow" → pick a sensible interval.
+   - When the prompt mentions a pattern ("three quick blinks then a
+     long pause"), encode the pattern as nested delay() calls in
+     loop(), NOT as a state machine — the Uno has 2KB SRAM and the
+     simplest correct sketch always wins.
+   - If the prompt doesn't specify, default to 500ms.
+
+3. Use a single top-of-file comment (2-3 lines) explaining the
+   interval choice + any pattern logic. Don't comment individual lines.
+
+4. Don't use F() or PROGMEM — those only matter for string literals
+   and this sketch has none worth storing.
+
+5. The sketch must fit in 32256 bytes after compile. A correct blink
+   sketch compiles to ~900 bytes, so this is non-binding in practice;
+   if your output goes near the limit, you've added something extra
+   that the user didn't ask for. Remove it.

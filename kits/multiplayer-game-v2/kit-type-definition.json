@@ -1,0 +1,55 @@
+{
+  "schema_version": "5",
+  "kit_name": "multiplayer-game-v2",
+  "kit_family": "codegen",
+  "version": "2.2.2",
+  "display_name": "Multiplayer Game v2",
+  "description": "Turns a prompt into a complete, playable browser game with sound, a lobby, online multiplayer and computer-controlled opponents.",
+  "category": "game",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "websocket"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "websocket",
+    "ingress",
+    "lobby",
+    "keyboard-input"
+  ],
+  "ui": {
+    "pill_label": "Game v2",
+    "hint": "e.g. a Donkey Kong clone, a racing game, a space battle royale, or a zombie survival arena",
+    "description": "Canvas 2D game with procedural audio, Socket.io multiplayer, lobby rooms, bot AI. LLM generates a complete game page."
+  },
+  "sample_prompts": [
+    "Build a multiplayer Donkey Kong clone with barrels, ladders, and platforming",
+    "Create a River Raid clone with scrolling river, enemy boats, and fuel pickups",
+    "Make a top-down multiplayer car racing game with power-ups and boost pads",
+    "Build a zombie survival arena where 4 players defend against waves",
+    "Create a multiplayer Pac-Man where one player controls the ghost"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "server.js",
+    "package.json",
+    "Dockerfile",
+    "public/audio.js"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Create a multiplayer browser game as a SINGLE HTML file (public/index.html). ALL game code inline in one <script> tag. No ES modules, no imports. audio.js and socket.io CDN are pre-loaded.\n\nSTRUCTURE: 1) Lobby screen with room cards, name input, bot players, Launch button. 2) 480x700 canvas with requestAnimationFrame. 3) Input: LEFT()/RIGHT()/UP()/DOWN()/ACTION(). 4) Audio: GameAudio.play('shoot'|'explode'|'hit'|'collect'|'lose'|'jump'|'coin'|'powerup'|'engine'|'bounce'). NEVER create AudioContext. 5) HUD: call updateHUD(score,fuel). 6) Socket: var socket=typeof io!=='undefined'?io():null; socket.emit('player_update',data). 7) Game over overlay. 8) 2-3 AI bots.\n\nRULES: One <script> block. No import/require. <script src='https://cdn.socket.io/4.7.4/socket.io.min.js'> and <script src='audio.js'> in <head>.\n\n=== SPRITE DRAWING QUALITY \u2014 CRITICAL ===\nNEVER draw entities as plain rectangles or single triangles. Every sprite MUST be a detailed multi-part composition using 10+ Canvas 2D draw calls. Use ctx.save()/ctx.restore(), ctx.translate(), ctx.rotate(), ctx.arc(), ctx.beginPath()/ctx.lineTo()/ctx.closePath(), ctx.createRadialGradient(), ctx.shadowBlur/ctx.shadowColor for glow.\n\nEXAMPLE \u2014 How to draw a GORILLA (not a rectangle!):\nfunction drawGorilla(ctx,x,y){\n  ctx.save();ctx.translate(x,y);\n  // Brown fur body\n  ctx.fillStyle='#5C3317';ctx.beginPath();ctx.ellipse(0,0,22,28,0,0,Math.PI*2);ctx.fill();\n  // Chest\n  ctx.fillStyle='#8B6914';ctx.beginPath();ctx.ellipse(0,5,14,16,0,0,Math.PI*2);ctx.fill();\n  // Head\n  ctx.fillStyle='#5C3317';ctx.beginPath();ctx.arc(0,-26,14,0,Math.PI*2);ctx.fill();\n  // Face\n  ctx.fillStyle='#D2A06D';ctx.beginPath();ctx.ellipse(0,-24,9,10,0,0,Math.PI*2);ctx.fill();\n  // Eyes\n  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-5,-27,3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(5,-27,3,0,Math.PI*2);ctx.fill();\n  ctx.fillStyle='#000';ctx.beginPath();ctx.arc(-4,-27,1.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(6,-27,1.5,0,Math.PI*2);ctx.fill();\n  // Nostrils\n  ctx.fillStyle='#4A2A0A';ctx.beginPath();ctx.arc(-2,-21,1.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(2,-21,1.5,0,Math.PI*2);ctx.fill();\n  // Mouth\n  ctx.strokeStyle='#4A2A0A';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,-19,4,0.1*Math.PI,0.9*Math.PI);ctx.stroke();\n  // Arms\n  ctx.fillStyle='#5C3317';ctx.beginPath();ctx.ellipse(-26,2,8,18,0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(26,2,8,18,-0.3,0,Math.PI*2);ctx.fill();\n  // Hands\n  ctx.fillStyle='#4A2A0A';ctx.beginPath();ctx.arc(-28,18,6,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(28,18,6,0,Math.PI*2);ctx.fill();\n  // Legs\n  ctx.fillStyle='#5C3317';ctx.beginPath();ctx.ellipse(-10,28,8,10,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(10,28,8,10,0,0,Math.PI*2);ctx.fill();\n  ctx.restore();\n}\n\nEXAMPLE \u2014 How to draw a JET FIGHTER (not a triangle!):\nfunction drawJet(ctx,x,y,color){\n  ctx.save();ctx.translate(x,y);\n  // Fuselage\n  ctx.fillStyle=color||'#4488FF';\n  ctx.beginPath();ctx.moveTo(0,-18);ctx.bezierCurveTo(-5,-10,-6,10,-4,18);ctx.lineTo(4,18);ctx.bezierCurveTo(6,10,5,-10,0,-18);ctx.fill();\n  // Cockpit canopy\n  var cg=ctx.createRadialGradient(0,-8,1,0,-8,5);cg.addColorStop(0,'#aef');cg.addColorStop(1,'#258');ctx.fillStyle=cg;ctx.beginPath();ctx.ellipse(0,-8,4,6,0,0,Math.PI*2);ctx.fill();\n  // Wings\n  ctx.fillStyle=color||'#4488FF';ctx.beginPath();ctx.moveTo(-5,2);ctx.lineTo(-22,12);ctx.lineTo(-18,14);ctx.lineTo(-5,8);ctx.fill();\n  ctx.beginPath();ctx.moveTo(5,2);ctx.lineTo(22,12);ctx.lineTo(18,14);ctx.lineTo(5,8);ctx.fill();\n  // Tail fins\n  ctx.beginPath();ctx.moveTo(-3,15);ctx.lineTo(-10,20);ctx.lineTo(-3,18);ctx.fill();\n  ctx.beginPath();ctx.moveTo(3,15);ctx.lineTo(10,20);ctx.lineTo(3,18);ctx.fill();\n  // Engine glow\n  ctx.shadowBlur=8;ctx.shadowColor='#f80';\n  ctx.fillStyle='#fa0';ctx.fillRect(-2,17,4,4+Math.random()*4);\n  ctx.fillStyle='#ff6';ctx.fillRect(-1,17,2,3+Math.random()*3);\n  ctx.shadowBlur=0;\n  ctx.restore();\n}\n\nEXAMPLE \u2014 How to draw a CAR (not a rectangle!):\nfunction drawCar(ctx,x,y,color){\n  ctx.save();ctx.translate(x,y);\n  // Shadow\n  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.ellipse(0,2,16,8,0,0,Math.PI*2);ctx.fill();\n  // Body\n  ctx.fillStyle=color||'#e22';ctx.beginPath();ctx.roundRect(-14,-10,28,24,4);ctx.fill();\n  // Roof/cabin\n  ctx.fillStyle=color?'#'+Math.min(0xff,parseInt(color.slice(1,3),16)+0x33).toString(16)+color.slice(3):'#f55';ctx.beginPath();ctx.roundRect(-10,-6,20,12,3);ctx.fill();\n  // Windshield\n  ctx.fillStyle='#adf';ctx.beginPath();ctx.roundRect(-8,-5,16,5,2);ctx.fill();\n  // Headlights\n  ctx.fillStyle='#ff4';ctx.shadowBlur=4;ctx.shadowColor='#ff4';ctx.beginPath();ctx.arc(-10,-10,2.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(10,-10,2.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;\n  // Taillights\n  ctx.fillStyle='#f22';ctx.beginPath();ctx.arc(-10,13,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(10,13,2,0,Math.PI*2);ctx.fill();\n  // Wheels\n  ctx.fillStyle='#222';ctx.fillRect(-16,-4,4,6);ctx.fillRect(12,-4,4,6);ctx.fillRect(-16,6,4,6);ctx.fillRect(12,6,4,6);\n  ctx.restore();\n}\n\nEXAMPLE \u2014 How to draw a HUMAN/PERSON:\nfunction drawPerson(ctx,x,y,color,frame){\n  ctx.save();ctx.translate(x,y);\n  // Legs (animated walk)\n  var legSwing=Math.sin(frame*0.15)*4;\n  ctx.fillStyle='#36c';ctx.fillRect(-4,8,4,12+legSwing);ctx.fillRect(2,8,4,12-legSwing);\n  // Shoes\n  ctx.fillStyle='#333';ctx.fillRect(-5,19+legSwing,6,3);ctx.fillRect(1,19-legSwing,6,3);\n  // Body/torso\n  ctx.fillStyle=color||'#e44';ctx.beginPath();ctx.roundRect(-7,-4,14,14,2);ctx.fill();\n  // Arms (animated)\n  ctx.fillStyle='#da8';ctx.fillRect(-10,0,4,10-legSwing);ctx.fillRect(8,0,4,10+legSwing);\n  // Head\n  ctx.fillStyle='#da8';ctx.beginPath();ctx.arc(0,-10,7,0,Math.PI*2);ctx.fill();\n  // Hair\n  ctx.fillStyle='#421';ctx.beginPath();ctx.arc(0,-13,7,Math.PI,2*Math.PI);ctx.fill();\n  // Eyes\n  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-3,-11,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(3,-11,2,0,Math.PI*2);ctx.fill();\n  ctx.fillStyle='#000';ctx.beginPath();ctx.arc(-2.5,-11,1,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(3.5,-11,1,0,Math.PI*2);ctx.fill();\n  // Smile\n  ctx.strokeStyle='#a55';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,-8,3,0.1*Math.PI,0.9*Math.PI);ctx.stroke();\n  ctx.restore();\n}\n\nApply this SAME level of detail to ALL sprites in the game: boats with hulls and cabins, helicopters with rotors and skids, tanks with turrets and treads, barrels with wood grain bands, princesses with dresses and crowns, asteroids with craters, UFOs with dome and lights, fuel depots with pump details, power-ups with icons.\n\nNEVER use a single fillRect or a single triangle for ANY game entity. ALWAYS use 10+ draw calls per sprite.\n\nThe game MUST be immediately playable with arrow keys and spacebar. The game must",
+  "estimate": {
+    "cpu_m": 300,
+    "mem_mb": 256
+  }
+}

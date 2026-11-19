@@ -1,0 +1,150 @@
+{
+  "schema_version": "5",
+  "kit_name": "lobster",
+  "kit_family": "stamped",
+  "version": "1.1.2",
+  "display_name": "Personal AI Assistant Gateway",
+  "description": "A personal AI assistant with web chat, session memory and optional Telegram and Discord channels.",
+  "category": "ai",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "AI Gateway",
+    "hint": "e.g. a personal assistant with web chat and Telegram support",
+    "description": "Node.js gateway with WebSocket real-time chat, SQLite memory, optional Telegram/Discord adapters, and a web dashboard."
+  },
+  "sample_prompts": [
+    "A personal AI assistant with web chat, session memory, and Telegram integration",
+    "An AI gateway with a web dashboard, conversation logs, and Discord bot support",
+    "A multi-channel AI chatbot with web UI, memory, and optional WhatsApp adapter"
+  ],
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  },
+  "user_inputs": [
+    {
+      "id": "admin_password",
+      "label": "Dashboard Admin Password",
+      "type": "password",
+      "placeholder": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
+      "required": false,
+      "secret": true,
+      "purpose": "runtime_env",
+      "group": "Security",
+      "env_var": "LOBSTER_ADMIN_PASSWORD",
+      "hint": "Protects the web dashboard. Defaults to 'lobster' if not set."
+    },
+    {
+      "id": "telegram_bot_token",
+      "label": "Telegram Bot Token",
+      "type": "password",
+      "placeholder": "123456:ABC-DEF...",
+      "required": false,
+      "secret": true,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "env_var": "LOBSTER_TELEGRAM_BOT_TOKEN",
+      "hint": "Get from @BotFather. Leave blank to disable Telegram."
+    },
+    {
+      "id": "discord_bot_token",
+      "label": "Discord Bot Token",
+      "type": "password",
+      "placeholder": "your-discord-bot-token",
+      "required": false,
+      "secret": true,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "env_var": "LOBSTER_DISCORD_BOT_TOKEN",
+      "hint": "Discord application bot token. Leave blank to disable Discord."
+    },
+    {
+      "id": "whatsapp_token",
+      "label": "WhatsApp Access Token",
+      "type": "password",
+      "placeholder": "EAAxxxxxxxx...",
+      "required": false,
+      "secret": true,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "requires_internet_egress": true,
+      "env_var": "LOBSTER_WHATSAPP_TOKEN",
+      "hint": "Permanent or temporary access token from Meta Developer portal. Leave blank to disable WhatsApp."
+    },
+    {
+      "id": "whatsapp_phone_id",
+      "label": "WhatsApp Phone Number ID",
+      "type": "text",
+      "placeholder": "123456789012345",
+      "required": false,
+      "secret": false,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "env_var": "LOBSTER_WHATSAPP_PHONE_ID",
+      "hint": "Numeric ID from Meta \u2192 WhatsApp \u2192 API Setup (not the phone number itself)."
+    },
+    {
+      "id": "whatsapp_verify_token",
+      "label": "WhatsApp Webhook Verify Token",
+      "type": "password",
+      "placeholder": "my-secret-verify-token",
+      "required": false,
+      "secret": true,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "env_var": "LOBSTER_WHATSAPP_VERIFY_TOKEN",
+      "hint": "A string you choose; must match what you enter in Meta webhook configuration."
+    },
+    {
+      "id": "signal_api_url",
+      "label": "Signal API URL",
+      "type": "text",
+      "placeholder": "http://192.168.1.x:8080",
+      "required": false,
+      "secret": false,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "requires_egress": true,
+      "env_var": "LOBSTER_SIGNAL_API_URL",
+      "hint": "URL of your signal-cli-rest-api instance. Leave blank to disable Signal."
+    },
+    {
+      "id": "signal_number",
+      "label": "Signal Phone Number",
+      "type": "text",
+      "placeholder": "+14155552671",
+      "required": false,
+      "secret": false,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "env_var": "LOBSTER_SIGNAL_NUMBER",
+      "hint": "E.164 phone number registered with signal-cli-rest-api (e.g. +14155552671)."
+    },
+    {
+      "id": "signal_allowed_senders",
+      "label": "Signal Allowed Senders",
+      "type": "text",
+      "placeholder": "+14155550001,+14155550002",
+      "required": false,
+      "secret": false,
+      "purpose": "runtime_env",
+      "group": "Channels",
+      "env_var": "LOBSTER_SIGNAL_ALLOWED_SENDERS",
+      "hint": "Comma-separated E.164 numbers allowed to chat. Leave blank to allow anyone."
+    }
+  ]
+}

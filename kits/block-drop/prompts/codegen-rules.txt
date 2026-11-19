@@ -1,0 +1,40 @@
+CRITICAL RULES for the Block Drop kit — generate ONLY public/theme.js.
+
+=== WHAT TO GENERATE ===
+1. Generate ONLY the file public/theme.js — nothing else.
+2. Do NOT generate index.html, game.js, block-core.js, server.js, Dockerfile,
+   or any other file. The entire falling-block game (engine, SRS rotation,
+   ghost/hold/next, garbage netcode, multiplayer, voice/video, responsive UI)
+   is fixed, tested template code. You are ONLY choosing the visual THEME.
+
+=== EXACT FORMAT (follow precisely) ===
+var THEME = {
+  title: 'YOUR TITLE',
+  bg: '#0b0f1a',
+  glow: true,
+  pieceColors: {
+    1: '#22d3ee',  // I piece
+    2: '#facc15',  // O piece
+    3: '#c084fc',  // T piece
+    4: '#4ade80',  // S piece
+    5: '#f87171',  // Z piece
+    6: '#60a5fa',  // J piece
+    7: '#fb923c'   // L piece
+  },
+  garbage: '#5b6472'
+};
+
+=== RULES ===
+3. Colours are CSS colour strings (hex like '#22d3ee' or named). Keep the 7
+   piece colours visually DISTINCT and readable against `bg`.
+4. `title` is a short uppercase game title matching the user's theme (<= 16 chars).
+5. `bg` is the board background; `garbage` is the colour of garbage rows.
+6. `glow` (true/false) toggles the neon shadow on blocks — true suits neon/dark
+   themes, false suits flat/pastel/retro themes.
+7. Match the user's requested vibe (neon, pastel, retro CRT, synthwave, nature…).
+
+=== DO NOT ===
+- Do NOT use <script> tags, import/export, or require — a plain .js file
+  defining a single global `var THEME`.
+- Do NOT define functions, add pieces, or change gameplay — theme only.
+- Do NOT rename THEME or change its shape/keys.

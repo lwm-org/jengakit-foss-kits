@@ -1,0 +1,7 @@
+# F7: stamped-family persona spec for moms-bible. The kit ships a fully-working
+# app under templates/ — the stamped pipeline copies it verbatim. There
+# are no `{{NAME}}` placeholders in the templates today, so the
+# substitutions list is empty. Future revisions can add placeholders
+# (literal / llm / secret) without changing the kit's family.
+substitutions: []
+secrets_required: []

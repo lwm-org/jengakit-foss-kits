@@ -1,0 +1,90 @@
+{
+  "board_id": "rpi-zero-2w",
+  "display_name": "Raspberry Pi Zero 2 W",
+  "kind": "single-board-computer",
+  "connection_kind": "ssh",
+
+  "provider_id": "rpi-zero-2w",
+  "provider_primary": true,
+  "provider_display_name": "Raspberry Pi Zero 2 W",
+
+  "manufacturer": "Raspberry Pi Foundation",
+  "chip": "RP3A0 (BCM2710A1)",
+  "variants": ["rpi-zero-2w"],
+  "toolchain": "ssh-python",
+
+  "flash": {
+    "method": "ssh-rsync",
+    "protocol": "ssh-rsync",
+    "format": "python-program"
+  },
+
+  "capabilities": {
+    "mcu": "RP3A0",
+    "clock_mhz": 1000,
+    "sram_bytes": 536870912,
+    "flash_bytes": 0,
+    "max_sketch_size_bytes": 0,
+    "digital_pins": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
+    "analog_pins": [],
+    "pwm_pins": [12, 13, 18, 19],
+    "onboard_led_pin": null,
+    "gpio": 40,
+    "pwm": 4,
+    "onboard_led": null,
+    "sram": 536870912,
+    "flash": 0,
+    "has_wifi": true,
+    "has_bluetooth": true,
+    "has_filesystem": true,
+    "serial_baud_default": 115200,
+    "language": "Python",
+    "fqbn": "",
+    "notes": [
+      "Quad-core Linux host — kits deliver a program over SSH that runs on the Pi (system python3, no Docker on the board).",
+      "No on-board ADC; use an external SPI/I2C ADC for analog input.",
+      "GPIO addressed by BCM number."
+    ]
+  },
+
+  "config_schema": [
+    {
+      "name": "ssh_host",
+      "kind": "text",
+      "type": "string",
+      "required": true,
+      "required_message": "ssh_host is required (IP or DNS name of the Pi)"
+    },
+    {
+      "name": "ssh_user",
+      "kind": "text",
+      "type": "string",
+      "required": true,
+      "required_message": "ssh_user is required (typically 'pi' or your account)"
+    },
+    {
+      "name": "board_variant",
+      "kind": "variant",
+      "type": "string",
+      "required": false,
+      "default": "rpi-zero-2w",
+      "enum": ["rpi-zero-2w"],
+      "enum_message": "board_variant {value} not supported. Allowed: {allowed}"
+    },
+    {
+      "name": "ssh_port",
+      "kind": "port",
+      "type": "int",
+      "required": false,
+      "default": 22,
+      "min": 1,
+      "max": 65535,
+      "range_message": "ssh_port must be 1-65535",
+      "type_message": "ssh_port must be an integer"
+    }
+  ],
+
+  "kit_platform_ids": ["rpi-zero-2w"],
+  "resolver_keywords": ["pi zero 2", "zero 2 w", "rpi zero 2"],
+  "default_peripherals": []
+}

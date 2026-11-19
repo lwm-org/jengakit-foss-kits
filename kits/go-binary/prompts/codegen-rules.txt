@@ -1,0 +1,8 @@
+Go binary / CLI apps:
+- Write a single main.go with package main
+- Use only stdlib packages (fmt, os, math, strings, strconv, time, etc.) — no external deps
+- Output results to stdout using fmt.Println or fmt.Printf — no HTTP server
+- go.mod must contain exactly: module app\n\ngo 1.22
+- Do NOT generate a go.sum file
+- Do NOT use net/http or any HTTP listener
+- Do NOT generate a Dockerfile — it comes from a separate stage

@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "jengaKIT Persona Spec (v1)",
+  "description": "persona-spec.yaml schema for Family C (stamped) kits. Replaces kit-specific Python (e.g. _inject_lobster_persona, _fix_ai_agent_server). Declarative placeholder substitutions backed by a frozen filter registry (lib/pipeline/stamped/filters.py).",
+
+  "definitions": {
+    "filter_name": {
+      "type": "string",
+      "enum": ["lower", "upper", "kebab", "snake", "pascal", "b64encode", "json_string", "hex8"]
+    },
+    "placeholder_source": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["source"],
+          "properties": {
+            "source":      { "const": "literal" },
+            "value":       { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["source", "prompt_file"],
+          "properties": {
+            "source":      { "const": "llm" },
+            "prompt_file": { "type": "string" },
+            "filters":     { "type": "array", "items": { "$ref": "#/definitions/filter_name" } }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["source", "env"],
+          "properties": {
+            "source": { "const": "secret" },
+            "env":    { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["source", "same_as"],
+          "properties": {
+            "source":  { "const": "same_as" },
+            "same_as": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["source"],
+          "properties": {
+            "source": { "const": "platform.allocate_port" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["source"],
+          "properties": {
+            "source": { "const": "platform.allocate_subdomain" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+
+  "type": "object",
+  "required": ["substitutions"],
+  "properties": {
+    "substitutions": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["file", "placeholders"],
+        "properties": {
+          "file": { "type": "string", "minLength": 1 },
+          "placeholders": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/placeholder_source" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "secrets_required": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

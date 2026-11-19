@@ -1,0 +1,26 @@
+## Detection — dockerhub-image-importer
+- IMPORTANT: if the user prompt contains a Docker Hub URL (https://hub.docker.com/...)
+  OR a plain Docker Hub image reference in any of these forms:
+    - user/image
+    - user/image:tag
+    - library/image
+    - a single well-known image name like "nginx" or "redis" with a deploy/run intent
+  AND the request is to deploy, run, host, launch, or import it,
+  THEN set:
+    framework: "dockerhub"
+    runtime: "dockerfile"
+    app_category: "dockerhub-image-importer"
+
+- Do NOT classify this as python3, node, go, or any language runtime.
+  The runtime is the image itself — not a language jengakit generates code for.
+
+- Do NOT match GitHub URLs (https://github.com/...) — those are github-docker-repo-importer.
+
+- Do NOT match docker-compose.yml references.
+
+- Do NOT match non-Docker-Hub registries (gcr.io, quay.io, ghcr.io, ecr., azurecr.io).
+
+## normalized_description
+- Extract and include the Docker Hub image reference verbatim.
+- Format: "Docker Hub deployment of <IMAGE_REF>. Pull and deploy pre-built image."
+- If a Docker Hub URL was given, include it verbatim.

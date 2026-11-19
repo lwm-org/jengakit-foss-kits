@@ -1,0 +1,38 @@
+{
+  "schema_version": "5",
+  "kit_name": "itchy",
+  "kit_family": "stamped",
+  "version": "1.1.1",
+  "display_name": "KidCode Studio",
+  "description": "A kid-friendly visual programming platform kit for jengaKIT, inspired by Scratch but built from the ground up.",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "KidCode",
+    "hint": "e.g. A visual programming studio for kids",
+    "description": "An interactive environment for teaching children how to code through drag-and-drop blocks."
+  },
+  "sample_prompts": [
+    "Deploy a kid-friendly coding platform",
+    "Launch a visual programming studio with sprites and backdrops",
+    "Run an educational block-based coding environment"
+  ],
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

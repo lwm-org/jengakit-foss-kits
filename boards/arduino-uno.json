@@ -1,0 +1,75 @@
+{
+  "board_id": "arduino-uno",
+  "display_name": "Arduino Uno",
+  "kind": "microcontroller",
+  "connection_kind": "usb-serial",
+
+  "provider_id": "arduino-uno",
+  "provider_primary": true,
+  "provider_display_name": "Arduino Uno",
+
+  "manufacturer": "Arduino",
+  "chip": "ATmega328P",
+  "variants": ["atmega328p"],
+  "toolchain": "platformio",
+
+  "flash": {
+    "method": "usb-serial-web",
+    "protocol": "stk500v1",
+    "baud": 115200,
+    "format": "hex"
+  },
+
+  "capabilities": {
+    "mcu": "ATmega328P",
+    "clock_mhz": 16,
+    "sram_bytes": 2048,
+    "flash_bytes": 32768,
+    "max_sketch_size_bytes": 32256,
+    "digital_pins": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    "analog_pins": ["A0", "A1", "A2", "A3", "A4", "A5"],
+    "pwm_pins": [3, 5, 6, 9, 10, 11],
+    "onboard_led_pin": 13,
+    "gpio": 14,
+    "pwm": 6,
+    "onboard_led": 13,
+    "sram": 2048,
+    "flash": 32768,
+    "has_wifi": false,
+    "has_bluetooth": false,
+    "has_filesystem": false,
+    "serial_baud_default": 115200,
+    "language": "C++",
+    "fqbn": "arduino:avr:uno",
+    "pio_platform": "atmelavr",
+    "pio_board": "uno",
+    "notes": [
+      "No floating-point hardware unit — float operations are slow.",
+      "Strings consume significant SRAM; use F() macro for literals.",
+      "No WiFi, no networking — sensor → serial-print only unless an attached shield is declared."
+    ]
+  },
+
+  "config_schema": [
+    {
+      "name": "note",
+      "kind": "note",
+      "type": "string",
+      "required": false,
+      "type_message": "note must be a string when provided"
+    },
+    {
+      "name": "variant",
+      "kind": "variant",
+      "type": "string",
+      "required": false,
+      "default": "atmega328p",
+      "enum": ["atmega328p"],
+      "enum_message": "variant {value} is not supported; only 'atmega328p' is wired in Phase 1"
+    }
+  ],
+
+  "kit_platform_ids": ["arduino-uno"],
+  "resolver_keywords": ["arduino", "uno", "atmega"],
+  "default_peripherals": []
+}

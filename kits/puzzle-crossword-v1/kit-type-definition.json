@@ -1,0 +1,59 @@
+{
+  "schema_version": "5",
+  "kit_name": "puzzle-crossword-v1",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Crossword Puzzle",
+  "description": "Crossword puzzle with single-player and up to 5-player cooperative/competitive multiplayer. Timer-based scoring, 3 difficulty levels, leaderboard.",
+  "category": "game",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "websocket"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "websocket",
+    "ingress",
+    "lobby",
+    "keyboard-input",
+    "touch-input",
+    "leaderboard"
+  ],
+  "ui": {
+    "pill_label": "Crossword",
+    "hint": "e.g. a tech-themed crossword, a geography crossword, a movie trivia crossword puzzle",
+    "description": "Crossword puzzle \u2014 solo or up to 5 players. Timer-based scoring with difficulty levels."
+  },
+  "sample_prompts": [
+    "Create a technology-themed crossword puzzle with terms like API, cloud, server, database, and algorithm",
+    "Build a geography crossword with world capitals, rivers, and mountain ranges",
+    "Make a movie trivia crossword with classic film titles, actors, and directors"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "server.js",
+    "package.json",
+    "Dockerfile",
+    "public/index.html",
+    "public/audio.js",
+    "public/touch.js",
+    "public/engine.js",
+    "public/words.js"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate ONLY public/words.js \u2014 a themed word list for a crossword puzzle.\n\nThe game engine (index.html) builds the crossword grid automatically from this word list.\n\nGenerate a JavaScript file that defines var WORD_LISTS with three difficulty levels.\nEach level has 10-15 words with clues matching the user's theme.\n\nEXACT FORMAT (follow precisely):\n\nvar WORD_LISTS = {\n  easy: [\n    {word:'WORD1',clue:'Clue for word 1'},\n    {word:'WORD2',clue:'Clue for word 2'},\n    // 10-12 words, 3-5 letters each\n  ],\n  medium: [\n    {word:'LONGER1',clue:'Clue for longer word'},\n    // 12-15 words, 4-7 letters each\n  ],\n  hard: [\n    {word:'VERYLONG1',clue:'Clue for challenging word'},\n    // 12-17 words, 5-10 letters each\n  ]\n};\n\nRULES:\n- ALL words UPPERCASE, letters only (A-Z), no spaces or hyphens\n- Easy: short common words (3-5 letters)\n- Medium: moderate words (4-7 letters)\n- Hard: longer/challenging words (5-10 letters)\n- Clues must be concise (under 50 chars) and match the theme\n- Include a mix of across-friendly and down-friendly word lengths\n- Words should share common letters (E,A,T,O,R,S,N,I) to enable crossings\n- Do NOT generate index.html, server.js, or any other file",
+  "estimate": {
+    "cpu_m": 200,
+    "mem_mb": 256
+  }
+}

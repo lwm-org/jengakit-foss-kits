@@ -1,0 +1,68 @@
+{
+  "schema_version": "5",
+  "kit_name": "block-drop",
+  "kit_family": "codegen",
+  "version": "1.0.2",
+  "display_name": "Block Drop",
+  "description": "A falling-block puzzle with solo high scores and a fair 2 to 4 player versus mode. Everyone gets the same pieces, cleared lines send garbage rows to rivals, and the last one standing wins. Plays on phone, tablet, desktop and TV, with in-room voice and video and a leaderboard.",
+  "category": "game",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "websocket"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "websocket",
+    "ingress",
+    "lobby",
+    "keyboard-input",
+    "touch-input",
+    "gamepad-input",
+    "responsive",
+    "voice-chat",
+    "video-chat",
+    "leaderboard"
+  ],
+  "ui": {
+    "pill_label": "Block Drop",
+    "hint": "e.g. neon-arcade block drop, a calm pastel theme, a retro green-CRT look",
+    "description": "Falling-block puzzle — solo + 2-4 player Versus with garbage. Responsive (phone → TV), voice/video, leaderboard."
+  },
+  "sample_prompts": [
+    "A neon arcade block drop with glowing pieces on a dark grid",
+    "A calming pastel block puzzle with soft colors",
+    "A retro green-CRT monochrome falling-block game",
+    "A synthwave block drop with hot-pink and cyan pieces"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "server.js",
+    "package.json",
+    "Dockerfile",
+    "public/index.html",
+    "public/game.js",
+    "public/block-core.js",
+    "public/net.js",
+    "public/rtc.js",
+    "public/input.js",
+    "public/audio.js",
+    "public/leaderboard.js",
+    "public/theme.js"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "interpret_hints": "prompts/interpret-hints.txt"
+  },
+  "estimate": {
+    "cpu_m": 200,
+    "mem_mb": 256
+  }
+}

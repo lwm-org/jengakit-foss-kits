@@ -1,0 +1,11 @@
+Rust low-memory API apps (app_category = "rust-low-mem-api"):
+- files MUST include exactly: src/main.rs, Cargo.toml
+- dependencies (Cargo.toml [dependencies]): axum, tokio (with full features), serde (with derive), serde_json
+- base_image: alpine:latest  (final stage of multi-stage build; builder uses rust:1.100-alpine)
+- port: 8080
+- entrypoint: ["/app/server"]
+- src/main.rs: Axum app with at least GET / (JSON response) and GET /health routes, tokio::main, listen on 0.0.0.0:8080
+- Cargo.toml: [profile.release] opt-level = "z", strip = true; [[bin]] name = "server"
+- app_description must state: Rust Axum API, multi-stage Docker build with rust:1.100-alpine builder and alpine:latest final image, statically-linked binary /app/server, port 8080
+- Do NOT plan app.py, requirements.txt, package.json, or any non-Rust files
+- Do NOT use a single-stage Rust build — the final image MUST be alpine:latest

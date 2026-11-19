@@ -1,0 +1,54 @@
+CODEGEN RULES for lobster kit:
+
+SERVER (server.js):
+- Express app on port 3000
+- WebSocket server using 'ws' package attached to the same HTTP server
+- Routes: GET / (dashboard), POST /webhook/telegram, POST /webhook/discord
+- API: GET /health, GET /api/sessions, GET /api/memory, GET /api/logs, GET /api/doctor, POST /api/chat
+- Static serving of public/ directory
+- On WebSocket message: parse JSON {type:"chat", content:"..."}, call agent, stream reply tokens back
+
+LLM AGENT (lib/agent.js):
+- Export async function chat(sessionId, userMessage, systemPrompt)
+- Load last 10 messages from DB for context
+- Call LLM: use JENGAKIT_LLM_URL if set (POST /v1/chat/completions), else use DEPLOY_LLM_API_KEY with OpenAI-compatible API
+- Save messages to DB
+- Return assistant reply text
+
+DATABASE (lib/db.js):
+- Use better-sqlite3 (synchronous)
+- DB file at process.env.DB_PATH || '/data/lobster.db'
+- Tables: sessions(id, name, created_at), messages(id, session_id, role, content, created_at), memory(id, key, value, created_at), logs(id, level, message, created_at)
+- Export: initDb(), getOrCreateSession(name), addMessage(sessionId, role, content), getMessages(sessionId, limit), addMemory(key, value), getMemory(), addLog(level, message), getLogs(limit)
+
+CHANNELS (lib/channels.js):
+- Only init Telegram if LOBSTER_TELEGRAM_BOT_TOKEN is set
+- Only init Discord if LOBSTER_DISCORD_BOT_TOKEN is set
+- Telegram: use axios to poll or use webhook, reply to messages via agent
+- Discord: use discord.js Client, listen for messageCreate, reply via agent
+- Export: initChannels(agentChatFn)
+
+TOOLS (lib/tools.js):
+- Export array of tool definitions with name, description, execute(args) async function
+- Tools: memory_recall(query), memory_store(key, value), web_fetch(url)
+
+CRON (lib/cron.js):
+- Use node-cron
+- Export: initCron(agentChatFn), addJob(expression, prompt), removeJob(id)
+
+DASHBOARD (public/index.html):
+- Single HTML file with Tailwind CSS CDN
+- Tabs: Chat, Memory, Logs, Doctor
+- Chat tab: text input, send button, message history div, WebSocket connection to ws://HOST/ws
+- Memory tab: table of memory entries from GET /api/memory, add entry form
+- Logs tab: auto-refreshing table from GET /api/logs
+- Doctor tab: JSON display from GET /api/doctor
+- Clean dark or light theme, professional look
+- Assistant name shown in header from GET /api/config
+
+HEALTH:
+- GET /health must return {"status":"ok","uptime":process.uptime()} immediately (no DB dependency)
+
+IMPORTANT: The app must start cleanly even if /data/lobster.db doesn't exist yet (create on startup).
+IMPORTANT: If JENGAKIT_LLM_URL is not set and DEPLOY_LLM_API_KEY is not set, still start up (LLM calls will fail gracefully with an error message).
+IMPORTANT: Keep all code in the required files listed. Do not split into more files than needed.

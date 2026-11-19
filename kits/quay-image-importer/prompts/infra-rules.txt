@@ -1,0 +1,16 @@
+quay-image-importer apps — infrastructure generation:
+
+The Dockerfile was already generated correctly in the codegen stage as a single FROM line.
+Do NOT regenerate it or add any instructions.
+
+Output the same minimal Dockerfile that was generated in codegen:
+  FROM quay.io/<IMAGE_REF>:<TAG>
+  LABEL jengakit.source="quay.io://<IMAGE_REF>:<TAG>"
+
+MANDATORY:
+  - Do NOT add RUN, COPY, ENV, CMD, or EXPOSE instructions.
+  - Do NOT switch to any language-specific base image (python:3.11-slim, node:20-slim, etc.).
+  - Always use the full quay.io/ prefixed image reference in the FROM line.
+  - The image defines its own runtime — jengakit provides only the re-tag layer.
+  - service.yaml and ingress.yaml port values are NOT hardcoded 5000 — they are set by
+    jengakit from the port detected via docker inspect. Do not override them.

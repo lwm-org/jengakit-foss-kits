@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#08090a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f0562d'/%3E%3Cpath d='M9 20l7-11 7 11' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Assistant</title>
+<style>
+/* ═══ lobster-v2 — Linear-minimal design system ═══ */
+:root{
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono','JetBrains Mono','Cascadia Code',Menlo,monospace;
+  --accent:#f0562d; --accent-hover:#ff6a44; --accent-press:#d8481f; --accent-ink:#fff; --accent-ghost:rgba(240,86,45,.13);
+  --r:8px; --r-sm:6px; --r-lg:12px; --r-pill:999px;
+  --dur:.15s; --dur-lg:.24s; --ease:cubic-bezier(.2,.5,.2,1);
+  --maxw:768px; --nav-w:236px;
+  --green:#3fb950;
+}
+html[data-theme="dark"]{
+  --bg:#08090a; --panel:#0d0e10; --surface:#111214; --surface-2:#17191c; --elevated:#1a1c1f;
+  --fg:#edeef0; --fg-2:#b0b3ba; --muted:#7a7f89; --faint:#565a63;
+  --border:rgba(255,255,255,.075); --border-2:rgba(255,255,255,.05); --border-strong:rgba(255,255,255,.13);
+  --user-bubble:#1b1d21; --code-bg:#0a0b0d; --focus:rgba(240,86,45,.5);
+  --shadow-1:0 1px 2px rgba(0,0,0,.35); --shadow-2:0 10px 34px -14px rgba(0,0,0,.7),0 2px 8px -4px rgba(0,0,0,.5);
+  --overlay:rgba(3,4,5,.66);
+}
+html[data-theme="light"]{
+  --bg:#fbfbfa; --panel:#ffffff; --surface:#ffffff; --surface-2:#f6f6f5; --elevated:#ffffff;
+  --fg:#101114; --fg-2:#3c4048; --muted:#6a6f78; --faint:#9a9ea6;
+  --border:rgba(11,13,16,.09); --border-2:rgba(11,13,16,.06); --border-strong:rgba(11,13,16,.15);
+  --user-bubble:#f1f1ef; --code-bg:#f5f5f3; --focus:rgba(240,86,45,.32);
+  --shadow-1:0 1px 2px rgba(0,0,0,.05); --shadow-2:0 14px 36px -16px rgba(0,0,0,.2),0 2px 6px -3px rgba(0,0,0,.08);
+  --overlay:rgba(20,22,26,.32);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);height:100dvh;display:flex;flex-direction:column;
+  font-size:14px;line-height:1.55;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  -webkit-tap-highlight-color:transparent;transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer;color:inherit;border:none;background:none;letter-spacing:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px;border-radius:5px}
+::selection{background:var(--accent-ghost);color:var(--fg)}
+svg{display:block}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+.mark{border-radius:7px;flex:0 0 auto}
+
+/* ── Inputs ── */
+input,textarea,select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--fg);border-radius:var(--r-sm);
+  padding:9px 11px;font-size:13.5px;font-family:inherit;letter-spacing:inherit;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur)}
+textarea{resize:vertical;line-height:1.5}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--focus)}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7f89' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px;cursor:pointer}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:var(--accent-ink);
+  border-radius:var(--r-sm);padding:9px 14px;font-weight:560;font-size:13.5px;letter-spacing:-.01em;white-space:nowrap;
+  transition:background var(--dur) var(--ease),transform var(--dur),box-shadow var(--dur);box-shadow:var(--shadow-1)}
+.btn:hover{background:var(--accent-hover)}.btn:active{transform:translateY(.5px);background:var(--accent-press)}
+.btn:disabled{opacity:.5;pointer-events:none}
+.btn.block{width:100%}
+.btn.ghost{background:var(--surface);color:var(--fg-2);border:1px solid var(--border);box-shadow:none}
+.btn.ghost:hover{background:var(--surface-2);color:var(--fg);border-color:var(--border-strong)}
+.icon-btn{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;border-radius:var(--r-sm);color:var(--muted);
+  transition:background var(--dur),color var(--dur)}
+.icon-btn:hover{background:var(--surface-2);color:var(--fg)}
+
+/* ── Login ── */
+#login{flex:1;display:grid;place-items:center;padding:24px;background:
+  radial-gradient(120% 80% at 50% -10%,var(--accent-ghost),transparent 60%)}
+#login .card{width:100%;max-width:360px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:32px 28px;box-shadow:var(--shadow-2)}
+#login .brand{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+#login .brand .mark{width:30px;height:30px}
+#login .brand .name{font-weight:600;font-size:15px;letter-spacing:-.02em}
+#login h1{font-size:19px;font-weight:600;letter-spacing:-.025em;margin-bottom:4px}
+#login .lede{color:var(--muted);font-size:13px;margin-bottom:22px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:540;color:var(--fg-2);margin-bottom:6px}
+.err{color:var(--accent);font-size:12.5px;min-height:17px;margin-top:9px}
+
+/* ── Shell ── */
+#app{flex:1;display:flex;min-height:0}
+#sidebar{width:var(--nav-w);flex:0 0 auto;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-head{padding:14px 14px 10px;display:flex;align-items:center;gap:9px}
+.side-head .mark{width:24px;height:24px}
+.side-head .name{font-weight:580;font-size:14px;letter-spacing:-.02em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side-new{margin:2px 10px 10px;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r-sm);
+  display:flex;align-items:center;gap:8px;color:var(--fg-2);font-weight:540;font-size:13px;background:var(--surface);
+  transition:background var(--dur),border-color var(--dur),color var(--dur)}
+.side-new:hover{background:var(--surface-2);color:var(--fg);border-color:var(--border-strong)}
+.side-label{padding:10px 16px 6px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+#sessions{flex:1;overflow-y:auto;padding:0 8px 8px}
+.sess{padding:8px 11px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;color:var(--fg-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background var(--dur),color var(--dur);margin-bottom:1px}
+.sess:hover{background:var(--surface-2);color:var(--fg)}
+.sess.active{background:var(--surface-2);color:var(--fg)}
+.side-foot{padding:8px 10px;border-top:1px solid var(--border);display:flex;align-items:center;gap:4px}
+.side-foot .me{flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:5px 6px;border-radius:var(--r-sm)}
+.side-foot .me .ava{width:24px;height:24px;border-radius:99px;flex:0 0 auto;display:grid;place-items:center;font-size:11px;font-weight:640;
+  background:var(--accent-ghost);color:var(--accent)}
+.side-foot .me .u{font-size:12.5px;font-weight:540;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+#main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+header.top{display:flex;align-items:center;gap:10px;height:52px;padding:0 clamp(14px,4vw,22px);border-bottom:1px solid var(--border)}
+header.top .menu{display:none}
+header.top .title{font-weight:560;font-size:14px;letter-spacing:-.02em}
+header.top .status{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;padding:3px 9px 3px 8px;
+  border:1px solid var(--border);border-radius:var(--r-pill);background:var(--surface)}
+header.top .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 20%,transparent)}
+header.top .spacer{flex:1}
+
+#log{flex:1;overflow-y:auto;padding:clamp(18px,3vw,30px) clamp(14px,4vw,22px);display:flex;flex-direction:column;gap:20px;
+  width:100%;max-width:var(--maxw);margin:0 auto;scroll-behavior:smooth}
+.msg{display:flex;gap:12px;max-width:100%}
+.msg .av{width:26px;height:26px;border-radius:7px;flex:0 0 auto;display:grid;place-items:center;font-size:11px;font-weight:640}
+.msg.user .av{background:var(--surface-2);color:var(--fg-2);border:1px solid var(--border)}
+.msg .content{min-width:0;flex:1}
+.msg .who{font-size:11.5px;font-weight:600;color:var(--muted);margin:4px 0 5px 1px;letter-spacing:-.01em}
+.msg .body{font-size:14.5px;line-height:1.62;color:var(--fg);word-break:break-word;overflow-wrap:anywhere}
+.msg.user .body{background:var(--user-bubble);border:1px solid var(--border-2);border-radius:3px 12px 12px 12px;padding:10px 13px;white-space:pre-wrap;display:inline-block;max-width:100%}
+.msg .body p{margin:0 0 10px}.msg .body p:last-child{margin:0}
+.msg .body ul,.msg .body ol{margin:6px 0 10px 20px}.msg .body li{margin:3px 0}
+.msg .body h3,.msg .body h4,.msg .body h5{font-weight:620;letter-spacing:-.015em;margin:14px 0 6px}
+.msg .body code{background:var(--code-bg);border:1px solid var(--border);border-radius:5px;padding:1px 5px;font-family:var(--mono);font-size:.85em}
+.msg .body pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:13px 15px;overflow-x:auto;margin:8px 0}
+.msg .body pre code{background:none;border:none;padding:0;font-size:.85em;line-height:1.6}
+.msg .body a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.msg .body a:hover{border-bottom-color:var(--accent)}
+.tool{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--fg-2);
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:4px 11px 4px 9px;max-width:100%;overflow:hidden}
+.tool .tico{width:13px;height:13px;flex:0 0 auto;color:var(--muted)}
+.tool b{color:var(--fg);font-weight:580}
+.tool .arg{color:var(--faint);font-family:var(--mono);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tool.done .tico{color:var(--green)}.tool.blocked{color:var(--accent)}.tool.blocked .tico{color:var(--accent)}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:9px 2px}
+.typing i{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:blink 1.3s infinite}
+.typing i:nth-child(2){animation-delay:.18s}.typing i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,72%,100%{opacity:.25;transform:translateY(0)}36%{opacity:.9;transform:translateY(-2px)}}
+.empty{margin:auto;text-align:center;max-width:420px;padding:24px}
+.empty .glyph{width:46px;height:46px;margin:0 auto 18px;border-radius:12px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-1)}
+.empty h2{font-size:17px;font-weight:620;color:var(--fg);letter-spacing:-.025em;margin-bottom:7px}
+.empty p{font-size:13.5px;line-height:1.6;color:var(--muted)}
+.empty .sugg{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:18px}
+.empty .sugg button{font-size:12.5px;color:var(--fg-2);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:6px 12px;transition:background var(--dur),border-color var(--dur),color var(--dur)}
+.empty .sugg button:hover{background:var(--surface-2);color:var(--fg);border-color:var(--border-strong)}
+
+.composer{padding:10px clamp(14px,4vw,22px) calc(14px + env(safe-area-inset-bottom))}
+.composer form{width:100%;max-width:var(--maxw);margin:0 auto;display:flex;align-items:flex-end;gap:9px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:7px 7px 7px 13px;box-shadow:var(--shadow-1);
+  transition:border-color var(--dur),box-shadow var(--dur)}
+.composer form:focus-within{border-color:color-mix(in srgb,var(--accent) 50%,var(--border));box-shadow:0 0 0 3px var(--focus)}
+#input{flex:1;background:none;border:none;padding:6px 0;font-size:14.5px;resize:none;max-height:168px;line-height:1.5}
+#input:focus{outline:none;box-shadow:none}
+#send{width:34px;height:34px;flex:0 0 auto;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;
+  transition:background var(--dur),transform var(--dur),opacity var(--dur)}
+#send:hover{background:var(--accent-hover)}#send:active{transform:scale(.93)}#send:disabled{opacity:.4;pointer-events:none;background:var(--faint)}
+
+/* ── Settings modal (two-pane) ── */
+#settingsOverlay{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;background:var(--overlay);
+  backdrop-filter:blur(3px);opacity:0;transition:opacity var(--dur-lg)}
+#settingsOverlay.show{opacity:1}
+.settings{width:100%;max-width:920px;height:min(640px,90vh);background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-2);display:flex;overflow:hidden;transform:translateY(8px) scale(.99);transition:transform var(--dur-lg) var(--ease)}
+#settingsOverlay.show .settings{transform:none}
+.settings-rail{width:206px;flex:0 0 auto;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 10px}
+.rail-head{font-size:12.5px;font-weight:620;letter-spacing:-.01em;color:var(--fg);padding:4px 8px 12px}
+#settingsNav{flex:1;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r-sm);color:var(--fg-2);font-size:13px;font-weight:520;text-align:left;
+  transition:background var(--dur),color var(--dur)}
+.nav-item svg{width:15px;height:15px;flex:0 0 auto;color:var(--muted)}
+.nav-item:hover{background:var(--surface-2);color:var(--fg)}
+.nav-item.active{background:var(--surface-2);color:var(--fg)}.nav-item.active svg{color:var(--accent)}
+.rail-foot{padding:12px 10px 4px;color:var(--faint);font-size:11px;font-family:var(--mono);letter-spacing:.02em}
+.settings-main{flex:1;min-width:0;position:relative;overflow-y:auto;padding:22px 26px 28px}
+.modal-close{position:absolute;top:14px;right:16px;z-index:2}
+.panel{display:none}.panel.active{display:block;animation:fade .2s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.panel-title{font-size:16px;font-weight:620;letter-spacing:-.02em;margin-bottom:3px}
+.panel-sub{font-size:12.5px;color:var(--muted);margin-bottom:20px}
+.grp{margin-bottom:24px}
+.grp:last-child{margin-bottom:4px}
+.grp-title{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:11px}
+
+/* segmented control */
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.seg button{padding:6px 14px;border-radius:6px;font-size:12.5px;font-weight:540;color:var(--muted);transition:background var(--dur),color var(--dur)}
+.seg button.on{background:var(--panel);color:var(--fg);box-shadow:var(--shadow-1)}
+
+/* key/value rows */
+.kv{display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:13px;padding:9px 0;border-bottom:1px solid var(--border-2)}
+.kv:last-child{border-bottom:none}
+.kv span{color:var(--muted)}.kv b{font-weight:540;font-family:var(--mono);font-size:12px;color:var(--fg-2)}
+
+/* status card (channels / integrations) */
+.cards{display:flex;flex-direction:column;gap:8px}
+.scard{display:flex;align-items:center;gap:12px;padding:12px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  transition:border-color var(--dur)}
+.scard:hover{border-color:var(--border-strong)}
+.scard .ci{width:30px;height:30px;flex:0 0 auto;border-radius:7px;display:grid;place-items:center;background:var(--surface-2);color:var(--fg-2);font-size:12px;font-weight:640}
+.scard .cmain{flex:1;min-width:0}
+.scard .cname{font-size:13px;font-weight:560;text-transform:capitalize}
+.scard .cmeta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scard .cmeta code{font-family:var(--mono);font-size:11px}
+.state{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:560;padding:3px 9px;border-radius:var(--r-pill);flex:0 0 auto}
+.state.on{color:var(--green);background:color-mix(in srgb,var(--green) 12%,transparent)}
+.state.on::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green)}
+.state.off{color:var(--muted);background:var(--surface-2)}
+.state.off::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--faint)}
+
+/* chips (tools) */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);
+  padding:4px 11px;font-size:12px;color:var(--fg-2);font-weight:500}
+.chip.accent{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,var(--border));background:var(--accent-ghost)}
+.note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:12px}
+.note b{color:var(--fg-2);font-weight:560}
+
+/* config form */
+.cfg-field{margin-bottom:13px}
+.cfg-field label{display:flex;align-items:center;font-size:12.5px;font-weight:540;color:var(--fg-2);margin-bottom:6px}
+.cfg-field textarea{min-height:76px;font-family:var(--mono);font-size:12px}
+.set-tag{color:var(--green);font-weight:600;font-size:10.5px;margin-left:7px;letter-spacing:.02em;text-transform:uppercase}
+.cfg-help{font-size:11.5px;color:var(--muted);margin-top:5px}
+.savebar{position:sticky;bottom:-28px;margin:22px -26px -28px;padding:14px 26px;background:linear-gradient(to top,var(--panel) 68%,transparent);
+  display:flex;align-items:center;gap:12px}
+.savebar .note{margin:0}
+
+/* audit */
+.audit{font-size:12px;font-family:var(--mono);border-bottom:1px solid var(--border-2);padding:10px 0;color:var(--muted);line-height:1.5}
+.audit:last-child{border-bottom:none}.audit b{color:var(--fg-2)}
+
+/* toast */
+#toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:var(--elevated);border:1px solid var(--border-strong);border-radius:var(--r);padding:10px 15px;font-size:13px;font-weight:520;
+  color:var(--fg);box-shadow:var(--shadow-2);display:flex;align-items:center;gap:9px;animation:toastin .24s var(--ease)}
+.toast .tk{width:15px;height:15px;color:var(--green)}
+@keyframes toastin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+@media(max-width:820px){
+  .settings{height:100dvh;max-width:none;border-radius:0;flex-direction:column}
+  #settingsOverlay{padding:0}
+  .settings-rail{width:100%;flex-direction:row;overflow-x:auto;padding:8px;border-right:none;border-bottom:1px solid var(--border)}
+  .rail-head,.rail-foot{display:none}
+  #settingsNav{flex-direction:row;gap:4px}
+  .nav-item{white-space:nowrap}.nav-item span{display:none}.nav-item svg{width:17px;height:17px}
+}
+@media(max-width:760px){
+  #sidebar{position:fixed;z-index:45;height:100%;transform:translateX(-100%);transition:transform var(--dur-lg) var(--ease);box-shadow:var(--shadow-2)}
+  #sidebar.open{transform:none}
+  header.top .menu{display:grid}
+  #scrim2{position:fixed;inset:0;background:var(--overlay);z-index:44;opacity:0;transition:opacity var(--dur)}
+  #scrim2.show{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<section id="login" class="hidden">
+  <form class="card" id="loginForm">
+    <div class="brand"><svg class="mark" id="loginMark" viewBox="0 0 32 32"></svg><span class="name" id="loginName">Assistant</span></div>
+    <h1>Welcome back</h1>
+    <p class="lede">Sign in to continue to your workspace.</p>
+    <div class="field"><label for="lu">Username</label><input id="lu" autocomplete="username" autofocus></div>
+    <div class="field"><label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password"></div>
+    <button type="submit" class="btn block">Sign in</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</section>
+
+<!-- App -->
+<div id="app" class="hidden">
+  <div id="scrim2" class="hidden"></div>
+  <aside id="sidebar">
+    <div class="side-head"><svg class="mark" id="sideMark" viewBox="0 0 32 32"></svg><span class="name" id="sideName">Assistant</span></div>
+    <button class="side-new" id="newchat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New conversation</button>
+    <div class="side-label">Recent</div>
+    <div id="sessions"></div>
+    <div class="side-foot">
+      <div class="me"><span class="ava" id="meAva">U</span><span class="u" id="meName">You</span></div>
+      <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
+      <button class="icon-btn" id="openSettings" title="Settings" aria-label="Settings"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="icon-btn" id="logout" title="Sign out" aria-label="Sign out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg></button>
+    </div>
+  </aside>
+
+  <div id="main">
+    <header class="top">
+      <button class="icon-btn menu" id="menu" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <span class="title" id="title">Assistant</span>
+      <span class="spacer"></span>
+      <span class="status"><i class="dot"></i>Online</span>
+    </header>
+    <div id="log"></div>
+    <div class="composer">
+      <form id="form">
+        <textarea id="input" rows="1" placeholder="Message your assistant…" autocomplete="off"></textarea>
+        <button id="send" type="submit" aria-label="Send"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div id="settingsOverlay" class="hidden">
+  <div class="settings" role="dialog" aria-modal="true" aria-label="Settings">
+    <aside class="settings-rail">
+      <div class="rail-head">Settings</div>
+      <nav id="settingsNav">
+        <button class="nav-item active" data-panel="general"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>General</span></button>
+        <button class="nav-item" data-panel="channels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Channels</span></button>
+        <button class="nav-item" data-panel="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span>Tools</span></button>
+        <button class="nav-item" data-panel="integrations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg><span>Integrations</span></button>
+        <button class="nav-item" data-panel="configure" id="navConfigure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg><span>Configure</span></button>
+        <button class="nav-item" data-panel="team" id="navTeam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team</span></button>
+        <button class="nav-item" data-panel="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg><span>Audit</span></button>
+      </nav>
+      <div class="rail-foot" id="setVersion"></div>
+    </aside>
+    <div class="settings-main">
+      <button class="icon-btn modal-close" id="closeSettings" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+
+      <section class="panel active" data-panel="general">
+        <div class="panel-title">General</div>
+        <div class="panel-sub">Appearance and workspace basics.</div>
+        <div class="grp"><div class="grp-title">Appearance</div>
+          <div class="seg" id="themeSeg"><button data-theme="light">Light</button><button data-theme="dark">Dark</button><button data-theme="system">System</button></div>
+        </div>
+        <div class="grp"><div class="grp-title">Workspace</div><div id="setRuntime"></div></div>
+      </section>
+
+      <section class="panel" data-panel="channels">
+        <div class="panel-title">Channels</div>
+        <div class="panel-sub">Reach your assistant from messaging apps. Configure tokens under Configure; a channel turns on the moment it's set.</div>
+        <div class="cards" id="setChannels"></div>
+      </section>
+
+      <section class="panel" data-panel="tools">
+        <div class="panel-title">Tools</div>
+        <div class="panel-sub">Capabilities the assistant can use on its own — just ask.</div>
+        <div class="chips" id="setTools"></div>
+        <div class="note">The assistant runs these for you automatically (e.g. “design a LinkedIn banner” uses the design tools).</div>
+      </section>
+
+      <section class="panel" data-panel="integrations">
+        <div class="panel-title">Integrations</div>
+        <div class="panel-sub">External apps the assistant can drive once connected.</div>
+        <div class="cards" id="setIntegrations"></div>
+      </section>
+
+      <section class="panel" data-panel="configure">
+        <div class="panel-title">Configure</div>
+        <div class="panel-sub">Everything is set up right here — no env vars, no redeploy. Saved changes apply to your next message.</div>
+        <div id="setConfig"></div>
+        <div class="savebar"><button class="btn" id="saveConfig">Save configuration</button><span class="note" id="configNote"></span></div>
+      </section>
+
+      <section class="panel" data-panel="team">
+        <div class="panel-title">Team</div>
+        <div class="panel-sub">Invite teammates to this workspace. Each gets their own memory, sessions, and audit trail.</div>
+        <div class="grp">
+          <div class="cfg-field"><label>Username</label><input id="nu" placeholder="teammate"></div>
+          <div class="cfg-field"><label>Password</label><input id="np" type="password" placeholder="min 6 characters"></div>
+          <button class="btn" id="createUser">Create user</button>
+          <div class="note" id="userNote"></div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="audit">
+        <div class="panel-title">Audit trail</div>
+        <div class="panel-sub">Every side-effecting tool run, attributed to the user.</div>
+        <div id="setAudit"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="md.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

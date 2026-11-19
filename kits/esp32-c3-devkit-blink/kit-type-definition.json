@@ -1,0 +1,29 @@
+{
+  "schema_version": "5",
+  "kit_name": "esp32-c3-devkit-blink",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "ESP32-C3 DevKit blink",
+  "description": "Reference blink kit for the ESP32-C3 DevKit, generated from its board descriptor.",
+  "category": "embedded",
+  "author": "jengakit",
+  "capabilities": [
+    "embedded",
+    "blink"
+  ],
+  "kit_target": {
+    "platform": "esp32-c3-devkit",
+    "variant": "esp32-c3"
+  },
+  "kit_toolchain": "esphome",
+  "kit_flash_methods": [
+    "ota-esphome"
+  ],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    {
+      "type": "led-onboard"
+    }
+  ],
+  "kit_template_dir": "templates"
+}

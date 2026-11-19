@@ -1,0 +1,50 @@
+{
+  "schema_version": "5",
+  "kit_name": "go-binary",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Go Binary",
+  "description": "A standalone Go program that runs once to completion and prints its results.",
+  "category": "api",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "go",
+  "kit_base_image": "golang:1.22-alpine",
+  "kit_network": {
+    "ingress_variant": "job"
+  },
+  "kit_deploy": {
+    "method": "job",
+    "validate_method": "logs"
+  },
+  "capabilities": [
+    "job"
+  ],
+  "ui": {
+    "pill_label": "Go Binary",
+    "hint": "e.g. compute prime numbers up to 1000 and print each one",
+    "description": "Go CLI \u2014 runs to completion, prints to stdout. No HTTP server. K8s Job (not Deployment). Output captured via kubectl logs."
+  },
+  "sample_prompts": [
+    "Compute all prime numbers up to 10000 and print them",
+    "Generate a multiplication table from 1 to 12 and print it formatted",
+    "Calculate the first 50 Fibonacci numbers and display each one"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "main.go",
+    "go.mod",
+    "Dockerfile"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Build a standalone Go CLI program using only stdlib packages. It must run to completion and print its output to stdout. No HTTP server. Use a multi-stage Docker build (golang:1.22-alpine to build, alpine:latest to run). The program must",
+  "estimate": {
+    "cpu_m": 200,
+    "mem_mb": 64
+  }
+}

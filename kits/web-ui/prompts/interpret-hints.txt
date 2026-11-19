@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for React, a web UI, a frontend, a single-page app, or a visual dashboard with React components, set framework to "flask", runtime to "python3", app_category to "web-ui" — the app will be served by Flask with a self-contained HTML page loading React 18 and Babel via CDN
+
+## normalized_description note
+- For web-ui apps: specify it must be a self-contained HTML page inside app.py (Python string, single triple-quotes), loading React 18, ReactDOM 18, and Babel standalone via CDN; no npm, no build step; all React components use JSX inside a <script type="text/babel"> tag; use mock/hardcoded data unless explicitly stated otherwise

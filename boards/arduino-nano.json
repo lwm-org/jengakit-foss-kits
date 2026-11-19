@@ -1,0 +1,75 @@
+{
+  "board_id": "arduino-nano",
+  "display_name": "Arduino Nano",
+  "kind": "microcontroller",
+  "connection_kind": "usb-serial",
+
+  "provider_id": "arduino-nano",
+  "provider_primary": true,
+  "provider_display_name": "Arduino Nano",
+
+  "manufacturer": "Arduino",
+  "chip": "ATmega328P",
+  "variants": ["atmega328p"],
+  "toolchain": "platformio",
+
+  "flash": {
+    "method": "usb-serial-web",
+    "protocol": "stk500v1",
+    "baud": 57600,
+    "format": "hex"
+  },
+
+  "capabilities": {
+    "mcu": "ATmega328P",
+    "clock_mhz": 16,
+    "sram_bytes": 2048,
+    "flash_bytes": 30720,
+    "max_sketch_size_bytes": 30720,
+    "digital_pins": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    "analog_pins": ["A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7"],
+    "pwm_pins": [3, 5, 6, 9, 10, 11],
+    "onboard_led_pin": 13,
+    "gpio": 22,
+    "pwm": 6,
+    "onboard_led": 13,
+    "sram": 2048,
+    "flash": 30720,
+    "has_wifi": false,
+    "has_bluetooth": false,
+    "has_filesystem": false,
+    "serial_baud_default": 115200,
+    "language": "C++",
+    "fqbn": "arduino:avr:nano",
+    "pio_platform": "atmelavr",
+    "pio_board": "nanoatmega328",
+    "notes": [
+      "Same ATmega328P as the Uno in a smaller footprint; two extra analog-only pins (A6/A7).",
+      "The classic Nano bootloader flashes at 57600 baud, not 115200.",
+      "No WiFi/networking — sensor → serial-print only unless a shield is declared."
+    ]
+  },
+
+  "config_schema": [
+    {
+      "name": "note",
+      "kind": "note",
+      "type": "string",
+      "required": false,
+      "type_message": "note must be a string when provided"
+    },
+    {
+      "name": "variant",
+      "kind": "variant",
+      "type": "string",
+      "required": false,
+      "default": "atmega328p",
+      "enum": ["atmega328p"],
+      "enum_message": "variant {value} is not supported; only 'atmega328p' is wired"
+    }
+  ],
+
+  "kit_platform_ids": ["arduino-nano"],
+  "resolver_keywords": ["nano", "arduino nano"],
+  "default_peripherals": []
+}

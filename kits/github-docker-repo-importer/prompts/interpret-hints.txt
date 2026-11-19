@@ -1,0 +1,15 @@
+## Detection
+- IMPORTANT: if the user prompt contains a GitHub URL (https://github.com/...) and asks to
+  deploy, run, import, or host it, set:
+    framework: "git-clone"
+    runtime: "dockerfile"
+    app_category: "github-docker-repo-importer"
+- Do NOT classify this as python3, node, go, or any specific language runtime — the runtime
+  is determined by the target repository, not by jengakit defaults.
+
+## normalized_description
+- MUST include the full GitHub URL verbatim — do not abbreviate or omit it.
+- Format: "Git-clone deployment of <FULL_URL>. Inferred technology: <detected_stack>."
+- Detect the likely technology from the repository name and organisation if recognisable
+  (e.g. a Hugo static site, a Node.js API, a Python service, a Go binary).
+- If the technology cannot be determined, state "unknown stack".

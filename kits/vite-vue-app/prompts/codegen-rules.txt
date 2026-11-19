@@ -1,0 +1,29 @@
+CRITICAL: Generate ONLY src/App.vue — nothing else.
+
+This is a Vite + Vue 3 app. Do NOT use React imports, JSX, or Next.js imports.
+
+DO NOT generate: package.json, Dockerfile, vite.config.ts, main.ts, style.css, index.html, nginx.conf, tailwind.config, postcss.config, or any config file.
+
+=== src/App.vue RULES ===
+
+Structure:
+- Use <script setup lang="ts">, <template>, and <style scoped> sections
+- ALL application logic in this single component
+- Use ref() and reactive() for state management
+- Use vue-router for navigation if needed (already in package.json)
+- Use @vueuse/core composables where helpful
+
+Imports (all pre-installed):
+- import { ref, reactive, computed } from 'vue';
+- import { useLocalStorage, useDark } from '@vueuse/core';
+
+Layout:
+- Left sidebar (w-56) with business name and navigation items
+- Main content area with page title and content
+- Tailwind CSS classes for ALL styling
+
+Content:
+- Stat cards (3-4 per section)
+- Data tables with 8-15 realistic sample rows
+- Forms with inputs, selects, action buttons
+- Theme colors via Tailwind utility classes

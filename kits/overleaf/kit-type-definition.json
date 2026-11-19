@@ -1,0 +1,38 @@
+{
+  "schema_version": "5",
+  "kit_name": "overleaf",
+  "kit_family": "importer",
+  "version": "1.0.2",
+  "display_name": "Overleaf (Community Edition)",
+  "description": "A self-hosted collaborative LaTeX editor, built on Overleaf Community Edition, where teams write and compile documents together. The first admin account is created by hand once (see the kit README), since there is no default account and open registration is off.",
+  "category": "importer",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.6.0",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress",
+    "multi-service"
+  ],
+  "ui": {
+    "pill_label": "Overleaf CE",
+    "hint": "Deploy self-hosted Overleaf (collaborative LaTeX)",
+    "description": "Brings up Overleaf Community Edition — the web app, a single-member MongoDB replica set, and Redis — as one deployment. First boot takes a few minutes; then create the first admin with the one-time step in the kit README (Overleaf CE has no default login)."
+  },
+  "sample_prompts": [
+    "Deploy Overleaf",
+    "Set up a self-hosted LaTeX editor",
+    "Run Overleaf Community Edition"
+  ],
+  "estimate": {
+    "cpu_m": 2000,
+    "mem_mb": 4096
+  }
+}

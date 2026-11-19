@@ -1,0 +1,48 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-quiz-app",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Quiz Champion",
+  "description": "Multiple-choice quiz with categories like animals, science, geography, and history. Earn badges",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Quiz Champion",
+    "hint": "e.g. a dinosaur trivia quiz with badges, a science quiz with fun facts",
+    "description": "Multiple-choice quiz with categories like animals, science, geography, and history. Earn badges"
+  },
+  "sample_prompts": [
+    "A trivia quiz for kids about animals and nature",
+    "A science quiz game with fun facts and badges",
+    "A geography quiz where kids guess countries from flags"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate a single index.html file for a kids app. Static HTML only \u2014 no backend, no server, no Python, no Node.js. Use Tailwind CSS CDN and inline JavaScript. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

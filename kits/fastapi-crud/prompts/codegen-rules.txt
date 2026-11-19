@@ -1,0 +1,44 @@
+CRITICAL: Generate ONLY templates/index.html — nothing else.
+
+This app has a WORKING BACKEND with a universal CRUD API and SQLite database.
+Data PERSISTS across page refreshes. Do NOT hardcode sample data.
+
+=== API ENDPOINTS (provided by template) ===
+
+  GET    /api/{table}         → returns JSON array of all rows
+  POST   /api/{table}         → creates row (JSON body), returns {id, ...fields}
+  PUT    /api/{table}/{id}    → updates row by id (JSON body with fields to update)
+  DELETE /api/{table}/{id}    → deletes row by id
+
+Tables: /api/invoices, /api/customers, /api/payments, etc.
+
+=== index.html RULES ===
+
+1. Single HTML file with inline <script> tag — no modules, no imports
+2. Use Tailwind CSS via CDN: <script src="https://cdn.tailwindcss.com"></script>
+3. Use Lucide icons via CDN: <script src="https://unpkg.com/lucide@latest"></script>
+4. Call lucide.createIcons() after DOM loads
+
+DATA LOADING — use fetch(), NOT hardcoded arrays:
+  async function loadInvoices() {
+    const res = await fetch('/api/invoices');
+    return await res.json();
+  }
+
+SEED ON FIRST LOAD:
+  const rows = await fetch('/api/invoices').then(r=>r.json());
+  if (rows.length === 0) {
+    const samples = [{customer:'ABC Corp', amount:'2500', status:'paid'}, ...];
+    await Promise.all(samples.map(s =>
+      fetch('/api/invoices', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(s)})
+    ));
+  }
+
+CREATE: fetch('/api/invoices', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)})
+UPDATE: fetch('/api/invoices/'+id, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)})
+DELETE: fetch('/api/invoices/'+id, {method:'DELETE'})
+
+UI: Sidebar + data tables + forms + stat cards. All data from fetch().
+
+DO NOT generate: main.py, requirements.txt, Dockerfile, or any backend file.
+DO NOT use hardcoded arrays for displayed data.

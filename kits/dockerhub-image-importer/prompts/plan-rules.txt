@@ -1,0 +1,26 @@
+dockerhub-image-importer apps (app_category = "dockerhub-image-importer"):
+
+MANDATORY file list — output EXACTLY these three files, no others:
+  files: ["Dockerfile", "provenance.json", "README.md"]
+
+Do NOT include app.py, requirements.txt, server.js, package.json, main.go, or any
+application source file. The container image is pre-built on Docker Hub — jengakit does
+not generate any application code for this type.
+
+base_image: extract the Docker Hub image reference from the user prompt.
+  - From URL https://hub.docker.com/r/user/image → "user/image"
+  - From URL https://hub.docker.com/_/image      → "image"
+  - From plain ref user/image:tag                → "user/image:tag"
+  - Default tag to "latest" if not specified.
+
+port: 80
+  (The actual port is determined by jengakit at build time via docker inspect.
+   Emit 80 as a placeholder — it will be overridden before manifests are written.)
+
+entrypoint: []
+  (The image defines its own entrypoint.)
+
+dependencies: []
+
+app_description: "Docker Hub deployment of <IMAGE_REF>. Pulls and re-tags the pre-built
+image for jengakit-managed deployment."

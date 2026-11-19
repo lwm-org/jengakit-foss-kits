@@ -1,0 +1,52 @@
+{
+  "schema_version": "5",
+  "kit_name": "go-api",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Go API",
+  "description": "A minimal Go web API that answers JSON requests, written with only the standard library.",
+  "category": "api",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "go",
+  "kit_base_image": "golang:1.22-alpine",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Go API",
+    "hint": "e.g. a Go HTTP API that returns JSON",
+    "description": "Go HTTP API \u2014 stdlib net/http only, multi-stage Docker build (golang:1.22-alpine \u2192 alpine:latest)."
+  },
+  "sample_prompts": [
+    "A Go API that returns server health metrics as JSON",
+    "A key-value store API with GET and PUT endpoints using Go stdlib",
+    "A timezone conversion API that accepts a timestamp and target timezone"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "main.go",
+    "go.mod",
+    "Dockerfile"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Build a minimal Go HTTP API using only net/http and encoding/json from the standard library. No external dependencies. Use a multi-stage Docker build (golang:1.22-alpine to build, alpine:latest to run). The API must",
+  "estimate": {
+    "cpu_m": 100,
+    "mem_mb": 64
+  }
+}

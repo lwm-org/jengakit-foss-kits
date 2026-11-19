@@ -1,0 +1,56 @@
+{
+  "schema_version": "5",
+  "kit_name": "nextjs-app",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Next.js App",
+  "description": "Full-stack business application using Next.js 14, Tailwind CSS, Lucide Icons, Recharts, and SQLite. Template-first \u2014 guaranteed to build.",
+  "category": "fullstack",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Business App",
+    "hint": "e.g. an invoicing app for a construction business, a CRM with dashboards, a project tracker",
+    "description": "Full-stack Next.js business app with sidebar, tabs, charts, forms, tables, and SQLite database. Guaranteed build."
+  },
+  "sample_prompts": [
+    "An invoicing app for a construction business with customer tracking and bookkeeping",
+    "A project management app with kanban boards, team members, and due dates",
+    "A CRM for a real estate agency with property listings and client management",
+    "A clinic management system with appointments, patients, and billing"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "package.json",
+    "next.config.js",
+    "tailwind.config.js",
+    "postcss.config.js",
+    "app/layout.js",
+    "app/page.js",
+    "app/globals.css",
+    "jsconfig.json",
+    "components.json"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}
