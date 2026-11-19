@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "jengaKIT Kit Type Definition (v5)",
-  "description": "v5 schema. Superset of v4 (any valid v4 kit is a valid v5 kit modulo the schema_version const). Adds the portable `services` block (a kit DECLARES the backing services it needs, namely postgres, redis, object-storage, email, cron, ai and auth, instead of the platform inferring them; the docker runtime materializes them as containers) and a single opaque extension object for host-specific realization detail (never authored by docker kits). The embedded/hardware family is unchanged from v4. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
+  "description": "v5 schema. Superset of v4 (any valid v4 kit is a valid v5 kit modulo the schema_version const). Adds the portable `services` block (a kit DECLARES the backing services it needs - postgres, redis, object-storage, email, cron, ai, auth - instead of the platform inferring them; the docker runtime materializes them) and a single reserved, opaque extension object that kits never author and the engine never reads. The embedded/hardware family is unchanged from v4. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
   "definitions": {
     "kit_name_string": {
       "type": "string",
@@ -436,7 +436,7 @@
     "x-jengakit-cloud": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Host-specific realization detail (workload bindings, generation depth slots, auth_provider, etc.). ABSENT in docker-authored kits; the validator treats it as opaque and never authors it."
+      "description": "Reserved extension object. Kits never author it; the validator accepts it as opaque and the engine never reads it."
     },
     "kit_target": {
       "$ref": "#/definitions/kit_target_object"
