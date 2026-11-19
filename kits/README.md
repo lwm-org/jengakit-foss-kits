@@ -31,7 +31,7 @@ directory.
 2. Set `kit_min_jengakit_version` when the kit needs a newer engine than the
    one it declared before (a new board, a new schema field).
 3. Run `python scripts/validate-kits.py kits/<name>` and, when the kit has
-   tests, `python -m unittest discover -s tests`.
+   tests, `python -m unittest discover -s tests -t .`.
 4. Open a pull request to `dev`.
 
 The kit is released as `<name>-v<version>` when `dev` is merged to `main`.
