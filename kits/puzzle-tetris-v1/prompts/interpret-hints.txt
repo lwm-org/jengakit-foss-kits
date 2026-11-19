@@ -1,0 +1,4 @@
+## Detection
+- IMPORTANT: if the user asks for tetris, falling blocks, block puzzle, block stacking game, tile matching game, or any game where blocks fall and lines are cleared, set app_category to "puzzle-tetris-v1"
+- Keywords: "tetris", "falling blocks", "block puzzle", "line clear", "tetrominoes", "stacking", "block game", "tile puzzle"
+- Examples: "neon tetris", "classic tetris game", "falling block puzzle", "1v1 tetris battle", "block stacking game", "retro tetris"

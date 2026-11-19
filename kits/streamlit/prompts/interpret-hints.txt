@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for Streamlit, a data dashboard, or a data visualization app with widgets (sliders, charts, tables, sidebar), set framework to "streamlit", runtime to "python3", app_category to "streamlit"
+
+## normalized_description note
+- For streamlit apps: specify it must use only streamlit and standard data libraries (pandas, plotly, altair, etc.) — no Flask, no fastapi; use only mock/hardcoded data; listen on port 5000

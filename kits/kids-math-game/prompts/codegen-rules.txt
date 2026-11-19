@@ -1,0 +1,31 @@
+CRITICAL: You MUST generate ONLY ONE file: index.html
+Do NOT generate app.py, requirements.txt, server.js, or ANY other file.
+The ONLY file in your response must be named "index.html".
+
+This is a static HTML app served by nginx. There is NO backend server.
+
+=== index.html REQUIREMENTS ===
+
+1. Single self-contained HTML file with ALL code inline
+2. Include <script src="https://cdn.tailwindcss.com"></script> in <head>
+3. All JavaScript MUST be in a <script> tag inside the HTML
+4. All CSS MUST be inline <style> or Tailwind classes
+5. The page MUST be fully functional — no "loading" placeholders
+6. Use emoji for icons (no external icon libraries needed)
+
+=== CONTENT SAFETY (MANDATORY) ===
+
+- This is for CHILDREN ages 6-12
+- Bright cheerful colors, large readable fonts (min 16px)
+- Large touch-friendly buttons (min 48px tap targets)
+- Fun animations (CSS transitions, bounce, confetti)
+- Immediate visual feedback on every interaction
+- NO violence, scary content, or adult themes
+- NO external API calls — everything runs in the browser
+- NO login, personal data collection, or tracking
+
+=== OUTPUT FORMAT ===
+
+Your response MUST contain exactly ONE file named "index.html".
+Do NOT include any Python, Node.js, or server-side code.
+Do NOT include Dockerfile, requirements.txt, package.json, or server files.

@@ -1,0 +1,13 @@
+## Detection
+- IMPORTANT: if the user asks for Tetris, a falling-block puzzle, a tetromino
+  game, a block-stacking/line-clearing game, or "block drop" — with or without
+  multiplayer/versus — set app_category to "block-drop".
+- Keywords: "tetris", "falling block", "block puzzle", "tetromino", "line clear",
+  "stacking blocks", "block drop", "versus blocks", "garbage lines".
+- Examples: "neon tetris", "space block puzzle", "1v1 tetris", "retro block drop",
+  "multiplayer falling blocks".
+
+## normalized_description note
+- The game engine is fixed; only the visual theme (public/theme.js) is generated.
+  Capture the THEME/vibe (colours, mood, title) — all gameplay (solo/versus,
+  SRS, ghost/hold/next, garbage, responsive, voice/video, leaderboard) is built in.

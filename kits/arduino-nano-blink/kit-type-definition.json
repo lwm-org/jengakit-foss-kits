@@ -1,0 +1,32 @@
+{
+  "schema_version": "5",
+  "kit_name": "arduino-nano-blink",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "Arduino Nano blink",
+  "description": "Reference blink kit for the Arduino Nano, generated from its board descriptor.",
+  "category": "embedded",
+  "author": "jengakit",
+  "capabilities": [
+    "embedded",
+    "blink"
+  ],
+  "kit_target": {
+    "platform": "arduino-nano",
+    "variant": "atmega328p"
+  },
+  "kit_toolchain": "platformio",
+  "kit_flash_methods": [
+    "usb-serial-web"
+  ],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    {
+      "type": "led-onboard"
+    }
+  ],
+  "kit_template_dir": "templates",
+  "kit_prompts": {
+    "codegen": "prompts/codegen-rules.txt"
+  }
+}

@@ -1,0 +1,6 @@
+Extract from the user's prompt:
+- assistant_name: the name of the assistant (default: "Lobster")
+- personality: brief personality description
+- channels: list of channels mentioned (telegram, discord, slack)
+- tools_enabled: list of tools to enable
+- features: special features requested

@@ -1,0 +1,38 @@
+{
+  "schema_version": "5",
+  "kit_name": "moms-bible",
+  "kit_family": "stamped",
+  "version": "1.1.2",
+  "display_name": "Mom's Bible",
+  "description": "A senior-friendly, mobile-first KJV Bible application with adjustable font sizes and offline support.",
+  "category": "lifestyle",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Mom's Bible",
+    "hint": "e.g. A Bible app for my grandmother who loves the Psalms",
+    "description": "Elegant, simple, and high-contrast Bible reader designed specifically for seniors."
+  },
+  "sample_prompts": [
+    "A senior-friendly Bible app with large text and high contrast",
+    "A mobile Bible reader focused on the KJV with bookmarks and notes",
+    "A simple Bible application for elderly users that works offline"
+  ],
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

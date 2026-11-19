@@ -1,0 +1,55 @@
+{
+  "schema_version": "5",
+  "kit_name": "sveltekit-app",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "SvelteKit App",
+  "description": "A full-stack SvelteKit web app styled with Tailwind CSS. Pages render ahead of the browser for fast first loads, and each file in the routes folder becomes a page.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "SvelteKit",
+    "hint": "e.g. a dashboard, a content site, a business app with SSR - built with Svelte",
+    "description": "SvelteKit + Tailwind. Server-side rendered Svelte app with file-based routing."
+  },
+  "sample_prompts": [
+    "A task management app with drag-and-drop kanban boards and team assignments",
+    "A fitness tracker with workout logs, progress charts, and weekly summaries",
+    "A restaurant menu builder with categories, items, and pricing"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "package.json",
+    "svelte.config.js",
+    "vite.config.ts",
+    "postcss.config.cjs",
+    "tailwind.config.cjs",
+    "src/app.html",
+    "src/app.css",
+    "src/routes/+layout.svelte",
+    "src/routes/+page.svelte"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

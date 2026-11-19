@@ -1,0 +1,53 @@
+{
+  "schema_version": "5",
+  "kit_name": "astro-app",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Astro App",
+  "description": "Static site built with Astro 4, React islands, and Tailwind CSS. Builds to static files served by nginx.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Astro",
+    "hint": "e.g. a content site, a blog, a portfolio - static-first with React islands for interactivity",
+    "description": "Astro 4 + React islands + Tailwind. Static-first with interactive React components where needed."
+  },
+  "sample_prompts": [
+    "A developer portfolio with project cards, skills section, and contact form",
+    "A product landing page with feature sections, testimonials, and pricing",
+    "A travel blog with destination cards, photo galleries, and trip timeline"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "package.json",
+    "astro.config.mjs",
+    "postcss.config.cjs",
+    "tailwind.config.cjs",
+    "nginx.conf",
+    "src/layouts/Layout.astro",
+    "src/pages/index.astro"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 300,
+    "mem_mb": 256
+  }
+}

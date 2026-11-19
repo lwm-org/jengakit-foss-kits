@@ -1,0 +1,10 @@
+Static website apps (app_category = "static-website"):
+- files MUST include: Dockerfile, nginx.conf, index.html
+- Additional pages as needed (about.html, contact.html, etc.)
+- Optional: css/style.css, js/main.js
+- base_image: nginx:alpine
+- port: 80 — NOT 5000 or 3000
+- No server-side code (no Python, no Node.js, no database)
+- CSS framework loaded via CDN link in <head>
+- All internal links use relative paths for portability
+- Responsive design with mobile hamburger menu

@@ -1,0 +1,52 @@
+{
+  "schema_version": "5",
+  "kit_name": "web-ui",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Web UI",
+  "description": "Single-page React app via Babel CDN, served by Flask. No npm build step.",
+  "category": "frontend",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "python3",
+  "kit_base_image": "python:3.11-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Web UI",
+    "hint": "e.g. a task manager with React, or a dashboard with charts",
+    "description": "React SPA via CDN \u2014 Flask serves a self-contained HTML page with React 18 + Babel. No build step."
+  },
+  "sample_prompts": [
+    "Build a task manager app with add, complete, and delete functionality",
+    "Create a weather dashboard that displays mock forecast data with charts",
+    "Make a personal bookmarks page with categories and search"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "app.py",
+    "requirements.txt",
+    "Dockerfile"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Build a single-page React web UI app served by Flask. The HTML page must be self-contained inside app.py as a Python string (use single triple-quotes), loading React 18, ReactDOM 18, and Babel standalone via CDN. No npm, no build step, no separate template files. The app must",
+  "estimate": {
+    "cpu_m": 200,
+    "mem_mb": 192
+  }
+}

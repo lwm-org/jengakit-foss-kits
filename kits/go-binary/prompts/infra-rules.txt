@@ -1,0 +1,5 @@
+Dockerfile for Go binary apps:
+- Use the same two-stage build as Go API apps:
+    FROM golang:1.22-alpine AS builder\nWORKDIR /app\nCOPY . .\nRUN go build -o main .\n\nFROM alpine:latest\nWORKDIR /app\nCOPY --from=builder /app/main .\nCMD ["./main"]
+- Do NOT EXPOSE any port
+- Do NOT use a web server CMD

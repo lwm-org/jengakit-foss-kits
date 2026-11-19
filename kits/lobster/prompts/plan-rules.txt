@@ -1,0 +1,8 @@
+PLAN RULES for lobster kit:
+
+1. The app is a Node.js personal AI assistant gateway.
+2. Core files required: server.js, lib/agent.js, lib/db.js, lib/channels.js, lib/tools.js, lib/cron.js, public/index.html, Dockerfile, package.json
+3. The assistant name and personality come from the user's prompt.
+4. Channel adapters (Telegram, Discord) are only initialized if their token env vars are set.
+5. The web dashboard must have: Chat tab, Memory tab, Logs tab, Doctor tab.
+6. All data persists in SQLite at /data/lobster.db.

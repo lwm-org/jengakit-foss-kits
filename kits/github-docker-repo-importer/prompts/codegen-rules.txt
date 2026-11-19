@@ -1,0 +1,72 @@
+github-docker-repo-importer apps:
+
+Dockerfile — generate EXACTLY this two-stage git clone pattern:
+
+  FROM alpine/git AS source
+  RUN git clone --depth=1 <EXACT_GITHUB_URL_FROM_PROMPT> /repo
+
+  FROM <INFERRED_BASE_IMAGE>
+  WORKDIR /app
+  COPY --from=source /repo /app
+  <INFERRED_INSTALL_STEP>
+  EXPOSE <DETECTED_PORT>
+  CMD <INFERRED_ENTRYPOINT_AS_JSON_ARRAY>
+
+Inference rules for base image and run command:
+  Node.js repos (name suggests Express/API/server, or common node project names):
+    FROM node:20-slim
+    RUN npm install --omit=dev
+    CMD ["node", "server.js"]   (or "index.js" if that is more likely)
+
+  Python repos (name suggests Flask/FastAPI/Django/ML):
+    FROM python:3.11-slim
+    RUN pip install --no-cache-dir -r requirements.txt
+    CMD ["python", "app.py"]
+
+  Hugo static sites (name/org suggests documentation, blog, or "the.cloud" style sites):
+    FROM hugomods/hugo:latest AS build
+    WORKDIR /src
+    COPY --from=source /repo /src
+    RUN hugo --minify
+    FROM nginx:alpine
+    COPY --from=build /src/public /usr/share/nginx/html
+    EXPOSE 80
+    CMD ["nginx", "-g", "daemon off;"]
+
+  Go repos (name suggests Go binary or API):
+    FROM golang:1.22-alpine AS builder
+    WORKDIR /app
+    COPY --from=source /repo /app
+    RUN go build -o main .
+    FROM alpine:latest
+    WORKDIR /app
+    COPY --from=builder /app/main .
+    EXPOSE <PORT>
+    CMD ["./main"]
+
+  Unknown / cannot determine:
+    FROM ubuntu:22.04
+    RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+    EXPOSE 8080
+    CMD ["sh", "-c", "echo 'Imported repo at /app — inspect and configure entrypoint' && sleep infinity"]
+
+MANDATORY rules:
+- The git clone URL on line 2 MUST be the exact URL extracted from the user prompt.
+  Do NOT use a placeholder, example URL, or abbreviated path.
+- Do NOT generate any application source files (no app.py, no server.js, no main.go).
+  Only generate: Dockerfile, provenance.json, README.md.
+- Do NOT use CMD ["python", "app.py"] unless the target repo is confirmed to be a Python app.
+
+provenance.json — generate exactly this structure:
+  {
+    "repo_url": "<EXACT_GITHUB_URL>",
+    "detected_port": <PORT_NUMBER>,
+    "inferred_stack": "<DETECTED_STACK>",
+    "import_time": "<ISO8601_TIMESTAMP>",
+    "status": "imported"
+  }
+
+README.md — one short paragraph:
+  State the app was imported from <URL> via git clone at Docker build time.
+  State the inferred technology stack and port.
+  Note that the source code is not stored locally — it is cloned fresh on each build.

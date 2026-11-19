@@ -1,0 +1,37 @@
+{
+  "schema_version": "5",
+  "kit_name": "github-docker-repo-importer",
+  "kit_family": "importer",
+  "version": "1.2.2",
+  "display_name": "GitHub Docker Importer",
+  "description": "Brings an app online straight from its GitHub repository, built from the repository's own source.",
+  "category": "importer",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_port": 8080,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "GitHub Import",
+    "hint": "e.g. deploy https://github.com/user/repo",
+    "description": "Clones a GitHub repository at Docker build time and runs it using inferred build steps."
+  },
+  "sample_prompts": [
+    "Deploy https://github.com/username/my-app (has Dockerfile)",
+    "Import a GitHub repo with Dockerfile into jengaKIT",
+    "Deploy a containerized app from GitHub"
+  ],
+  "estimate": {
+    "cpu_m": 500,
+    "mem_mb": 512
+  }
+}

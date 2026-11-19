@@ -1,0 +1,76 @@
+CRITICAL RULES for public/index.html generation (Tetris Puzzle):
+
+=== FILE STRUCTURE ===
+1. Generate ONLY public/index.html
+2. ALL game code in ONE inline <script> tag
+3. Include in <head>: socket.io CDN, audio.js, touch.js, engine.js
+3b. NEVER use <script type="text/babel"> — use plain <script> only. No JSX, no Babel. Pure JavaScript.
+
+=== ENGINE.JS API (already global — DO NOT recreate) ===
+INPUT: LEFT(), RIGHT(), UP(), DOWN(), ACTION() — keyboard+touch
+NETWORKING: GameNet.joinRoom(), GameNet.startSolo(), GameNet.sendUpdate(), GameNet.sendEvent()
+GAME STATE: GameState.playerName, GameState.difficulty, GameState.speedMultiplier
+LOBBY: GameLobby.showWaitingRoom(null, {playerName, roomId, onStart})
+AUDIO: GameAudio.play('land'|'collect'|'levelup'|'lose'|'explode'), GameAudio.startMusic()
+TOUCH: TouchControls.init()
+LEADERBOARD: fetch('/api/leaderboard'), POST {name, score, game} to '/api/leaderboard'
+
+=== TETRIS GAME RULES ===
+4. 10-column x 20-row grid, cell size 30px
+5. 7 tetrominoes: I(cyan), O(yellow), T(purple), S(green), Z(red), J(blue), L(orange)
+6. Each block: gradient fill + white highlight on top edge + shadowBlur glow
+7. Rotation on UP() or ACTION() — with wall kick
+8. LEFT()/RIGHT() to move horizontally
+9. DOWN() for soft drop (1 point per cell), hold 500ms for hard drop
+10. Line clear scoring: 1 line=100, 2=300, 3=500, 4(Tetris)=800
+11. Speed increases every 10 lines (reduce drop interval by 80ms, min 100ms)
+12. Ghost piece: translucent outline at landing position
+13. Next piece preview: show next 3 pieces
+14. Hold piece: press UP twice or a dedicated key to hold current piece
+
+=== LOBBY (REQUIRED) ===
+15. Player name input
+16. Difficulty selector: Easy / Medium / Hard
+17. Solo Play button: GameNet.startSolo(playerName); initGame()
+18. 1v1 Multiplayer button: GameNet.joinRoom('tetris-1v1', playerName);
+    GameLobby.showWaitingRoom(null, {playerName, roomId, onStart: initGame})
+19. Leaderboard panel: fetch('/api/leaderboard')
+
+=== DIFFICULTY ===
+20. Easy: slow drop (1200ms), no garbage rows at start
+21. Medium: moderate drop (1000ms), 2 pre-filled garbage rows
+22. Hard: fast drop (600ms), 4 pre-filled garbage rows, faster speed ramp
+
+=== MULTIPLAYER (1v1) ===
+23. Two boards side by side (or stacked on mobile)
+24. Cleared lines send garbage rows to opponent:
+    GameNet.sendEvent('garbage', {lines: clearedCount})
+25. Receive garbage: GameNet.onEvent(function(d){ if(d.type==='garbage') addGarbage(d.data.lines) })
+26. Garbage rows: gray blocks with one random gap per row, added at bottom
+27. Show opponent's board in mini view (or side panel)
+28. Show both player names: GameState.playerName and GameNet.getPlayerName(opponentId)
+
+=== VISUALS ===
+29. Each block type: distinct color with gradient, white highlight, shadowBlur glow
+30. Line clear animation: flash white, then collapse rows
+31. Hard drop: brief trail effect
+32. Level up: flash effect, GameAudio.play('levelup')
+33. Tetris (4 lines): screen flash, GameAudio.play('explode'), score popup
+
+=== AUDIO ===
+34. GameAudio.play('land') — piece locks in place
+35. GameAudio.play('collect') — line clear
+36. GameAudio.play('explode') — Tetris (4 lines)
+37. GameAudio.play('levelup') — speed increase
+38. GameAudio.play('lose') — game over
+39. GameAudio.play('swoosh') — hard drop
+40. GameAudio.startMusic() — background music
+
+=== GAME OVER ===
+41. POST {name: GameState.playerName, score, game: 'Tetris'} to /api/leaderboard
+42. Show overlay with score, lines, level, and top 10 leaderboard
+43. Restart button resets game
+
+=== PLAYER NAMES ===
+44. Show GameState.playerName in HUD
+45. In 1v1: show both names above respective boards

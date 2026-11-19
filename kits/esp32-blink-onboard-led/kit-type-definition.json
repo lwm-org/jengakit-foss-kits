@@ -1,0 +1,35 @@
+{
+  "schema_version": "5",
+  "kit_name": "esp32-blink-onboard-led",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "ESP32 onboard LED blinker",
+  "description": "First ESP32 kit — blinks the DevKit's GPIO 2 LED at an interval inferred from the user's prompt. First-flash over USB via Web Serial; subsequent flashes use ESPHome OTA over WiFi.",
+  "category": "embedded",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.5.4",
+  "capabilities": ["embedded", "led-onboard", "blink", "ota"],
+  "ui": {
+    "pill_label": "ESP32 blink",
+    "hint": "e.g. blink the onboard LED every 250ms, fast SOS pulse, heartbeat once a second",
+    "description": "Generates an ESPHome YAML config + compiles via the ESPHome sidecar (requires JENGAKIT_ESPHOME_ENABLED=true). First flash over USB; subsequent flashes use the device's OTA endpoint."
+  },
+  "sample_prompts": [
+    "Blink the onboard LED every 250ms",
+    "Slow heartbeat pulse on the onboard LED",
+    "SOS pattern — three short, three long, three short, repeating"
+  ],
+  "kit_target": {
+    "platform": "esp32-devkit-v1",
+    "variant": "esp32dev"
+  },
+  "kit_toolchain": "esphome",
+  "kit_flash_methods": ["usb-serial-web", "ota-esphome"],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    { "type": "led-onboard", "pin": "GPIO2" }
+  ],
+  "kit_required_libraries": [],
+  "kit_required_env": [],
+  "kit_template_dir": "templates"
+}

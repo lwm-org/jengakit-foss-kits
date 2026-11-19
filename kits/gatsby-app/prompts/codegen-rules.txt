@@ -1,0 +1,32 @@
+CRITICAL: Generate ONLY src/pages/index.tsx — nothing else.
+
+This is a Gatsby 5 app with React. Do NOT use Next.js imports (no next/link, next/router, next/image, no 'use client' directive).
+
+DO NOT generate: package.json, Dockerfile, gatsby-config.ts, tsconfig.json, global.css, tailwind.config, postcss.config, or any config file.
+
+=== src/pages/index.tsx RULES ===
+
+Structure:
+- One default export: export default function IndexPage()
+- Export Head component: export const Head: HeadFC = () => <title>Page Title</title>
+- Import global.css: import "../styles/global.css"
+- ALL application logic in this single component
+- Use React.useState for state management
+
+Imports (all pre-installed):
+- import * as React from 'react';
+- import type { HeadFC } from 'gatsby';
+- import { IconName } from 'lucide-react';
+- import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
+Layout:
+- Left sidebar (w-56) with business name and navigation items
+- Main content area with page title and content
+- Tailwind CSS classes for ALL styling
+
+Content:
+- Stat cards (3-4 per section)
+- Data tables with 8-15 realistic sample rows
+- Charts using Recharts with sample data
+- Forms with inputs, selects, action buttons
+- Theme colors via Tailwind utility classes

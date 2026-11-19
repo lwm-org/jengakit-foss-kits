@@ -1,0 +1,9 @@
+Streamlit apps:
+- import streamlit as st at the top
+- Use st.title(), st.write(), st.sidebar, st.columns(), st.metric(), st.dataframe(),
+  st.plotly_chart() / st.altair_chart() / st.line_chart() as appropriate
+- Use only mock/hardcoded data — no pd.read_csv() from external URLs, no API calls
+- requirements.txt must list streamlit>=1.32.0 and any data/chart libraries used
+  (pandas, plotly, altair, etc.) — do NOT include Flask
+- Do NOT include app.run() or any Flask boilerplate
+- Keep the app.py concise — fewer lines = fewer JSON encoding errors

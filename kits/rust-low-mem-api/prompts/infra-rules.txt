@@ -1,0 +1,1 @@
+Use a multi-stage Docker build. Build in 'rust:1.100-alpine' to ensure static linking with musl. Use 'alpine:latest' for the final runtime image to keep the image size under 20MB. Strip symbols from the final binary.

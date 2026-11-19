@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for a Go HTTP API or Go web server, set framework to "go", runtime to "go", app_category to "go-api"
+
+## normalized_description note
+- For go-api apps: specify it must use only net/http and encoding/json from stdlib (no external dependencies), listen on :5000, return JSON from GET /, and use a multi-stage Docker build (golang:1.22-alpine to build, alpine:latest to run)

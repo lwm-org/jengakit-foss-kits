@@ -1,0 +1,7 @@
+Go apps (HTTP API):
+- Write a single main.go file with package main
+- Use only stdlib packages: net/http, encoding/json, log (no external dependencies)
+- Listen on port 5000: log.Fatal(http.ListenAndServe(":5000", nil))
+- GET / handler must set Content-Type application/json and encode a JSON response
+- go.mod must contain exactly: module app\n\ngo 1.22
+- Do NOT generate a go.sum file — it is not needed when there are no external dependencies

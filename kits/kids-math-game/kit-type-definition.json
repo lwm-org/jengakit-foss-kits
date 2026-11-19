@@ -1,0 +1,48 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-math-game",
+  "kit_family": "codegen",
+  "version": "1.1.1",
+  "display_name": "Math Quest",
+  "description": "A fun math quiz game with levels, timers, and star rewards. Kids solve addition, subtraction, and multiplication problems",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "dockerfile-only",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Math Quest",
+    "hint": "e.g. a times tables quiz with star rewards, a math race with difficulty levels",
+    "description": "A fun math quiz game with levels, timers, and star rewards. Kids solve addition, subtraction, and multiplication problems"
+  },
+  "sample_prompts": [
+    "A math quiz for 8-year-olds with cartoon animals and star rewards",
+    "A multiplication practice game with levels and a leaderboard",
+    "An addition and subtraction challenge with timed rounds"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "kit_prompt_prefix": "Generate a single index.html file for a kids app. Static HTML only \u2014 no backend, no server, no Python, no Node.js. Use Tailwind CSS CDN and inline JavaScript. ",
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

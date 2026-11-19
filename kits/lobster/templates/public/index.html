@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lobster Gateway</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<style>
+  :root { --accent:#f97316; }
+  body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+  .tab-active { border-bottom: 2px solid var(--accent); color: var(--accent); }
+  .msg-user { background:#f0f9ff; border-left:3px solid #0ea5e9; }
+  .msg-asst { background:#fafafa; border-left:3px solid var(--accent); }
+  .msg-err  { background:#fef2f2; border-left:3px solid #ef4444; color:#dc2626; }
+  #chat-box { scroll-behavior:smooth; }
+  .chip-ok   { background:#dcfce7; color:#166534; }
+  .chip-warn { background:#fef9c3; color:#854d0e; }
+  .chip-err  { background:#fee2e2; color:#991b1b; }
+  pre { white-space:pre-wrap; word-break:break-word; }
+  .log-info  { color:#0369a1; }
+  .log-warn  { color:#d97706; }
+  .log-error { color:#dc2626; }
+  textarea { resize:vertical; }
+  /* Settings sidebar */
+  #settings-sidebar button {
+    display:block; width:100%; text-align:left; padding:0.6rem 1rem;
+    font-size:0.8125rem; color:#6b7280; background:none; border:none;
+    cursor:pointer; border-left:3px solid transparent; transition:background 0.15s;
+  }
+  #settings-sidebar button:hover { background:rgba(0,0,0,0.04); color:#111827; }
+  #settings-sidebar button.active {
+    background:#fff7ed; color:#c2410c; font-weight:600; border-left-color:#f97316;
+  }
+  /* Password change modal */
+  #pw-modal {
+    display:none; position:fixed; inset:0; z-index:100;
+    background:rgba(0,0,0,0.5); align-items:center; justify-content:center;
+  }
+  #pw-modal.show { display:flex; }
+  /* Tunnel badges */
+  .tunnel-badge-cf { display:inline-block; background:#dbeafe; color:#1d4ed8; font-size:0.7rem; font-weight:600; padding:2px 8px; border-radius:99px; }
+  .tunnel-badge-ts { display:inline-block; background:#ede9fe; color:#6d28d9; font-size:0.7rem; font-weight:600; padding:2px 8px; border-radius:99px; }
+  .tunnel-url-box  { font-family:ui-monospace,monospace; font-size:0.78rem; background:#1e2530; padding:0.5rem 0.75rem; border-radius:6px; word-break:break-all; color:#f9fafb; }
+  #login-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+  }
+  #login-overlay.show { display: flex; }
+  .ai-md p{margin:0 0 8px}.ai-md p:last-child{margin:0}.ai-md ul,.ai-md ol{margin:4px 0 8px 16px;padding:0}.ai-md li{margin:2px 0}.ai-md code{background:rgba(0,0,0,.08);padding:1px 4px;border-radius:3px;font-size:.85em}.ai-md pre{background:rgba(0,0,0,.06);padding:8px 12px;border-radius:6px;overflow-x:auto;margin:8px 0}.ai-md pre code{background:none;padding:0}.ai-md strong{font-weight:600}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- ── Login overlay ────────────────────────────────────────────────────────── -->
+<div id="login-overlay">
+  <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm mx-4">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-3xl">🦞</span>
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">Lobster Gateway</h2>
+        <p class="text-sm text-gray-500">Enter dashboard password to continue</p>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem">
+      <label style="display:block;font-size:0.8rem;color:#6b7280;margin-bottom:0.25rem">Username <span style="opacity:0.6">(leave blank for admin)</span></label>
+      <input id="login-username" type="text" placeholder="username (optional)"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+        autocomplete="username"
+        onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()"/>
+    </div>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+      <input id="login-password" type="password" placeholder="••••••••"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+        onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <button onclick="doLogin()"
+      class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium text-sm">
+      Sign in
+    </button>
+    <p id="login-error" class="mt-3 text-sm text-red-500 text-center hidden"></p>
+    <p class="mt-2 text-xs text-gray-400 text-center">Default password: <code class="font-mono">lobster</code></p>
+  </div>
+</div>
+
+<!-- ── Header ──────────────────────────────────────────────────────────────── -->
+<header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
+  <span class="text-2xl">🦞</span>
+  <h1 id="hdr-name" class="text-lg font-bold text-gray-900">Lobster Gateway</h1>
+  <div class="flex gap-2 ml-2" id="status-chips"></div>
+  <div class="ml-auto flex items-center gap-3 text-sm text-gray-500">
+    <span id="hdr-model" class="hidden bg-gray-100 px-2 py-0.5 rounded text-xs font-mono"></span>
+    <span id="hdr-uptime" class="text-xs text-gray-400"></span>
+    <button onclick="doLogout()" class="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 border border-gray-200 rounded">Sign out</button>
+  </div>
+</header>
+
+<!-- ── Tabs ───────────────────────────────────────────────────────────────── -->
+<nav class="bg-white border-b border-gray-200 px-6">
+  <div class="flex gap-6 text-sm font-medium text-gray-500 -mb-px">
+    <button onclick="showTab('chat')"   id="tab-chat"   class="py-3 px-1 tab-active">💬 Chat</button>
+    <button onclick="showTab('memory')" id="tab-memory" class="py-3 px-1">🧠 Memory</button>
+    <button onclick="showTab('logs')"   id="tab-logs"   class="py-3 px-1">📋 Logs</button>
+    <button onclick="showTab('doctor')" id="tab-doctor" class="py-3 px-1">🩺 Doctor</button>
+    <button onclick="showTab('setup')"  id="tab-setup"  class="py-3 px-1">⚙️ Settings</button>
+  </div>
+</nav>
+
+<main class="max-w-5xl mx-auto p-6">
+
+<!-- ── CHAT ───────────────────────────────────────────────────────────────── -->
+<div id="pane-chat">
+  <div class="flex gap-3 mb-4">
+    <div class="flex-1">
+      <label class="text-xs text-gray-500 mb-1 block">Session</label>
+      <input id="session-id" value="default" placeholder="session name"
+        class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+    </div>
+    <div class="flex items-end">
+      <button onclick="clearSession()"
+        class="text-sm px-3 py-1.5 border border-gray-300 rounded text-gray-600 hover:bg-gray-100">
+        Clear session
+      </button>
+    </div>
+  </div>
+
+  <div id="chat-box" class="bg-white rounded-lg border border-gray-200 p-4 h-96 overflow-y-auto flex flex-col gap-3 mb-4">
+    <div class="text-center text-gray-400 text-sm mt-auto">
+      Start a conversation below ↓
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <textarea id="chat-input" rows="2" placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
+      class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+      onkeydown="handleKey(event)"></textarea>
+    <button onclick="sendChat()"
+      class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-medium text-sm">
+      Send
+    </button>
+  </div>
+  <p class="text-xs text-gray-400 mt-2" id="chat-status"></p>
+</div>
+
+<!-- ── MEMORY ──────────────────────────────────────────────────────────────── -->
+<div id="pane-memory" class="hidden">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-base font-semibold text-gray-700">Long-term Memory</h2>
+    <span class="text-xs text-gray-400">Persists across turns within this session</span>
+  </div>
+
+  <div class="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+    <p class="text-sm font-medium text-gray-700 mb-3">Add a memory entry</p>
+    <div class="flex gap-3">
+      <input id="mem-key" placeholder="key  (e.g. user_name)" class="w-40 border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+      <input id="mem-val" placeholder="value  (e.g. Alice)" class="flex-1 border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+      <button onclick="addMemory()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1.5 rounded text-sm">Add</button>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-4 py-2 font-medium text-gray-600">Key</th>
+          <th class="text-left px-4 py-2 font-medium text-gray-600">Value</th>
+          <th class="text-left px-4 py-2 font-medium text-gray-600">Stored</th>
+          <th class="px-4 py-2"></th>
+        </tr>
+      </thead>
+      <tbody id="memory-tbody">
+        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400">No memories yet</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── LOGS ────────────────────────────────────────────────────────────────── -->
+<div id="pane-logs" class="hidden">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-base font-semibold text-gray-700">Activity Logs</h2>
+    <div class="flex gap-3 items-center">
+      <span id="log-count" class="text-xs text-gray-400"></span>
+      <button onclick="loadLogs()" class="text-sm px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-100">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <table class="w-full text-xs font-mono">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="text-left px-3 py-2 font-medium text-gray-600 w-40">Time</th>
+          <th class="text-left px-3 py-2 font-medium text-gray-600 w-16">Level</th>
+          <th class="text-left px-3 py-2 font-medium text-gray-600">Message</th>
+        </tr>
+      </thead>
+      <tbody id="logs-tbody">
+        <tr><td colspan="3" class="px-4 py-6 text-center text-gray-400 font-sans text-sm">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── DOCTOR ──────────────────────────────────────────────────────────────── -->
+<div id="pane-doctor" class="hidden">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-base font-semibold text-gray-700">System Health</h2>
+    <button id="doctor-run-btn" onclick="loadDoctor()" class="text-sm px-3 py-1 border border-gray-300 rounded text-gray-600 hover:bg-gray-100">↻ Run check</button>
+  </div>
+  <div id="doctor-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white rounded-lg border border-gray-200 p-4 text-center text-gray-400">Running check…</div>
+  </div>
+</div>
+
+<!-- ── SETUP / SETTINGS ────────────────────────────────────────────────────── -->
+<div id="pane-setup" class="hidden">
+  <div style="display:flex;gap:0;background:#fff;border-radius:8px;border:1px solid #e5e7eb;overflow:hidden;min-height:600px">
+    <!-- Sidebar -->
+    <nav id="settings-sidebar" style="width:180px;flex-shrink:0;border-right:1px solid #e5e7eb;background:#f9fafb;padding:0.5rem 0;display:flex;flex-direction:column">
+      <button data-panel="llm"      onclick="showSettingsPanel('llm')">🤖 LLM Provider</button>
+      <button data-panel="ssh"      onclick="showSettingsPanel('ssh')">🔑 SSH</button>
+      <button data-panel="tunnel"   onclick="showSettingsPanel('tunnel')">🌐 HTTPS Tunnel</button>
+      <button data-panel="telegram" onclick="showSettingsPanel('telegram')">✈️ Telegram</button>
+      <button data-panel="discord"  onclick="showSettingsPanel('discord')">🎮 Discord</button>
+      <button data-panel="whatsapp" onclick="showSettingsPanel('whatsapp')">💬 WhatsApp</button>
+      <button data-panel="signal"   onclick="showSettingsPanel('signal')">📡 Signal</button>
+      <button data-panel="users"    onclick="showSettingsPanel('users')">👥 Users</button>
+    </nav>
+    <!-- Content panels -->
+    <div style="flex:1;padding:1.5rem;overflow-y:auto">
+
+      <!-- LLM Provider panel -->
+      <div id="settings-panel-llm" class="settings-panel">
+        <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600;color:#111827">🤖 LLM Provider</h3>
+
+        <!-- Runtime LLM Override -->
+        <div id="runtime-llm-current" class="mb-4 text-sm text-gray-500 italic" style="margin-bottom:1rem;font-size:0.875rem;color:#6b7280;font-style:italic">Loading…</div>
+        <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden">
+          <div style="padding:1rem">
+            <p style="font-size:0.8rem;color:#6b7280;margin:0 0 0.75rem">Override the LLM used for chat without redeploying. Stored in the pod database — survives restarts.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+              <div>
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem">Provider</label>
+                <select id="runtime-llm-provider" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                  <option value="ollama">Ollama</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem">Ollama URL</label>
+                <div style="display:flex;gap:0.5rem">
+                  <input id="runtime-llm-url" type="text" placeholder="http://192.168.1.50:11434" class="flex-1 border border-gray-300 rounded px-3 py-1.5 text-sm">
+                  <button onclick="fetchRuntimeModels()" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50 whitespace-nowrap">Fetch Models</button>
+                </div>
+              </div>
+              <div style="grid-column:span 2">
+                <label style="display:block;font-size:0.75rem;font-weight:500;color:#374151;margin-bottom:0.25rem">Model</label>
+                <select id="runtime-llm-model" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                  <option value="">— fetch models first —</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem">
+              <button onclick="saveRuntimeLlm()" class="px-4 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600">Save Override</button>
+              <button onclick="clearRuntimeLlm()" class="px-4 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">Clear (use deploy default)</button>
+              <span id="runtime-llm-msg" class="text-sm ml-1"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SSH Autonomy Mode -->
+        <div style="border-top:1px solid #e5e7eb;margin-top:1.5rem;padding-top:1.5rem">
+          <h4 style="margin:0 0 0.5rem;font-size:0.875rem;font-weight:600;color:#111827">SSH Autonomy Mode</h4>
+          <p style="font-size:0.8rem;color:#6b7280;margin:0 0 0.75rem">Controls how the assistant handles SSH command execution.</p>
+          <select id="autonomy-select" class="border border-gray-300 rounded px-3 py-1.5 text-sm" style="min-width:320px">
+            <option value="ReadOnly">ReadOnly — describe only, never execute</option>
+            <option value="Supervised">Supervised — announce intent, then execute (default)</option>
+            <option value="Full">Full — execute immediately without announcing</option>
+          </select>
+          <div style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem">
+            <button onclick="saveAutonomy()" class="px-4 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600">Save</button>
+            <span id="autonomy-msg" style="font-size:0.8rem;color:#16a34a"></span>
+          </div>
+        </div>
+
+        <!-- Admin Password -->
+        <div style="border-top:1px solid #e5e7eb;margin-top:1.5rem;padding-top:1.5rem">
+          <h4 style="margin:0 0 0.25rem;font-size:0.875rem;font-weight:600;color:#111827">Admin Password</h4>
+          <p style="font-size:0.8rem;color:#6b7280;margin:0 0 0.75rem">Changes take effect immediately. The deploy-time value is the initial default.</p>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;max-width:320px">
+            <input id="admin-pw-input" type="password" placeholder="New password" class="border border-gray-300 rounded px-3 py-1.5 text-sm w-full">
+            <input id="admin-pw-confirm" type="password" placeholder="Confirm new password" class="border border-gray-300 rounded px-3 py-1.5 text-sm w-full">
+            <button onclick="changeAdminPassword()" class="px-4 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600" style="align-self:flex-start">Update Password</button>
+            <span id="admin-pw-msg" style="font-size:0.8rem"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SSH panel -->
+      <div id="settings-panel-ssh" class="settings-panel hidden">
+        <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600;color:#111827">🔑 SSH</h3>
+
+        <!-- Pod SSH Public Key -->
+        <div style="margin-bottom:1.5rem">
+          <h4 style="font-size:0.875rem;font-weight:600;color:#111827;margin:0 0 0.25rem">Pod SSH Public Key</h4>
+          <p style="font-size:0.8rem;color:#6b7280;margin:0 0 0.75rem">This pod has its own ED25519 keypair. Add the public key below to <code style="font-size:0.75rem;background:#f3f4f6;padding:1px 4px;border-radius:3px">~/.ssh/authorized_keys</code> on any server you want the assistant to access.</p>
+          <div id="ssh-pubkey-box" class="mb-3 text-sm text-gray-400 italic">Loading…</div>
+          <button onclick="copySshPubkey()" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">Copy public key</button>
+          <span id="ssh-pubkey-copy-msg" class="text-sm ml-2"></span>
+        </div>
+
+        <!-- SSH Hosts -->
+        <div>
+          <h4 style="font-size:0.875rem;font-weight:600;color:#111827;margin:0 0 0.25rem">🖥️ SSH Hosts</h4>
+          <p style="font-size:0.8rem;color:#6b7280;margin:0 0 0.75rem">Add hosts the assistant can SSH into. Reference them by label in the Chat tab — e.g. <em>"What is the disk usage on homelab?"</em></p>
+          <div id="ssh-hosts-list" class="mb-4 text-sm text-gray-500">Loading…</div>
+          <details class="border border-gray-200 rounded-lg">
+            <summary class="cursor-pointer px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">+ Add SSH Host</summary>
+            <div class="p-4 border-t border-gray-100">
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Label</label>
+                  <input id="ssh-host-label" type="text" placeholder="e.g. homelab" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Hostname / IP</label>
+                  <input id="ssh-host-hostname" type="text" placeholder="192.168.1.51" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Port</label>
+                  <input id="ssh-host-port" type="number" value="22" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Username</label>
+                  <input id="ssh-host-user" type="text" value="root" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="addSshHost()" class="px-4 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600">Save Host</button>
+                <span id="ssh-host-msg" class="text-sm"></span>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- HTTPS Tunnel panel -->
+      <div id="settings-panel-tunnel" class="settings-panel hidden">
+        <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600;color:#111827">🌐 HTTPS Tunnel</h3>
+        <div id="tunnel-status-area">Loading…</div>
+        <button onclick="loadTunnelStatus()" style="margin-top:1rem" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">↻ Refresh status</button>
+        <p style="font-size:0.75rem;color:#6b7280;margin-top:1rem">
+          Tunnel type and credentials are set at deploy time. To switch providers or disable the tunnel, redeploy with new values.
+        </p>
+      </div>
+
+      <!-- Telegram panel -->
+      <div id="settings-panel-telegram" class="settings-panel hidden">
+        <div class="telegram-status-chip" style="margin-bottom:0.5rem"></div>
+        <h3 style="margin:0 0 0.5rem;font-size:1rem;font-weight:600;color:#111827">✈️ Telegram Integration</h3>
+        <div id="telegram-status-chip"></div>
+        <p style="font-size:0.8rem;color:#6b7280;margin:0.75rem 0">
+          Telegram bot token is set at deploy time. To change it, redeploy with a new token.
+        </p>
+        <div style="margin-top:1rem">
+          <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:0.4rem">Webhook URL</div>
+          <div class="tunnel-url-box" id="tg-webhook-url"></div>
+          <button onclick="copyText(document.getElementById('tg-webhook-url').textContent)" style="margin-top:0.4rem" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">Copy</button>
+        </div>
+        <div style="margin-top:1rem">
+          <div style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.4rem">Register webhook</div>
+          <pre id="tg-curl-snippet" style="background:#0d1117;color:#d1fae5;font-size:0.7rem;padding:0.75rem;border-radius:6px;overflow-x:auto;white-space:pre-wrap"></pre>
+          <button onclick="copyText(document.getElementById('tg-curl-snippet').textContent)" style="margin-top:0.4rem" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">Copy</button>
+        </div>
+      </div>
+
+      <!-- Discord panel -->
+      <div id="settings-panel-discord" class="settings-panel hidden">
+        <div class="discord-status-chip" style="margin-bottom:0.5rem"></div>
+        <h3 style="margin:0 0 0.5rem;font-size:1rem;font-weight:600;color:#111827">🎮 Discord Integration</h3>
+        <div class="discord-status-chip" style="margin-bottom:0.5rem"></div>
+        <p style="font-size:0.8rem;color:#6b7280;margin:0.75rem 0">
+          Discord bot token is set at deploy time. To change it, redeploy with a new token.
+        </p>
+        <details style="margin-top:1rem;border:1px solid #e5e7eb;border-radius:6px">
+          <summary style="padding:0.6rem 0.75rem;cursor:pointer;font-size:0.8rem;font-weight:600">Setup instructions</summary>
+          <div style="padding:0.75rem;font-size:0.8rem;color:#4b5563">
+            <ol style="margin:0;padding-left:1.25rem;line-height:1.8">
+              <li>Create a Discord application at discord.com/developers</li>
+              <li>Add a Bot, copy the Bot Token</li>
+              <li>Enable Message Content Intent under Privileged Gateway Intents</li>
+              <li>Redeploy with the token as <code>LOBSTER_DISCORD_BOT_TOKEN</code></li>
+            </ol>
+          </div>
+        </details>
+      </div>
+
+      <!-- WhatsApp panel -->
+      <div id="settings-panel-whatsapp" class="settings-panel hidden">
+        <div class="wa-status-chip" style="margin-bottom:0.5rem"></div>
+        <h3 style="margin:0 0 0.5rem;font-size:1rem;font-weight:600;color:#111827">💬 WhatsApp Integration</h3>
+        <div class="wa-status-chip" style="margin-bottom:0.5rem"></div>
+        <p style="font-size:0.8rem;color:#6b7280;margin:0.75rem 0">
+          WhatsApp credentials are set at deploy time. To change them, redeploy with new values.
+        </p>
+        <div id="wa-phone-id-row" style="display:none;margin-top:0.75rem">
+          <div style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.25rem">Phone Number ID</div>
+          <code id="wa-phone-id" style="font-size:0.8rem"></code>
+        </div>
+        <div style="margin-top:1rem">
+          <div style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.4rem">Webhook URL</div>
+          <div class="tunnel-url-box" id="wa-webhook-url"></div>
+          <button onclick="copyText(document.getElementById('wa-webhook-url').textContent)" style="margin-top:0.4rem" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">Copy</button>
+          <p style="font-size:0.75rem;color:#6b7280;margin-top:0.4rem">⚠️ WhatsApp requires a public HTTPS URL. Use the Tunnel panel to set one up.</p>
+        </div>
+      </div>
+
+      <!-- Signal panel -->
+      <div id="settings-panel-signal" class="settings-panel hidden">
+        <div class="signal-status-chip" style="margin-bottom:0.5rem"></div>
+        <h3 style="margin:0 0 0.5rem;font-size:1rem;font-weight:600;color:#111827">📡 Signal Integration</h3>
+        <div class="signal-status-chip" style="margin-bottom:0.5rem"></div>
+        <p style="font-size:0.8rem;color:#6b7280;margin:0.75rem 0">
+          Signal credentials are set at deploy time. To change them, redeploy with new values.
+        </p>
+        <div id="signal-info-rows" style="display:none;margin-top:0.75rem">
+          <div style="margin-bottom:0.5rem">
+            <span style="font-size:0.75rem;font-weight:600;color:#6b7280">API URL: </span>
+            <code id="signal-api-url-display" style="font-size:0.8rem"></code>
+          </div>
+          <div>
+            <span style="font-size:0.75rem;font-weight:600;color:#6b7280">Number: </span>
+            <code id="signal-number-display" style="font-size:0.8rem"></code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users panel -->
+      <div id="settings-panel-users" class="settings-panel hidden">
+        <h3 style="margin:0 0 0.25rem;font-size:1rem;font-weight:600;color:#111827">👥 User Accounts</h3>
+        <p style="font-size:0.8rem;color:#6b7280;margin:0 0 1rem">
+          Separate from the admin account. Admin always logs in with no username using the deploy-time password (or the runtime override in LLM Provider → Admin Password).
+        </p>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:1rem">
+          <table style="width:100%;border-collapse:collapse;font-size:0.8125rem">
+            <thead>
+              <tr style="border-bottom:1px solid #e5e7eb">
+                <th style="padding:0.5rem 1rem;text-align:left;font-weight:600;color:#6b7280;font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Username</th>
+                <th style="padding:0.5rem 1rem;text-align:left;font-weight:600;color:#6b7280;font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Created</th>
+                <th style="padding:0.5rem 1rem;text-align:left;font-weight:600;color:#6b7280;font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+        <details style="border:1px solid #e5e7eb;border-radius:8px">
+          <summary style="padding:0.6rem 1rem;cursor:pointer;font-size:0.8125rem;font-weight:600">+ Add User</summary>
+          <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem;max-width:300px">
+            <input id="new-user-username" type="text" placeholder="Username" class="border border-gray-300 rounded px-3 py-1.5 text-sm w-full">
+            <input id="new-user-password" type="password" placeholder="Password (min 6 chars)" class="border border-gray-300 rounded px-3 py-1.5 text-sm w-full">
+            <button onclick="addUser()" class="px-4 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600" style="align-self:flex-start">Add User</button>
+            <span id="add-user-msg" style="font-size:0.8rem"></span>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ── Password modal ───────────────────────────────────────────────────────── -->
+<div id="pw-modal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1.5rem;width:100%;max-width:360px;margin:1rem">
+    <h3 style="margin:0 0 0.25rem;font-size:1rem;font-weight:600;color:#111827">Change Password</h3>
+    <p style="font-size:0.8rem;color:#6b7280;margin:0 0 1rem">User: <strong id="pw-modal-username"></strong></p>
+    <input id="pw-modal-input" type="password" placeholder="New password"
+      style="width:100%;box-sizing:border-box;margin-bottom:0.75rem;border:1px solid #d1d5db;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.875rem"
+      class="focus:outline-none focus:ring-2 focus:ring-orange-400">
+    <div style="display:flex;gap:0.5rem">
+      <button onclick="saveUserPassword()" class="px-4 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600">Save</button>
+      <button onclick="closePwModal()" class="px-4 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
+    </div>
+    <div id="pw-modal-msg" style="margin-top:0.5rem;font-size:0.8rem;color:#ef4444"></div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+let config = {};
+let sending = false;
+
+// ── Auth ───────────────────────────────────────────────────────────────────────
+function showLogin() {
+  document.getElementById('login-overlay').classList.add('show');
+  document.getElementById('login-password').focus();
+}
+
+function hideLogin() {
+  document.getElementById('login-overlay').classList.remove('show');
+  document.getElementById('login-error').classList.add('hidden');
+  document.getElementById('login-password').value = '';
+  const unEl = document.getElementById('login-username');
+  if (unEl) unEl.value = '';
+}
+
+async function doLogin() {
+  const username = (document.getElementById('login-username').value || '').trim();
+  const pw  = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+  err.classList.add('hidden');
+  const body = { password: pw };
+  if (username) body.username = username;
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    if (d.ok) {
+      hideLogin();
+      init();
+    } else {
+      err.textContent = 'Invalid credentials';
+      err.classList.remove('hidden');
+      document.getElementById('login-password').select();
+    }
+  } catch (e) {
+    err.textContent = 'Error: ' + e.message;
+    err.classList.remove('hidden');
+  }
+}
+
+async function doLogout() {
+  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  window.location.reload();
+}
+
+// Intercept 401 from any API response
+function handleApiResponse(res) {
+  if (res.status === 401) { showLogin(); return null; }
+  return res;
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────────────
+function showTab(name) {
+  ['chat','memory','logs','doctor','setup'].forEach(t => {
+    document.getElementById(`pane-${t}`).classList.toggle('hidden', t !== name);
+    document.getElementById(`tab-${t}`).classList.toggle('tab-active', t === name);
+  });
+  if (name === 'memory') loadMemory();
+  if (name === 'logs')   loadLogs();
+  if (name === 'doctor') loadDoctor();
+  if (name === 'setup')  { showSettingsPanel('llm'); }
+}
+
+// ── Format timestamp ───────────────────────────────────────────────────────────
+function relTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleTimeString();
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────────
+async function loadConfig() {
+  try {
+    const raw = await fetch('/api/config');
+    if (!handleApiResponse(raw)) return;
+    config = await raw.json();
+    document.getElementById('hdr-name').textContent = `${config.assistant_name} Gateway`;
+    document.title = config.assistant_name + ' Gateway';
+
+    const chips = document.getElementById('status-chips');
+    chips.innerHTML = '';
+    const llmChip = document.createElement('span');
+    llmChip.className = `text-xs px-2 py-0.5 rounded font-medium ${config.llm_configured ? 'chip-ok' : 'chip-warn'}`;
+    llmChip.textContent = config.llm_configured ? '✓ LLM' : '⚠ LLM';
+    chips.appendChild(llmChip);
+
+    if (config.telegram_configured) {
+      const c = document.createElement('span');
+      c.className = 'text-xs px-2 py-0.5 rounded font-medium chip-ok';
+      c.textContent = '✈ Telegram';
+      chips.appendChild(c);
+    }
+    if (config.discord_configured) {
+      const c = document.createElement('span');
+      c.className = 'text-xs px-2 py-0.5 rounded font-medium chip-ok';
+      c.textContent = '🎮 Discord';
+      chips.appendChild(c);
+    }
+    if (config.signal_configured) {
+      const c = document.createElement('span');
+      c.className = 'text-xs px-2 py-0.5 rounded font-medium chip-ok';
+      c.textContent = '📡 Signal';
+      chips.appendChild(c);
+    }
+    if (config.whatsapp_configured) {
+      const c = document.createElement('span');
+      c.className = 'text-xs px-2 py-0.5 rounded font-medium chip-ok';
+      c.textContent = '💬 WhatsApp';
+      chips.appendChild(c);
+    }
+    if (config.tunnel_url) {
+      const c = document.createElement('span');
+      c.className = 'text-xs px-2 py-0.5 rounded font-medium chip-ok';
+      c.title = config.tunnel_url;
+      c.textContent = `🔒 ${config.tunnel_type === 'tailscale' ? 'Tailscale' : 'CF'} Tunnel`;
+      chips.appendChild(c);
+    }
+
+    const modelEl = document.getElementById('hdr-model');
+    if (config.model && config.model !== 'unknown') {
+      modelEl.textContent = `${config.provider} / ${config.model}`;
+      modelEl.classList.remove('hidden');
+    }
+
+  } catch(e) { console.warn('config load failed', e); }
+}
+
+// Update uptime
+async function updateUptime() {
+  try {
+    const r = await fetch('/health');
+    const d = await r.json();
+    const s = d.uptime;
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+    document.getElementById('hdr-uptime').textContent =
+      `up ${h ? h+'h ' : ''}${m ? m+'m ' : ''}${sec}s`;
+  } catch(_) {}
+}
+
+// ── Chat ───────────────────────────────────────────────────────────────────────
+function appendMessage(role, content) {
+  const box = document.getElementById('chat-box');
+  // Remove placeholder
+  const ph = box.querySelector('.text-center');
+  if (ph) ph.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = `rounded-lg p-3 text-sm ${role === 'user' ? 'msg-user' : role === 'error' ? 'msg-err' : 'msg-asst'}`;
+
+  const who = document.createElement('div');
+  who.className = 'text-xs font-semibold mb-1 ' + (role === 'user' ? 'text-sky-600' : 'text-orange-600');
+  who.textContent = role === 'user' ? 'You' : (role === 'error' ? 'Error' : config.assistant_name || 'Assistant');
+  wrap.appendChild(who);
+
+  const body = document.createElement('div');
+  body.className = 'text-gray-800 text-sm leading-relaxed font-sans ai-md';
+  if (role === 'user') { body.textContent = content; }
+  else { try { body.innerHTML = DOMPurify.sanitize(marked.parse(content || '')); } catch(e) { body.textContent = content; } }
+  wrap.appendChild(body);
+
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+async function sendChat() {
+  if (sending) return;
+  const inp = document.getElementById('chat-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+
+  const session = document.getElementById('session-id').value.trim() || 'default';
+  inp.value = '';
+  sending = true;
+  const st = document.getElementById('chat-status');
+  st.textContent = 'Thinking…';
+
+  appendMessage('user', msg);
+
+  try {
+    const r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, session }),
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({ error: r.statusText }));
+      appendMessage('error', err.error || 'Request failed');
+    } else {
+      const d = await r.json();
+      appendMessage('assistant', d.reply);
+    }
+    st.textContent = '';
+  } catch(e) {
+    appendMessage('error', 'Network error: ' + e.message);
+    st.textContent = '';
+  } finally {
+    sending = false;
+  }
+}
+
+async function clearSession() {
+  const session = document.getElementById('session-id').value.trim() || 'default';
+  await fetch(`/api/sessions/${encodeURIComponent(session)}`, { method: 'DELETE' });
+  const box = document.getElementById('chat-box');
+  box.innerHTML = '<div class="text-center text-gray-400 text-sm mt-auto">Session cleared ↓</div>';
+}
+
+// ── Memory ─────────────────────────────────────────────────────────────────────
+async function loadMemory() {
+  try {
+    const r = await fetch('/api/memory');
+    const data = await r.json();
+    const tbody = document.getElementById('memory-tbody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">No memories yet. Add key/value pairs above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(m => `
+      <tr class="border-b border-gray-100 hover:bg-gray-50">
+        <td class="px-4 py-2 font-medium text-gray-800">${esc(m.key)}</td>
+        <td class="px-4 py-2 text-gray-600">${esc(m.value)}</td>
+        <td class="px-4 py-2 text-gray-400 text-xs">${relTime(m.ts)}</td>
+        <td class="px-4 py-2 text-right">
+          <button onclick="deleteMemory(${m.id})" class="text-xs text-red-500 hover:text-red-700">Delete</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function addMemory() {
+  const key = document.getElementById('mem-key').value.trim();
+  const val = document.getElementById('mem-val').value.trim();
+  if (!key || !val) return alert('Key and value are required');
+  await fetch('/api/memory', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key, value: val }),
+  });
+  document.getElementById('mem-key').value = '';
+  document.getElementById('mem-val').value = '';
+  loadMemory();
+}
+
+async function deleteMemory(id) {
+  await fetch(`/api/memory/${id}`, { method: 'DELETE' });
+  loadMemory();
+}
+
+// ── Logs ───────────────────────────────────────────────────────────────────────
+async function loadLogs() {
+  try {
+    const r = await fetch('/api/logs?limit=100');
+    const data = await r.json();
+    document.getElementById('log-count').textContent = `${data.length} entries`;
+    const tbody = document.getElementById('logs-tbody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-4 text-center text-gray-400 font-sans text-sm">No logs yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(l => `
+      <tr class="border-b border-gray-50 hover:bg-gray-50">
+        <td class="px-3 py-1.5 text-gray-400">${l.ts ? l.ts.replace('T',' ').split('.')[0] : ''}</td>
+        <td class="px-3 py-1.5 log-${l.level} font-semibold uppercase">${esc(l.level)}</td>
+        <td class="px-3 py-1.5 text-gray-700">${esc(l.message)}</td>
+      </tr>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+// ── Doctor ─────────────────────────────────────────────────────────────────────
+async function loadDoctor() {
+  const el  = document.getElementById('doctor-cards');
+  const btn = document.getElementById('doctor-run-btn');
+  el.innerHTML = '<div class="col-span-2 bg-white rounded-lg border border-gray-200 p-4 text-center text-gray-400">Running diagnostics… (LLM check may take up to 20s)</div>';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Checking…'; }
+  try {
+    const r = await fetch('/api/doctor');
+    const d = await r.json();
+
+    const cards = [
+      { title: 'Overall Status', value: d.status === 'ok' ? '✅ Healthy' : '⚠️ Degraded',
+        ok: d.status === 'ok', detail: `Uptime: ${d.uptime_seconds}s | Node ${d.node}` },
+      { title: 'LLM Provider',
+        value: d.llm.status === 'ok'
+          ? `✅ Connected (${d.llm.ping_ms}ms)${d.llm.source === 'runtime' ? ' — runtime override' : ''}`
+          : `⚠️ ${d.llm.status.replace(/_/g,' ')}`,
+        ok: d.llm.status === 'ok',
+        detail: d.llm.hint || d.llm.error
+          || (d.llm.status === 'ok'
+              ? `${d.llm.provider || ''} ${d.llm.model ? '· ' + d.llm.model : ''} · source: ${d.llm.source || 'deploy'}`
+              : 'No LLM configured') },
+      { title: 'Memory & Sessions',
+        value: `${d.memory_entries} memories · ${d.session_count} sessions`,
+        ok: true, detail: `${d.log_entries} log entries` },
+      { title: 'Channels',
+        value: [
+          d.channels.telegram?.enabled  ? '✈️ Telegram'  : null,
+          d.channels.discord?.enabled   ? '🎮 Discord'   : null,
+          d.channels.signal?.enabled    ? '📡 Signal'    : null,
+          d.channels.whatsapp?.enabled  ? '💬 WhatsApp'  : null,
+        ].filter(Boolean).join(' · ') || '○ None active',
+        ok: Object.values(d.channels || {}).some(c => c.enabled),
+        detail: 'See Setup tab to configure channels' },
+      { title: 'HTTPS Tunnel',
+        value: d.tunnel?.ready
+          ? `✅ ${d.tunnel.type === 'tailscale' ? 'Tailscale' : 'Cloudflare'}`
+          : d.tunnel?.type ? '⏳ Starting…' : '○ Not configured',
+        ok: !!d.tunnel?.ready,
+        detail: d.tunnel?.url
+          ? `<a href="${d.tunnel.url}" target="_blank" class="text-blue-500 underline break-all">${d.tunnel.url}</a>
+             <button onclick="navigator.clipboard.writeText('${d.tunnel.url}')" class="ml-2 text-xs px-1 border border-gray-300 rounded">copy</button>`
+          : d.tunnel?.type ? 'Tunnel starting — reload in a few seconds' : 'Set LOBSTER_CF_TUNNEL_TOKEN=quick or LOBSTER_TAILSCALE_AUTH_KEY to enable' },
+    ];
+
+    el.innerHTML = cards.map(c => `
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="text-xs text-gray-500 font-medium mb-1">${c.title}</div>
+        <div class="text-base font-semibold ${c.ok ? 'text-gray-800' : 'text-amber-700'}">${c.value}</div>
+        <div class="text-xs text-gray-400 mt-1">${c.detail}</div>
+      </div>`).join('');
+
+    // Raw JSON toggle
+    const raw = document.createElement('div');
+    raw.className = 'col-span-2 bg-white rounded-lg border border-gray-200 p-4';
+    raw.innerHTML = `<div class="text-xs text-gray-500 font-medium mb-2">Raw diagnostics</div>
+      <pre class="text-xs text-gray-600 bg-gray-50 rounded p-3 overflow-auto max-h-48">${JSON.stringify(d, null, 2)}</pre>`;
+    el.appendChild(raw);
+  } catch(e) {
+    el.innerHTML = `<div class="col-span-2 bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">Doctor check failed: ${esc(e.message)}</div>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '↻ Run check'; }
+  }
+}
+
+// ── Settings panel navigation ─────────────────────────────────────────────────
+function showSettingsPanel(name) {
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
+  const panel = document.getElementById('settings-panel-' + name);
+  if (panel) panel.classList.remove('hidden');
+  document.querySelectorAll('#settings-sidebar button').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector('#settings-sidebar button[data-panel="' + name + '"]');
+  if (btn) btn.classList.add('active');
+  if (name === 'ssh')      { loadSshPubkey(); loadSshHosts(); }
+  if (name === 'llm')      { loadRuntimeLlm(); loadAutonomySelect(); }
+  if (name === 'tunnel')   { loadTunnelStatus(); }
+  if (name === 'telegram') { renderTelegramPanel(); }
+  if (name === 'whatsapp') { renderWhatsAppPanel(); }
+  if (name === 'signal')   { renderSignalPanel(); }
+  if (name === 'discord')  { renderDiscordPanel(); }
+  if (name === 'users')    { loadUsers(); }
+}
+
+function loadAutonomySelect() {
+  const sel = document.getElementById('autonomy-select');
+  if (sel && config) sel.value = config.autonomy || 'Supervised';
+}
+
+async function saveAutonomy() {
+  const autonomy = document.getElementById('autonomy-select').value;
+  const msg = document.getElementById('autonomy-msg');
+  try {
+    const r = await fetch('/api/settings/autonomy', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ autonomy })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      if (config) config.autonomy = autonomy;
+      msg.style.color = '#16a34a';
+      msg.textContent = '✓ Saved';
+    } else {
+      msg.style.color = '#ef4444';
+      msg.textContent = d.error || 'Error';
+    }
+  } catch(e) { msg.textContent = 'Error'; }
+}
+
+async function changeAdminPassword() {
+  const pw  = document.getElementById('admin-pw-input').value;
+  const pw2 = document.getElementById('admin-pw-confirm').value;
+  const msg = document.getElementById('admin-pw-msg');
+  if (!pw || pw.length < 6) { msg.style.color='#ef4444'; msg.textContent='Min 6 characters'; return; }
+  if (pw !== pw2) { msg.style.color='#ef4444'; msg.textContent='Passwords do not match'; return; }
+  try {
+    const r = await fetch('/api/auth/change-admin-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pw })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      msg.style.color = '#16a34a';
+      msg.textContent = '✓ Updated';
+      document.getElementById('admin-pw-input').value = '';
+      document.getElementById('admin-pw-confirm').value = '';
+    } else {
+      msg.style.color = '#ef4444';
+      msg.textContent = d.error || 'Error';
+    }
+  } catch(e) { msg.textContent = 'Error'; }
+}
+
+// ── Tunnel panel ──────────────────────────────────────────────────────────────
+async function loadTunnelStatus() {
+  const area = document.getElementById('tunnel-status-area');
+  if (!area) return;
+  area.textContent = 'Loading…';
+  try {
+    const d = await fetch('/api/doctor').then(r => r.json());
+    const t = d.tunnel || {};
+    renderTunnelPanel(t.type, t.url, t.ready);
+  } catch(e) {
+    renderTunnelPanel(config ? config.tunnel_type : null, config ? config.tunnel_url : '', false);
+  }
+}
+
+function renderTunnelPanel(type, url, ready) {
+  const area = document.getElementById('tunnel-status-area');
+  if (!area) return;
+  let badge = '';
+  if (type === 'cloudflare') badge = '<span class="tunnel-badge-cf">☁ Cloudflare Tunnel</span>';
+  else if (type === 'tailscale') badge = '<span class="tunnel-badge-ts">🔒 Tailscale Funnel</span>';
+  let statusChip = '';
+  if (!type) {
+    statusChip = '<span style="font-size:0.8rem;color:#6b7280">○ No tunnel configured</span>';
+  } else if (ready && url) {
+    statusChip = '<span style="font-size:0.8rem;color:#16a34a">✅ Active</span>';
+  } else {
+    statusChip = '<span style="font-size:0.8rem;color:#f59e0b">⏳ Starting…</span>';
+  }
+  let urlSection = '';
+  if (url) {
+    const tgWebhook  = url + '/webhook/telegram';
+    const waWebhook  = url + '/webhook/whatsapp';
+    urlSection = `
+      <div style="margin-top:1rem">
+        <div style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:.05em">Public HTTPS URL</div>
+        <div class="tunnel-url-box" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          <a href="${esc(url)}" target="_blank" style="color:#f97316;word-break:break-all">${esc(url)}</a>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.4rem;flex-wrap:wrap">
+          <button class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick="copyText('${esc(url)}')">Copy URL</button>
+          <a href="${esc(url)}" target="_blank" class="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50" style="text-decoration:none;color:inherit">Open ↗</a>
+        </div>
+      </div>
+      <div style="margin-top:1.25rem">
+        <div style="font-size:0.75rem;font-weight:600;color:#6b7280;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:.05em">Webhook base URLs</div>
+        <div style="margin-bottom:0.5rem">
+          <span style="font-size:0.75rem;color:#6b7280">Telegram: </span>
+          <span class="tunnel-url-box" style="display:inline">${esc(tgWebhook)}</span>
+          <button class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-50" style="margin-left:0.4rem" onclick="copyText('${esc(tgWebhook)}')">Copy</button>
+        </div>
+        <div>
+          <span style="font-size:0.75rem;color:#6b7280">WhatsApp: </span>
+          <span class="tunnel-url-box" style="display:inline">${esc(waWebhook)}</span>
+          <button class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-50" style="margin-left:0.4rem" onclick="copyText('${esc(waWebhook)}')">Copy</button>
+        </div>
+      </div>`;
+  } else if (type) {
+    urlSection = `<p style="font-size:0.8rem;color:#6b7280;margin-top:0.75rem">Tunnel is starting — URL not yet available. Click Refresh.</p>`;
+  } else {
+    urlSection = `<p style="font-size:0.8rem;color:#6b7280;margin-top:0.75rem">Deploy with a Cloudflare or Tailscale token to enable a public HTTPS URL.</p>`;
+  }
+  area.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+      ${badge}
+      ${statusChip}
+    </div>
+    ${urlSection}`;
+}
+
+// ── Channel panel renderers ────────────────────────────────────────────────────
+function renderTelegramPanel() {
+  const base = (config && config.tunnel_url) ? config.tunnel_url : window.location.origin;
+  const webhookUrl = base + '/webhook/telegram';
+  const enabled = config && config.telegram_configured;
+  const chip = enabled
+    ? '<span style="color:#16a34a;font-size:0.8rem">✅ Enabled</span>'
+    : '<span style="color:#6b7280;font-size:0.8rem">○ Not configured</span>';
+  const el = document.getElementById('telegram-status-chip');
+  if (el) el.innerHTML = chip;
+  const wu = document.getElementById('tg-webhook-url');
+  if (wu) wu.textContent = webhookUrl;
+  const cs = document.getElementById('tg-curl-snippet');
+  if (cs) cs.textContent = `curl -X POST "https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook" \\\n  -d "url=${webhookUrl}"`;
+}
+
+function renderWhatsAppPanel() {
+  const base = (config && config.tunnel_url) ? config.tunnel_url : window.location.origin;
+  const webhookUrl = base + '/webhook/whatsapp';
+  const enabled = config && config.whatsapp_configured;
+  const phoneId = config && config.whatsapp_phone_id;
+  const chip = enabled
+    ? '<span style="color:#16a34a;font-size:0.8rem">✅ Enabled</span>'
+    : '<span style="color:#6b7280;font-size:0.8rem">○ Not configured</span>';
+  document.querySelectorAll('#settings-panel-whatsapp .wa-status-chip').forEach(el => { el.innerHTML = chip; });
+  const phoneRow = document.getElementById('wa-phone-id-row');
+  const phoneEl = document.getElementById('wa-phone-id');
+  if (phoneRow && phoneEl && phoneId) { phoneRow.style.display = ''; phoneEl.textContent = phoneId; }
+  const wu = document.getElementById('wa-webhook-url');
+  if (wu) wu.textContent = webhookUrl;
+}
+
+function renderSignalPanel() {
+  const enabled = config && config.signal_configured;
+  const apiUrl = config && config.signal_api_url;
+  const number = config && config.signal_number;
+  const chip = enabled
+    ? '<span style="color:#16a34a;font-size:0.8rem">✅ Enabled</span>'
+    : '<span style="color:#6b7280;font-size:0.8rem">○ Not configured</span>';
+  document.querySelectorAll('#settings-panel-signal .signal-status-chip').forEach(el => { el.innerHTML = chip; });
+  const infoRows = document.getElementById('signal-info-rows');
+  if (infoRows && (apiUrl || number)) {
+    infoRows.style.display = '';
+    const urlEl = document.getElementById('signal-api-url-display');
+    const numEl = document.getElementById('signal-number-display');
+    if (urlEl) urlEl.textContent = apiUrl || '—';
+    if (numEl) numEl.textContent = number || '—';
+  }
+}
+
+function renderDiscordPanel() {
+  const enabled = config && config.discord_configured;
+  const chip = enabled
+    ? '<span style="color:#16a34a;font-size:0.8rem">✅ Enabled</span>'
+    : '<span style="color:#6b7280;font-size:0.8rem">○ Not configured</span>';
+  document.querySelectorAll('#settings-panel-discord .discord-status-chip').forEach(el => { el.innerHTML = chip; });
+}
+
+// ── User management ────────────────────────────────────────────────────────────
+async function loadUsers() {
+  const tbody = document.getElementById('users-tbody');
+  if (!tbody) return;
+  try {
+    const users = await fetch('/api/users').then(r => r.json());
+    if (!Array.isArray(users) || !users.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="padding:1rem;color:#6b7280;text-align:center">No users yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = users.map(u => `<tr style="border-top:1px solid #e5e7eb">
+      <td style="padding:0.5rem 1rem;font-weight:500">${escHtml(u.username)}</td>
+      <td style="padding:0.5rem 1rem;font-size:0.75rem;color:#6b7280">${u.created_at || ''}</td>
+      <td style="padding:0.5rem 1rem;display:flex;gap:0.4rem;flex-wrap:wrap">
+        <button class="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50" onclick="openPwModal(${u.id},'${escHtml(u.username)}')">Change password</button>
+        <button class="px-3 py-1 text-xs border border-red-200 rounded text-red-600 hover:bg-red-50" onclick="deleteUser(${u.id},'${escHtml(u.username)}')">Delete</button>
+      </td>
+    </tr>`).join('');
+  } catch(e) { if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="padding:1rem;color:#ef4444">Error loading users</td></tr>'; }
+}
+
+async function addUser() {
+  const username = (document.getElementById('new-user-username').value || '').trim();
+  const password = document.getElementById('new-user-password').value || '';
+  const msg = document.getElementById('add-user-msg');
+  if (!username || !password) { msg.style.color='#ef4444'; msg.textContent='Username and password required'; return; }
+  if (password.length < 6) { msg.style.color='#ef4444'; msg.textContent='Password min 6 characters'; return; }
+  try {
+    const r = await fetch('/api/users', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const d = await r.json();
+    if (r.ok) {
+      document.getElementById('new-user-username').value = '';
+      document.getElementById('new-user-password').value = '';
+      msg.style.color = '#16a34a';
+      msg.textContent = '✓ User added';
+      loadUsers();
+    } else {
+      msg.style.color = '#ef4444';
+      msg.textContent = d.error || 'Error';
+    }
+  } catch(e) { msg.textContent = 'Error'; }
+}
+
+async function deleteUser(id, username) {
+  if (!confirm('Delete user "' + username + '"?')) return;
+  await fetch('/api/users/' + id, { method: 'DELETE' });
+  loadUsers();
+}
+
+let _pwModalUserId = null;
+function openPwModal(id, username) {
+  _pwModalUserId = id;
+  const unEl = document.getElementById('pw-modal-username');
+  const inp = document.getElementById('pw-modal-input');
+  const msg = document.getElementById('pw-modal-msg');
+  if (unEl) unEl.textContent = username;
+  if (inp) inp.value = '';
+  if (msg) msg.textContent = '';
+  const modal = document.getElementById('pw-modal');
+  if (modal) modal.classList.add('show');
+}
+function closePwModal() {
+  const modal = document.getElementById('pw-modal');
+  if (modal) modal.classList.remove('show');
+  _pwModalUserId = null;
+}
+async function saveUserPassword() {
+  const password = (document.getElementById('pw-modal-input').value || '');
+  const msg = document.getElementById('pw-modal-msg');
+  if (!password || password.length < 6) { if(msg){msg.style.color='#ef4444';msg.textContent='Min 6 characters';} return; }
+  const r = await fetch('/api/users/' + _pwModalUserId + '/password', {
+    method: 'PUT', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ password })
+  });
+  const d = await r.json();
+  if (d.ok) closePwModal();
+  else { if(msg){msg.style.color='#ef4444';msg.textContent=d.error||'Error';} }
+}
+
+// pw-modal close on backdrop + Escape
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('pw-modal');
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) closePwModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && _pwModalUserId !== null) closePwModal(); });
+});
+
+// ── Copy helper ───────────────────────────────────────────────────────────────
+function copyText(text) {
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+// ── HTML escape (for user-generated content in innerHTML) ─────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Runtime LLM Override ───────────────────────────────────────────────────────
+async function loadRuntimeLlm() {
+  const el = document.getElementById('runtime-llm-current');
+  try {
+    const r = await fetch('/api/llm/runtime');
+    const d = await r.json();
+    if (d.active) {
+      el.innerHTML = `<span class="text-green-700 font-medium">✅ Active override: ${esc(d.provider)} — ${esc(d.model)}</span> <span class="text-gray-400 text-xs ml-1">@ ${esc(d.url)}</span>`;
+      document.getElementById('runtime-llm-url').value   = d.url   || '';
+      document.getElementById('runtime-llm-model').innerHTML = `<option value="${esc(d.model)}" selected>${esc(d.model)}</option>`;
+    } else {
+      el.innerHTML = '<span class="text-gray-400">○ No override — using deploy-time default</span>';
+    }
+  } catch (e) {
+    el.innerHTML = `<span class="text-red-500">${esc(e.message)}</span>`;
+  }
+}
+
+async function fetchRuntimeModels() {
+  const url = document.getElementById('runtime-llm-url').value.trim();
+  const msg = document.getElementById('runtime-llm-msg');
+  const sel = document.getElementById('runtime-llm-model');
+  if (!url) { msg.textContent = 'Enter Ollama URL first.'; msg.className = 'text-sm text-red-500'; return; }
+  msg.textContent = 'Fetching models…'; msg.className = 'text-sm text-gray-400';
+  try {
+    const r = await fetch('/api/llm/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || 'Failed');
+    msg.textContent = `✅ Connected (${d.latency_ms}ms) — ${d.models.length} model(s)`; msg.className = 'text-sm text-green-600';
+    sel.innerHTML = d.models.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+  } catch (e) {
+    msg.textContent = `Error: ${esc(e.message)}`; msg.className = 'text-sm text-red-500';
+  }
+}
+
+async function saveRuntimeLlm() {
+  const url      = document.getElementById('runtime-llm-url').value.trim();
+  const model    = document.getElementById('runtime-llm-model').value;
+  const provider = document.getElementById('runtime-llm-provider').value;
+  const msg      = document.getElementById('runtime-llm-msg');
+  if (!url || !model) { msg.textContent = 'URL and model required.'; msg.className = 'text-sm text-red-500'; return; }
+  msg.textContent = 'Saving…'; msg.className = 'text-sm text-gray-400';
+  try {
+    const r = await fetch('/api/llm/runtime', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, model, provider }) });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    msg.textContent = '✅ Saved — chat will now use this LLM'; msg.className = 'text-sm text-green-600';
+    loadRuntimeLlm();
+    loadConfig();
+  } catch (e) { msg.textContent = `Error: ${esc(e.message)}`; msg.className = 'text-sm text-red-500'; }
+}
+
+async function clearRuntimeLlm() {
+  const msg = document.getElementById('runtime-llm-msg');
+  msg.textContent = 'Clearing…'; msg.className = 'text-sm text-gray-400';
+  try {
+    await fetch('/api/llm/runtime', { method: 'DELETE' });
+    msg.textContent = '✅ Cleared — using deploy-time default'; msg.className = 'text-sm text-green-600';
+    loadRuntimeLlm();
+    loadConfig();
+  } catch (e) { msg.textContent = `Error: ${esc(e.message)}`; msg.className = 'text-sm text-red-500'; }
+}
+
+// ── Pod public key ─────────────────────────────────────────────────────────────
+let _sshPubkeyValue = '';
+
+async function loadSshPubkey() {
+  const el = document.getElementById('ssh-pubkey-box');
+  try {
+    const r = await fetch('/api/ssh/pubkey');
+    const d = await r.json();
+    _sshPubkeyValue = d.public_key || '';
+    el.innerHTML = `<pre class="text-xs bg-gray-50 border border-gray-200 rounded p-3 whitespace-pre-wrap break-all font-mono select-all">${esc(_sshPubkeyValue)}</pre>`;
+  } catch (e) {
+    el.innerHTML = `<p class="text-red-500 text-sm">${esc(e.message)}</p>`;
+  }
+}
+
+function copySshPubkey() {
+  const msg = document.getElementById('ssh-pubkey-copy-msg');
+  if (!_sshPubkeyValue) return;
+  navigator.clipboard.writeText(_sshPubkeyValue).then(() => {
+    msg.textContent = '✅ Copied!'; msg.className = 'text-sm text-green-600';
+    setTimeout(() => { msg.textContent = ''; }, 2000);
+  }).catch(() => {
+    msg.textContent = 'Copy failed — select and copy manually.'; msg.className = 'text-sm text-red-500';
+  });
+}
+
+// ── SSH Hosts ──────────────────────────────────────────────────────────────────
+async function loadSshHosts() {
+  const el = document.getElementById('ssh-hosts-list');
+  try {
+    const r = await fetch('/api/ssh/hosts');
+    const hosts = await r.json();
+    if (!hosts.length) {
+      el.innerHTML = '<p class="text-gray-400 text-sm italic">No hosts saved yet.</p>';
+      return;
+    }
+    el.innerHTML = `<table class="w-full text-sm border-collapse">
+      <thead><tr class="text-xs text-gray-400 border-b"><th class="text-left py-1 pr-3">Label</th><th class="text-left py-1 pr-3">Host</th><th class="text-left py-1 pr-3">User</th><th></th></tr></thead>
+      <tbody>${hosts.map(h => `<tr class="border-b border-gray-50" id="ssh-host-row-${h.id}">
+        <td class="py-1.5 pr-3 font-medium">${esc(h.label)}</td>
+        <td class="py-1.5 pr-3 font-mono text-xs text-gray-600">${esc(h.hostname)}:${h.port}</td>
+        <td class="py-1.5 pr-3 text-gray-600">${esc(h.username)}</td>
+        <td class="py-1.5 flex gap-1">
+          <button onclick="testSshHost(${h.id})" class="text-xs text-blue-600 hover:text-blue-800 px-2 py-0.5 border border-blue-200 rounded">Test</button>
+          <button onclick="deleteSshHost(${h.id})" class="text-xs text-red-500 hover:text-red-700 px-2 py-0.5 border border-red-200 rounded">Delete</button>
+          <span id="ssh-test-${h.id}" class="text-xs ml-1 self-center"></span>
+        </td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (e) {
+    el.innerHTML = `<p class="text-red-500 text-sm">${esc(e.message)}</p>`;
+  }
+}
+
+async function addSshHost() {
+  const label    = document.getElementById('ssh-host-label').value.trim();
+  const hostname = document.getElementById('ssh-host-hostname').value.trim();
+  const port     = document.getElementById('ssh-host-port').value || '22';
+  const username = document.getElementById('ssh-host-user').value.trim() || 'root';
+  const msg      = document.getElementById('ssh-host-msg');
+  if (!label || !hostname) { msg.textContent = 'Label and hostname required.'; msg.className = 'text-sm text-red-500'; return; }
+  msg.textContent = 'Saving…'; msg.className = 'text-sm text-gray-400';
+  try {
+    const r = await fetch('/api/ssh/hosts', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({label, hostname, port: parseInt(port), username}) });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    msg.textContent = '✅ Host saved'; msg.className = 'text-sm text-green-600';
+    document.getElementById('ssh-host-label').value = '';
+    document.getElementById('ssh-host-hostname').value = '';
+    document.getElementById('ssh-host-port').value = '22';
+    document.getElementById('ssh-host-user').value = 'root';
+    loadSshHosts();
+  } catch (e) { msg.textContent = `Error: ${e.message}`; msg.className = 'text-sm text-red-500'; }
+}
+
+async function deleteSshHost(id) {
+  if (!confirm('Delete this SSH host?')) return;
+  await fetch(`/api/ssh/hosts/${id}`, { method:'DELETE' });
+  loadSshHosts();
+}
+
+async function testSshHost(id) {
+  const el = document.getElementById(`ssh-test-${id}`);
+  el.textContent = 'Testing…'; el.className = 'text-xs ml-1 self-center text-gray-400';
+  try {
+    const r = await fetch('/api/ssh/test', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({host_id: id}) });
+    const d = await r.json();
+    if (d.ok) {
+      el.textContent = '✅ Connected'; el.className = 'text-xs ml-1 self-center text-green-600';
+    } else {
+      el.textContent = `❌ ${d.error}`; el.className = 'text-xs ml-1 self-center text-red-500';
+    }
+  } catch (e) { el.textContent = `❌ ${e.message}`; el.className = 'text-xs ml-1 self-center text-red-500'; }
+}
+
+// ── Utils ──────────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+async function init() {
+  await loadConfig();
+  if (config && config.assistant_name) {
+    setInterval(updateUptime, 5000);
+    updateUptime();
+  }
+}
+init();
+</script>
+</body>
+</html>

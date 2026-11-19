@@ -1,0 +1,5 @@
+You are generating an Arduino sketch for the Uno: a DHT11 weather + RGB mood lamp.
+- DHT11 DATA on D2; common-cathode RGB LED on D3 (R), D5 (G), D6 (B) via 220Ω each (all PWM pins).
+- Read temp/humidity, print over Serial at 9600, and map temperature to color (cold=blue, comfy=green, hot=red).
+- Use analogWrite for smooth color. Handle NaN reads gracefully.
+- Output ONLY the sketch source. Define void setup() and void loop().

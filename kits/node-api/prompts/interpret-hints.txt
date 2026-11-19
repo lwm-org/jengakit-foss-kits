@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for a Node.js REST API, Express API, or a JavaScript backend API (not a game), set framework to "express", runtime to "node", app_category to "node-api"
+
+## normalized_description note
+- For node-api apps: specify it must use Express, listen on 0.0.0.0:5000, return JSON from GET /, and use mock/hardcoded data unless explicitly stated otherwise

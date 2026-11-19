@@ -1,0 +1,42 @@
+# Reference ESPHome config for the esp32-blink-onboard-led kit.
+# The pipeline regenerates this per prompt; this file is a worked
+# example for human reviewers + the fallback the codegen-context loads
+# as a few-shot anchor for the LLM.
+#
+# Substitute !secret references are populated at compile time from the
+# device's stored WiFi/OTA credentials — never inlined in the LLM
+# prompt.
+
+esphome:
+  name: esp32-blink-onboard-led
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+  level: INFO
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+output:
+  - platform: gpio
+    pin: GPIO2
+    id: onboard_led
+
+light:
+  - platform: binary
+    name: "Onboard LED"
+    output: onboard_led
+
+interval:
+  - interval: 500ms
+    then:
+      - light.toggle: onboard_led

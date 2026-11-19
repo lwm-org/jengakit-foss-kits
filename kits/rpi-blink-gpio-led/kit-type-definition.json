@@ -1,0 +1,40 @@
+{
+  "schema_version": "5",
+  "kit_name": "rpi-blink-gpio-led",
+  "kit_family": "embedded",
+  "version": "1.0.2",
+  "display_name": "Raspberry Pi GPIO LED blinker",
+  "description": "Blinks an external LED wired through a 220Ω resistor to GPIO 17 (BCM) on a Raspberry Pi. A small Python program runs on the Pi itself, using the board's own python3.",
+  "category": "embedded",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.5.4",
+  "capabilities": ["embedded", "led-external", "blink", "rpi", "gpio"],
+  "ui": {
+    "pill_label": "Pi GPIO blink",
+    "hint": "e.g. blink GPIO 17 every 200ms, slow pulse",
+    "description": "Triggers an external LED via the Pi's GPIO. ACTUATOR-class kit — the dashboard's safety gate intercepts the flash until you confirm you've wired the LED through a current-limiting resistor."
+  },
+  "sample_prompts": [
+    "Blink the GPIO 17 LED every 200ms",
+    "Slow morse-S pattern on the GPIO 17 LED",
+    "Two long pulses then a half-second pause"
+  ],
+  "kit_target": {
+    "platform": "rpi-4",
+    "variant": "rpi-4"
+  },
+  "kit_toolchain": "ssh-python",
+  "kit_flash_methods": ["ssh-rsync"],
+  "kit_safety_class": "actuator",
+  "kit_required_peripherals": [
+    { "type": "led-external", "pin": "GPIO17" }
+  ],
+  "kit_required_wiring": [
+    { "from": "GPIO17", "to": "LED anode", "note": "LED anode (long leg)" },
+    { "from": "LED cathode", "to": "220Ω resistor", "note": "current limit" },
+    { "from": "220Ω resistor", "to": "GND", "note": "" }
+  ],
+  "kit_required_libraries": [],
+  "kit_required_env": [],
+  "kit_template_dir": "templates"
+}

@@ -1,0 +1,71 @@
+CRITICAL: Generate ONLY these two files. Nothing else:
+1. app/page.js — The entire application UI as a single React component
+2. app/globals.css — Tailwind directives + custom theme CSS
+
+DO NOT generate: package.json, Dockerfile, next.config.js, layout.js, lib/db.js, jsconfig.json, tailwind.config.js, postcss.config.js, or any other file.
+
+=== app/page.js RULES ===
+
+The file MUST start with the EXACT directive (use double quotes — JSON-safe round-trip): "use client";
+
+Structure:
+- One default export: export default function Home() { ... }
+- ALL application logic in this single component
+- Use useState for: active tab/page, form data, modal visibility, selected items
+- Use sidebar navigation to switch between different "pages" (views) within the component
+
+Required imports (these packages are pre-installed):
+- import { useState } from 'react';
+- import { IconName } from 'lucide-react';  (LayoutDashboard, Users, FileText, Clock, DollarSign, Settings, Plus, Search, Edit, Trash2, ChevronRight, etc.)
+- import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+
+Layout structure:
+- Left sidebar (w-64, dark background matching theme) with:
+  - Business name/logo at top
+  - Navigation items with Lucide icons
+  - Active item highlighted
+- Main content area (flex-1) with:
+  - Page title header with action buttons
+  - Content specific to active tab
+
+EVERY tab/section MUST include:
+- Stat cards row (3-4 cards with label, value, icon)
+- Data table with realistic sample rows (8-15 rows)
+- Action buttons (Add New, Edit, Delete)
+- Search/filter input
+- At least one modal/form for creating/editing entries
+
+Sample data:
+- Define realistic sample data as const arrays INSIDE the component or at module level
+- Use business-appropriate names, amounts, dates
+- Include 8-15 entries per data type
+- Dates should use readable format: "Jan 15, 2024"
+- Currency should be formatted: "$2,450.00"
+
+Charts:
+- Include at least 2 Recharts visualizations on the dashboard/overview tab
+- Use ResponsiveContainer with width="100%" height={300}
+- Use theme-appropriate colors for chart elements
+
+Forms and interactions:
+- Add New button opens a form section or inline form
+- Form fields with labels, inputs, selects
+- useState to track form state
+- Save/Cancel buttons on forms
+
+=== app/globals.css RULES ===
+
+Must include:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+Add custom CSS variables for the theme colors requested by the user.
+Example for black/white/gold theme:
+:root {
+  --primary: #D4AF37;
+  --bg-dark: #000000;
+  --bg-light: #FFFFFF;
+}
+
+Style the scrollbar, selection colors, and any custom utility classes.

@@ -1,0 +1,38 @@
+{
+  "schema_version": "5",
+  "kit_name": "kids-weather-app",
+  "kit_family": "stamped",
+  "version": "1.1.1",
+  "display_name": "Weather Explorer",
+  "description": "Fun animated weather display showing current conditions with friendly characters and fun facts about weather",
+  "category": "kids",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_base_image": "nginx:alpine",
+  "kit_port": 80,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Weather Explorer",
+    "hint": "e.g. a weather dashboard with animated characters, a climate explorer for kids",
+    "description": "Fun animated weather display showing current conditions with friendly characters and fun facts about weather"
+  },
+  "sample_prompts": [
+    "A weather app for kids with animated sun and rain characters",
+    "A fun weather dashboard that teaches kids about climate",
+    "A weather tracker with cartoon animals dressed for the weather"
+  ],
+  "estimate": {
+    "cpu_m": 50,
+    "mem_mb": 32
+  }
+}

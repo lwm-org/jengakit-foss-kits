@@ -1,0 +1,43 @@
+CRITICAL RULES for public/words.js generation (Crossword Puzzle):
+
+=== FILE STRUCTURE ===
+1. Generate ONLY public/words.js — nothing else
+2. Do NOT generate index.html, server.js, Dockerfile, or any other file
+3. The game engine (index.html) is template-provided and builds the grid automatically
+
+=== EXACT FORMAT ===
+var WORD_LISTS = {
+  easy: [
+    {word:'WORD',clue:'Short clue here'},
+    // 10-12 words, 3-5 letters each
+  ],
+  medium: [
+    {word:'LONGER',clue:'Medium difficulty clue'},
+    // 12-15 words, 4-7 letters each
+  ],
+  hard: [
+    {word:'CHALLENGE',clue:'Harder clue for longer word'},
+    // 12-17 words, 5-10 letters each
+  ]
+};
+
+=== WORD RULES ===
+4. ALL words UPPERCASE, letters A-Z only
+5. No spaces, hyphens, numbers, or special characters in words
+6. Words must match the user's requested theme
+7. Include words with common crossing letters: E, A, T, O, R, S, N, I, L
+8. Each difficulty level should have a mix of word lengths for good grid generation
+9. Clues must be concise (under 50 characters) and factually accurate
+10. No duplicate words across difficulty levels (each level has unique words)
+
+=== THEME EXAMPLES ===
+- "Movies crossword": ACTOR, SCENE, DRAMA, OSCAR, SEQUEL, DIRECTOR, PREMIERE
+- "Animals crossword": CAT, DOG, BEAR, EAGLE, TIGER, DOLPHIN, ELEPHANT
+- "Geography crossword": LAKE, RIVER, OCEAN, DESERT, MOUNTAIN, CONTINENT
+- "Food crossword": RICE, BREAD, PASTA, CHEESE, TOMATO, AVOCADO
+
+=== DO NOT ===
+- Do NOT use <script> tags — this is a plain .js file
+- Do NOT use import/export/require
+- Do NOT define functions — only the WORD_LISTS variable
+- Do NOT generate the crossword grid — the engine does this at runtime

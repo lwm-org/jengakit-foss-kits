@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for a high-performance API, low-memory API, Rust backend, Axum web service, Tokio async API, or any backend that specifically mentions Rust, Axum, or performance/memory constraints, set framework to "axum", runtime to "rust", app_category to "rust-low-mem-api"
+
+## normalized_description note
+- For rust-low-mem-api apps: specify it must use Rust with Axum and Tokio, multi-stage Docker build (rust:1.100-alpine builder, alpine:latest final image), serde for JSON serialization, a /health endpoint, listen on port 8080, produce a single statically-linked binary /app/server

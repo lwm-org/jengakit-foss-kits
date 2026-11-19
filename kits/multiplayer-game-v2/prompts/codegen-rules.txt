@@ -1,0 +1,80 @@
+CRITICAL RULES for public/index.html generation:
+
+FILE STRUCTURE:
+1. Generate ONLY public/index.html — nothing else
+2. ALL game code in ONE inline <script> tag at the bottom of <body>
+3. NO import statements, NO ES modules, NO require()
+4. Include in <head>: <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+5. Include in <head>: <script src="audio.js"></script>
+
+LOBBY (must include):
+6. Lobby div with game title, room cards (2-3 rooms with difficulty stars)
+7. Room detail with player name input, player list showing bots, Launch button
+8. Bot players auto-populate lobby (2-3 bots with callsign names)
+9. CSS styling inline in <style> tag — dark theme, colored accents
+
+GAME LOOP:
+10. Canvas element: 480x700 pixels, id="cv"
+11. requestAnimationFrame loop — update physics then render each frame
+12. Movement: if(LEFT())x-=speed, if(RIGHT())x+=speed, etc.
+13. Action: if(ACTION()) fire/jump/activate — with cooldown timer
+
+=== SPRITE QUALITY — THIS IS THE MOST IMPORTANT RULE ===
+
+14. NEVER draw ANY entity as a plain rectangle (ctx.fillRect) or single triangle
+15. Every entity MUST have a dedicated draw function: drawJet(), drawCar(), drawGorilla(), drawPerson(), drawBarrel(), drawHelicopter(), drawBoat(), drawTank(), drawAsteroid(), drawUFO(), etc.
+16. Each draw function MUST use 10+ Canvas 2D calls combining:
+    - ctx.arc() for heads, wheels, eyes, circles
+    - ctx.ellipse() for bodies, clouds, organic shapes
+    - ctx.beginPath()/ctx.lineTo()/ctx.bezierCurveTo() for complex outlines
+    - ctx.createRadialGradient() for metallic/glossy surfaces
+    - ctx.shadowBlur/ctx.shadowColor for glow effects (engine flames, lasers, power-ups)
+    - ctx.roundRect() for vehicle bodies with rounded edges
+    - ctx.rotate() for propellers, spinning objects
+
+17. CHARACTERS (humans, gorillas, aliens) MUST have:
+    - Head (arc), eyes (two small arcs with pupils), mouth/expression
+    - Body/torso (rounded rect or ellipse)
+    - Arms and legs (separate shapes, animated with Math.sin for walk cycle)
+    - Clothing/fur color distinct from skin color
+    - Hair or helmet or distinctive head feature
+
+18. VEHICLES (jets, cars, boats, helicopters) MUST have:
+    - Main body with aerodynamic shape (bezier curves, not rectangles)
+    - Windshield/canopy with gradient (glass reflection effect)
+    - Wheels or engine details
+    - Headlights/taillights with glow (ctx.shadowBlur)
+    - Color-coded per player (pass color parameter)
+    - Animated engine exhaust/flame (flickering height with Math.random)
+
+19. OBJECTS (barrels, asteroids, crates, fuel depots) MUST have:
+    - 3D appearance using gradients or shadow
+    - Surface detail (wood bands on barrels, craters on asteroids, pump on fuel depots)
+    - Distinct shape (not just a rectangle)
+
+20. EFFECTS MUST include:
+    - Explosions: expanding concentric circles with decreasing alpha, inner white core
+    - Engine trails: small particles with glow behind moving entities
+    - Pickup glow: pulsing shadowBlur with Math.sin(time)
+    - Screen shake on collision (offset canvas draw position temporarily)
+    - Score popups: floating "+100" text that rises and fades
+
+AUDIO:
+21. GameAudio.play('shoot') — for firing
+22. GameAudio.play('explode') — for enemy destruction
+23. GameAudio.play('hit') — for bullet hits
+24. GameAudio.play('collect') — for pickups
+25. GameAudio.play('lose') — for game over
+26. GameAudio.play('jump') — for jumping
+27. GameAudio.play('coin') — for score items
+28. NEVER create your own AudioContext or oscillators
+
+MULTIPLAYER:
+29. var socket = typeof io !== 'undefined' ? io() : null;
+30. socket.emit('player_update', {x, y, score}) each frame
+31. socket.emit('game_event', {type, data}) for actions
+
+BOTS:
+32. 2-3 bot players with simple AI (move toward safe zone, dodge hazards, act randomly)
+33. Bots have named callsigns and colored sprites
+34. Bot bullets/actions interact with game entities

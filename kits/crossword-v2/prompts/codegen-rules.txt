@@ -1,0 +1,40 @@
+CRITICAL RULES for the Crossword kit — generate ONLY public/content.js.
+
+=== WHAT TO GENERATE ===
+1. Generate ONLY the file public/content.js — nothing else.
+2. Do NOT generate index.html, game.js, server.js, Dockerfile, or any other
+   file. The entire crossword game (grid generation, solving, multiplayer,
+   voice/video, responsive UI) is fixed, tested template code that reads your
+   word lists. You are ONLY choosing the themed words + clues.
+
+=== EXACT FORMAT (follow precisely) ===
+var THEME_CONTENT = {
+  easy: [
+    { word: 'WORD', clue: 'Short clue' },
+    // 10-12 entries, 3-5 letters each
+  ],
+  medium: [
+    { word: 'LONGER', clue: 'Medium clue' },
+    // 10-14 entries, 4-7 letters each
+  ],
+  hard: [
+    { word: 'CHALLENGE', clue: 'Harder clue' },
+    // 10-14 entries, 5-10 letters each
+  ]
+};
+
+=== WORD RULES ===
+3. ALL words UPPERCASE, letters A-Z only — no spaces, digits, hyphens, accents.
+4. Words must match the user's requested theme; clues concise (< 55 chars) and
+   accurate.
+5. Prefer words that share common letters (E, A, T, O, R, S, N, I, L) so the
+   grid crosses densely — but the generator NEVER drops a word, so variety is
+   fine.
+6. No duplicate words within a difficulty; each level is its own set.
+7. Easy = short/common, Medium = moderate, Hard = longer/challenging.
+
+=== DO NOT ===
+- Do NOT use <script> tags, import/export, or require — this is a plain .js file
+  defining a single global `var THEME_CONTENT`.
+- Do NOT define any functions or build the grid — the engine does that at runtime.
+- Do NOT rename THEME_CONTENT or change its shape.

@@ -1,0 +1,30 @@
+dockerhub-image-importer apps — generate EXACTLY these three files:
+
+Dockerfile:
+  FROM <DOCKER_HUB_IMAGE_REF>:<TAG>
+  LABEL jengakit.source="dockerhub://<DOCKER_HUB_IMAGE_REF>:<TAG>"
+
+  Rules:
+  - Extract the image reference from the user prompt.
+  - Use "latest" as the tag if none was specified.
+  - Do NOT add any RUN, COPY, EXPOSE, ENV, or CMD instructions.
+  - Do NOT add any application source code.
+  - The image's own CMD/ENTRYPOINT is used at runtime.
+  - IMPORTANT: jengakit will verify and overwrite this file before build.
+    The only requirement is a syntactically valid FROM line with the correct image.
+
+provenance.json — generate exactly this structure:
+  {
+    "dockerhub_url": "<FULL_HUB_URL_IF_PROVIDED_ELSE_EMPTY_STRING>",
+    "image_ref": "<NORMALIZED_IMAGE_REF>",
+    "tag": "<TAG>",
+    "detected_port": null,
+    "port_override": false,
+    "import_time": "<ISO8601_TIMESTAMP>",
+    "status": "pending-port-detection"
+  }
+
+README.md — one short paragraph:
+  State the app was imported from Docker Hub image <IMAGE_REF>.
+  State the image is pulled directly and re-tagged for the local jengakit registry.
+  Note that no application source code was generated.

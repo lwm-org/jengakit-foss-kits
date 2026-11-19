@@ -1,0 +1,24 @@
+CRITICAL: Generate ONLY src/routes/+page.svelte — nothing else.
+
+This is a SvelteKit app with Svelte. Do NOT use React, Vue, or Next.js imports.
+
+DO NOT generate: package.json, Dockerfile, svelte.config.js, vite.config.ts, +layout.svelte, app.html, app.css, tailwind.config, postcss.config, or any config file.
+
+=== src/routes/+page.svelte RULES ===
+
+Structure:
+- Use <script lang="ts"> for TypeScript
+- Use Svelte syntax: {#if}, {#each}, bind:value, on:click
+- ALL application logic in this single component
+- Use let for reactive state declarations
+
+Layout:
+- Left sidebar (w-56) with business name and navigation items
+- Main content area with page title and content
+- Tailwind CSS classes for ALL styling
+
+Content:
+- Stat cards (3-4 per section)
+- Data tables with 8-15 realistic sample rows
+- Forms with inputs, selects, action buttons
+- Theme colors via Tailwind utility classes

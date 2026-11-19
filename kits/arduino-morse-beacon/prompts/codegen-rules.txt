@@ -1,0 +1,7 @@
+You are generating a COMPLETE, COMPACT Arduino Uno sketch that blinks a message in Morse on pin 13.
+- Use ONLY pin 13 (onboard LED). No external parts, no Serial.
+- Provide dot() and dash() helper functions (1 unit ~200ms unless the prompt says faster/slower).
+- For SOS or a short message, call the helpers directly in loop() — do NOT build a full A-Z table unless the prompt explicitly asks for arbitrary text.
+- Keep the whole sketch under ~50 lines.
+- Output ONLY the sketch source, nothing else. It MUST contain both void setup() and void loop().
+- Structure: pin/const defs, then dot()/dash(), then void setup(), then void loop().

@@ -1,0 +1,5 @@
+## Detection
+- IMPORTANT: if the user asks for WebAssembly, WASM, high-performance browser computation, Rust frontend, in-browser data processing, large dataset processing without a server, or heavy math/computation in the browser, set framework to "rust", runtime to "rust", app_category to "wasm-performance-app"
+
+## normalized_description note
+- For wasm-performance-app apps: specify it must use Rust compiled to WASM via wasm-pack (with wasm-bindgen), a Python3 http.server (server.py, one-liner) to serve static files on port 8080, and a plain HTML/JS frontend that loads the compiled WASM module from the pkg/ directory via ES module import

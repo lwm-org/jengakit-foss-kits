@@ -1,0 +1,38 @@
+{
+  "schema_version": "5",
+  "kit_name": "rpi-onboard-led",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "Pi onboard-LED patterns",
+  "description": "Blinks the Pi's built-in green ACT LED (via /sys/class/leds) in patterns \u2014 no external wiring at all.",
+  "category": "embedded",
+  "author": "jengakit",
+  "capabilities": [
+    "embedded",
+    "rpi"
+  ],
+  "ui": {
+    "pill_label": "Pi onboard-LED patterns",
+    "hint": "e.g. blink the onboard LED, SOS on the ACT LED",
+    "description": "Blinks the Pi's built-in green ACT LED (via /sys/class/leds) in patterns \u2014 no external wiring at all."
+  },
+  "sample_prompts": [
+    "Blink the onboard green LED every 300ms",
+    "SOS on the Pi's ACT LED"
+  ],
+  "kit_target": {
+    "platform": "rpi-4",
+    "variant": "rpi-4"
+  },
+  "kit_toolchain": "ssh-python",
+  "kit_flash_methods": [
+    "ssh-rsync"
+  ],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    {
+      "type": "led-onboard"
+    }
+  ],
+  "kit_template_dir": "templates"
+}

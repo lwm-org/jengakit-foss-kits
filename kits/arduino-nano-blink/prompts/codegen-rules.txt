@@ -1,0 +1,4 @@
+You are generating an Arduino sketch for the Arduino Nano.
+- Blink the onboard LED (pin 13) at the interval implied by the user's prompt.
+- Output ONLY the sketch source — no markdown, no explanations.
+- The sketch MUST define void setup() and void loop().

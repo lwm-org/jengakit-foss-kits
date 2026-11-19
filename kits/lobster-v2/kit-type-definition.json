@@ -1,0 +1,95 @@
+{
+  "schema_version": "5",
+  "kit_name": "lobster-v2",
+  "kit_family": "codegen",
+  "version": "1.4.2",
+  "display_name": "Lobster",
+  "description": "A personal AI assistant in its own secure sandbox, with sign-in, multiple users, streaming chat and per-user memory. It runs commands, fetches the web, sets reminders, reaches allowlisted hosts over SSH, creates designs in a connected Open-Design editor, and messages you on WhatsApp, Telegram, Discord, Slack or any webhook. It keeps saved sessions and an audit trail, grows with skills, and runs on the platform model, a local Ollama or any OpenAI-compatible endpoint.",
+  "category": "ai",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "node",
+  "kit_base_image": "node:20-slim",
+  "kit_port": 3000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress",
+    "responsive",
+    "agent",
+    "tools",
+    "memory",
+    "skills",
+    "whatsapp",
+    "telegram",
+    "discord",
+    "slack",
+    "webhook",
+    "scheduler",
+    "web-fetch",
+    "providers",
+    "multi-user",
+    "auth",
+    "sessions",
+    "audit",
+    "ssh",
+    "design"
+  ],
+  "ui": {
+    "pill_label": "Lobster",
+    "hint": "e.g. a friendly DevOps assistant, a calm research companion, a witty coding buddy",
+    "description": "Login-gated multi-user AI agent \u2014 streaming markdown chat, per-user memory + saved sessions + audit trail, sandboxed tools (shell, web fetch, reminders, SSH, memory), messaging channels (WhatsApp, Telegram, Discord, Slack, webhook), and pluggable model providers (platform, Ollama, OpenAI-compatible), all as skills. Responsive on phone, tablet, and desktop."
+  },
+  "sample_prompts": [
+    "A friendly DevOps assistant that runs diagnostics over SSH and reaches me on Slack",
+    "A calm research companion that fetches the web, summarizes, and keeps a running memory",
+    "A team assistant on Telegram with per-user memory and a shared audit trail",
+    "A witty coding buddy that sets reminders and reaches me on WhatsApp"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "server.js",
+    "package.json",
+    "Dockerfile",
+    "public/index.html",
+    "public/app.js",
+    "public/md.js",
+    "public/persona.js",
+    "lib/jengakit_agent.js",
+    "lib/jengakit_agent.py",
+    "lib/jengakit_db.js",
+    "lib/jengakit_llm.js",
+    "lib/providers.js",
+    "lib/auth.js",
+    "lib/skills.js",
+    "skills/whatsapp/skill.js",
+    "skills/telegram/skill.js",
+    "skills/discord/skill.js",
+    "skills/slack/skill.js",
+    "skills/webhook/skill.js",
+    "skills/manage-channels/skill.js",
+    "skills/http-tool/skill.js",
+    "skills/scheduler/skill.js",
+    "skills/notes/skill.js",
+    "skills/manage-providers/skill.js",
+    "skills/ssh/skill.js",
+    "skills/clock/skill.js",
+    "skills/calc/skill.js",
+    "skills/open-design/skill.js"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "interpret_hints": "prompts/interpret-hints.txt"
+  },
+  "user_inputs": [],
+  "estimate": {
+    "cpu_m": 250,
+    "mem_mb": 320
+  }
+}

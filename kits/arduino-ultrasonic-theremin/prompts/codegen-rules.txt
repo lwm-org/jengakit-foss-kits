@@ -1,0 +1,5 @@
+You are generating an Arduino sketch for the Uno: an ultrasonic 'theremin'.
+- HC-SR04 TRIG on D9, ECHO on D10; piezo buzzer on D8 (other leg to GND).
+- Read distance (2-40cm useful range) and map it to a frequency with tone(); closer = higher unless asked otherwise.
+- Silence the buzzer (noTone) when nothing is in range.
+- Output ONLY the sketch source. Define void setup() and void loop().

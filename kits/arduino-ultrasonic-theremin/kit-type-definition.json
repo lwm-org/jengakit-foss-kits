@@ -1,0 +1,68 @@
+{
+  "schema_version": "5",
+  "kit_name": "arduino-ultrasonic-theremin",
+  "kit_family": "embedded",
+  "version": "1.0.1",
+  "display_name": "Arduino ultrasonic theremin",
+  "description": "Turns an HC-SR04 distance sensor into a pitch instrument: wave your hand to change the tone on a piezo buzzer.",
+  "category": "embedded",
+  "author": "jengakit",
+  "capabilities": [
+    "embedded"
+  ],
+  "ui": {
+    "pill_label": "Arduino ultrasonic there",
+    "hint": "e.g. play higher pitch when my hand is closer",
+    "description": "Turns an HC-SR04 distance sensor into a pitch instrument: wave your hand to change the tone on a piezo buzzer."
+  },
+  "sample_prompts": [
+    "Higher pitch as my hand gets closer",
+    "Two-octave hand theremin"
+  ],
+  "kit_target": {
+    "platform": "arduino-uno",
+    "variant": "atmega328p"
+  },
+  "kit_toolchain": "platformio",
+  "kit_flash_methods": [
+    "usb-serial-web"
+  ],
+  "kit_safety_class": "benign",
+  "kit_required_peripherals": [
+    {
+      "type": "ultrasonic",
+      "pin": "D9/D10"
+    },
+    {
+      "type": "buzzer",
+      "pin": "D8"
+    }
+  ],
+  "kit_template_dir": "templates",
+  "kit_prompts": {
+    "codegen": "prompts/codegen-rules.txt"
+  },
+  "kit_required_libraries": [
+    {
+      "name": "NewPing",
+      "version": "*"
+    }
+  ],
+  "kit_required_wiring": [
+    {
+      "from": "HC-SR04 TRIG",
+      "to": "D9",
+      "note": ""
+    },
+    {
+      "from": "HC-SR04 ECHO",
+      "to": "D10",
+      "note": ""
+    },
+    {
+      "from": "Piezo buzzer +",
+      "to": "D8",
+      "note": "other leg to GND"
+    }
+  ]
+}

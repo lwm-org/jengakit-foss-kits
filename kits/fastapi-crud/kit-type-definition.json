@@ -1,0 +1,49 @@
+{
+  "schema_version": "5",
+  "kit_name": "fastapi-crud",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Python CRUD App",
+  "description": "A starter Python app where people browse, add, edit and remove records through a generated web page. Built with FastAPI and SQLite, and data stays put across refreshes.",
+  "category": "fullstack",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "python3",
+  "kit_base_image": "python:3.11-slim",
+  "kit_port": 8000,
+  "kit_network": {
+    "ingress_variant": "standard"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress"
+  ],
+  "ui": {
+    "pill_label": "Python CRUD",
+    "hint": "e.g. an inventory tracker, a booking system, a task manager - with working persistence",
+    "description": "FastAPI + SQLite. Full CRUD that works. LLM generates the HTML UI, template provides the API."
+  },
+  "sample_prompts": [
+    "An inventory management system for a warehouse with stock tracking",
+    "A booking system for a hair salon with appointments and clients",
+    "A task manager with projects, assignments, and due dates"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "Dockerfile",
+    "requirements.txt",
+    "main.py",
+    "templates/index.html"
+  ],
+  "kit_prompts": {
+    "codegen_rules": "prompts/codegen-rules.txt"
+  },
+  "estimate": {
+    "cpu_m": 300,
+    "mem_mb": 256
+  }
+}

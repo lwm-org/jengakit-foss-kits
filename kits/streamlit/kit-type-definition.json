@@ -1,0 +1,53 @@
+{
+  "schema_version": "5",
+  "kit_name": "streamlit",
+  "kit_family": "codegen",
+  "version": "1.1.2",
+  "display_name": "Streamlit",
+  "description": "A Streamlit data dashboard in Python that turns data into interactive charts and tables.",
+  "category": "ai",
+  "author": "jengakit",
+  "kit_min_jengakit_version": "0.1.0",
+  "kit_language": "python3",
+  "kit_base_image": "python:3.11-slim",
+  "kit_port": 5000,
+  "kit_network": {
+    "ingress_variant": "streaming-long-poll"
+  },
+  "kit_deploy": {
+    "method": "deployment",
+    "validate_method": "http-check"
+  },
+  "capabilities": [
+    "http",
+    "ingress",
+    "timeout"
+  ],
+  "ui": {
+    "pill_label": "Streamlit",
+    "hint": "e.g. a data dashboard with charts and sidebar filters",
+    "description": "Streamlit dashboard \u2014 Python 3.11, port 5000. Timeout ingress (no rewrite). For data apps with widgets, charts, and tables."
+  },
+  "sample_prompts": [
+    "Build a CSV upload dashboard that shows summary statistics and charts",
+    "Create a real-time metric tracker with line charts and sidebar filters",
+    "Make an interactive data explorer that lets users filter and sort a sample dataset"
+  ],
+  "kit_template_dir": "templates",
+  "kit_required_files": [
+    "app.py",
+    "requirements.txt",
+    "Dockerfile"
+  ],
+  "kit_prompts": {
+    "interpret_hints": "prompts/interpret-hints.txt",
+    "plan_rules": "prompts/plan-rules.txt",
+    "codegen_rules": "prompts/codegen-rules.txt",
+    "infra_rules": "prompts/infra-rules.txt"
+  },
+  "kit_prompt_prefix": "Build a Streamlit data dashboard app.",
+  "estimate": {
+    "cpu_m": 300,
+    "mem_mb": 384
+  }
+}

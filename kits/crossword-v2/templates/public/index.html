@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0f1320">
+<link rel="icon" href="data:,">
+<title>Crossword</title>
+<style>
+:root{--cell:32px;--cols:10;--bg:#0f1320;--panel:#161d2e;--line:#2a3548;--fg:#e0e8f0;--muted:#8892a8;--accent:#f59e0b;--accent2:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:'Segoe UI',system-ui,sans-serif;min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer}
+.title{font-size:clamp(28px,7vw,64px);font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.sub{color:var(--muted);font-size:clamp(11px,2.6vw,18px);text-align:center;margin-bottom:1rem}
+.btn{border:none;border-radius:10px;padding:clamp(10px,1.6vh,16px) clamp(18px,5vw,32px);font-size:clamp(14px,2.4vw,20px);font-weight:700;margin:4px}
+.btn-solo{background:#2a3548;color:var(--fg)}.btn-multi{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:clamp(12px,2.5vw,22px);width:min(94vw,520px);margin:8px auto}
+input[type=text]{background:#0a0e18;border:1px solid var(--line);color:#fff;padding:10px 14px;border-radius:10px;font-size:clamp(14px,2.4vw,20px);width:100%;max-width:340px}
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;margin:8px 0}
+.diff .focusable,.mode .focusable{padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);font-size:clamp(12px,2.2vw,18px)}
+.diff .focusable.active,.mode .focusable.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.swatch{width:clamp(26px,6vw,42px);height:clamp(26px,6vw,42px);border-radius:50%;border:3px solid transparent}
+.swatch.active{border-color:#fff}
+h4{color:var(--accent);font-size:clamp(12px,2.4vw,18px);margin-bottom:6px}
+.lb-row,.ros-row{display:flex;justify-content:space-between;gap:8px;font-size:clamp(11px,2.2vw,17px);padding:3px 0;border-bottom:1px solid #1e2738}
+.lb-rank{color:var(--accent);width:2.2em}.lb-name{flex:1}.lb-score{color:#00d4ff}
+.lb-empty{color:#556;font-size:clamp(11px,2vw,15px)}
+.ros-row .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
+.chip{padding:6px 12px;border-radius:8px;background:#1a2636;border:1px solid var(--line);color:var(--fg);font-size:clamp(11px,2.2vw,16px)}
+.chip.on{border-color:#22c55e;color:#22c55e}
+
+/* ── Screens ── */
+#waiting,#game,#gameover{display:none}
+#lobby,#waiting,#gameover{width:100%;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:1rem}
+#waiting,#gameover{position:fixed;inset:0;background:rgba(8,12,20,.96);z-index:50;display:none;flex-direction:column}
+
+/* ── Game ── */
+#game{width:100%;flex:1;flex-direction:column;align-items:center;padding:6px}
+#hud{display:flex;gap:12px;align-items:center;justify-content:space-between;width:min(96vw,900px);font-size:clamp(13px,2.6vw,22px);padding:0 clamp(2.6rem,8vw,3.4rem)}
+#timer{font-weight:800;letter-spacing:1px}#timer.warn{color:var(--accent2);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.5}}
+#clue-bar{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:6px 0;font-size:clamp(12px,2.6vw,20px);text-align:center;width:min(96vw,900px);min-height:1.8em}
+.play-area{display:flex;gap:14px;align-items:flex-start;justify-content:center;width:100%;flex-wrap:wrap}
+#board-wrap{display:flex;justify-content:center;align-items:flex-start}
+#board{display:grid;gap:2px;touch-action:manipulation}
+.cx-blk{width:var(--cell);height:var(--cell)}
+.cx-cell{width:var(--cell);height:var(--cell);background:#1a1f30;border:1px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:calc(var(--cell)*0.5);color:var(--fg);border-radius:3px;user-select:none}
+.cx-cell.cx-hl{background:#16294a}.cx-cell.cx-sel{background:#1e3a5f;outline:2px solid #00d4ff;z-index:2}
+.cx-cell.cx-ok{background:#0f3d1a;color:#4ade80}.cx-cell.cx-bad{background:#3d1620;color:#f87171}
+.cx-num{position:absolute;top:0;left:2px;font-size:calc(var(--cell)*0.26);color:var(--muted);font-weight:600;line-height:1}
+.cx-cur{position:absolute;top:2px;right:2px;width:calc(var(--cell)*0.2);height:calc(var(--cell)*0.2);border-radius:50%}
+.clues{display:flex;gap:12px;flex:1;min-width:min(92vw,340px);max-width:420px;max-height:60vh;overflow-y:auto}
+.clues>div{flex:1;background:var(--panel);border-radius:8px;padding:8px}
+.clue{padding:4px 6px;border-radius:4px;color:var(--muted);font-size:clamp(11px,2.2vw,16px)}
+.clue.act{color:#fff;background:#1e3a5f}
+#standings{display:none;width:min(96vw,900px);background:var(--panel);border-radius:8px;padding:6px 10px;margin-top:6px}
+.toolbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0;width:100%}
+.toolbar .btn{padding:8px 16px;font-size:clamp(12px,2.4vw,18px)}
+.fab{position:fixed;z-index:60}
+#mute-btn{top:calc(env(safe-area-inset-top) + 6px);left:calc(env(safe-area-inset-left) + 6px);background:rgba(0,0,0,.5);border:1px solid var(--line);color:#fff;border-radius:8px;padding:6px 10px;font-size:16px}
+
+/* ── On-screen keyboard (touch) ── */
+.oskb{display:none;position:fixed;left:0;right:0;bottom:0;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:rgba(10,14,24,.96);z-index:70;flex-direction:column;gap:5px}
+body.is-coarse .oskb,body.is-touch .oskb{display:flex}
+.oskb-row{display:flex;justify-content:center;gap:4px}
+.oskb-k{flex:1;max-width:44px;min-height:44px;border-radius:6px;border:none;background:#2a3548;color:#fff;font-size:16px;font-weight:700}
+.oskb-k:active{background:var(--accent);color:#000}
+.oskb-bk{max-width:60px}
+body.is-coarse #game,body.is-touch #game{padding-bottom:180px}
+
+/* ── TV / 10-foot focus ── */
+.focus-cur{outline:3px solid #00d4ff !important;outline-offset:2px}
+body.is-tv{font-size:1.25em}
+body.is-tv .title{font-size:clamp(48px,6vw,96px)}
+
+/* ── Orientation: dock clues beside the board in landscape ── */
+@media (orientation:portrait){.clues{max-height:34vh;width:min(96vw,900px);max-width:none}}
+@media (orientation:landscape) and (min-width:760px){.play-area{flex-wrap:nowrap}}
+</style>
+</head>
+<body>
+<button id="mute-btn" class="fab" aria-label="mute">🔊</button>
+
+<!-- Lobby -->
+<div id="lobby">
+  <div class="title">CROSSWORD</div>
+  <div class="sub">Solo · Co-op · Versus — with voice/video &amp; leaderboard</div>
+  <div class="card">
+    <div class="row"><input id="pname" type="text" placeholder="Your name" maxlength="16"></div>
+    <div class="row" id="swatches"></div>
+    <div class="row diff"><button class="focusable active" onclick="setDiff('easy',this)">Easy</button><button class="focusable" onclick="setDiff('medium',this)">Medium</button><button class="focusable" onclick="setDiff('hard',this)">Hard</button></div>
+    <div class="row mode"><button class="focusable active" onclick="setMode('solo',this)">Solo</button><button class="focusable" onclick="setMode('coop',this)">Co-op</button><button class="focusable" onclick="setMode('versus',this)">Versus</button></div>
+    <div class="row"><button class="btn btn-solo focusable" onclick="playSolo()">Play Solo</button></div>
+    <div id="mp-panel" style="display:none">
+      <div class="row"><input id="room-id" type="text" placeholder="Room code (share it)" maxlength="24"></div>
+      <div class="row"><button class="btn btn-multi focusable" onclick="joinRoom()">Join / Create Room</button></div>
+      <div class="row"><button class="chip focusable" id="voice-btn">Voice</button><button class="chip focusable" id="video-btn">Video</button></div>
+      <div class="sub" id="mp-status"></div>
+    </div>
+  </div>
+  <div class="card"><h4>Leaderboard</h4><div id="lb-list"></div></div>
+</div>
+
+<!-- Waiting room -->
+<div id="waiting">
+  <div class="title" style="font-size:clamp(22px,5vw,40px)">Waiting Room</div>
+  <div class="card"><div id="roster"></div></div>
+  <div class="row">
+    <button class="btn btn-solo focusable" id="ready-btn" onclick="toggleReady()">Ready</button>
+    <button class="btn btn-multi focusable" id="start-btn" onclick="hostStart()" style="display:none">Start Game</button>
+    <button class="chip focusable" onclick="leaveRoom()">Leave</button>
+  </div>
+</div>
+
+<!-- Game -->
+<div id="game">
+  <div id="hud"><span id="timer">10:00</span><span id="mode-tag">Solo</span><span>Score: <b id="score">0</b></span></div>
+  <div id="clue-bar">Tap a cell, then type.</div>
+  <div class="play-area">
+    <div id="board-wrap"><div id="board"></div></div>
+    <div class="clues"><div><h4>Across</h4><div id="clue-across"></div></div><div><h4>Down</h4><div id="clue-down"></div></div></div>
+  </div>
+  <div id="standings"></div>
+  <div class="toolbar">
+    <button class="btn btn-multi focusable" onclick="checkBoard()">Check</button>
+    <button class="btn btn-solo focusable" onclick="revealCell()">Reveal cell</button>
+    <button class="btn btn-solo focusable" onclick="revealWord()">Reveal word</button>
+  </div>
+</div>
+
+<!-- Game over -->
+<div id="gameover">
+  <div class="title" id="go-title">Solved!</div>
+  <div class="sub" id="go-stats"></div>
+  <div class="card"><h4>Top Scores</h4><div id="go-lb"></div></div>
+  <button class="btn btn-multi focusable" onclick="playAgain()">Play Again</button>
+</div>
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="audio.js"></script>
+<script src="input.js"></script>
+<script src="net.js"></script>
+<script src="rtc.js"></script>
+<script src="leaderboard.js"></script>
+<script src="crossword-core.js"></script>
+<script src="content.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

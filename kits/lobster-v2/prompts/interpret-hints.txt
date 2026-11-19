@@ -1,0 +1,14 @@
+## Detection
+- IMPORTANT: if the user asks for a personal AI assistant, an AI agent, a chatbot
+  that can DO things (run commands, remember, use tools), a WhatsApp assistant, or
+  an "assistant/agent that ..." — set app_category to "lobster-v2".
+- Keywords: "assistant", "agent", "chatbot", "AI helper", "personal AI", "does
+  things", "remembers", "whatsapp bot", "devops assistant", "coding buddy".
+- Examples: "a devops assistant", "an AI agent that remembers my notes", "a
+  whatsapp assistant", "a coding buddy that can run commands".
+
+## normalized_description note
+- The app is fixed; only the assistant's persona (public/persona.js: name +
+  system prompt) is generated. Capture the PERSONALITY/ROLE the user wants —
+  all capabilities (sandboxed tools, memory, WhatsApp, skills, streaming UI) are
+  built in.
