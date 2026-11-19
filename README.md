@@ -5,13 +5,18 @@ released on their own cadence. Each kit is published as a GitHub release
 `<kit>-v<version>` with one asset, `<kit>.tar.gz`, and listed in `index.json` on
 the rolling `registry-latest` release. The engine's marketplace reads that index.
 
-## Status: temporary
+## Public registry
 
-This repo is private and its name is temporary. Once the vetting in the move
-plan passes, it is renamed in place to its permanent public name (proposed
-`jengakit-kits`), made public and opened to forks. Until then, each install
-points at it by setting its registry URL (`.env` on the engine); no engine
-release ships this name as a default.
+This repo is public. Reading the registry and installing kits needs no token:
+the index and every bundle are plain downloads from GitHub releases. The
+license is to be announced.
+
+## Contributing
+
+Fork the repo, branch, change a kit (bump its `version`), and open a pull
+request to `dev`. `validate.yml` runs on the pull request and needs no secrets.
+Releases happen on `main` through a `dev` to `main` pull request. The engine
+lives in [lwm-org/jengakit](https://github.com/lwm-org/jengakit).
 
 ## Layout
 
@@ -51,10 +56,9 @@ there first, then here, and update `SCHEMA_SOURCE`.
 - `bundle_download_url`: the asset's `browser_download_url`, served off the
   GitHub API rate limit.
 
-`bundle_url` is the `browser_download_url` once the repo is public. While it is
-private it stays the API asset URL, because a private repo answers 404 on
-`browser_download_url` even with a token. `BUNDLE_URL_MODE=download|api`
-overrides the automatic choice.
+`bundle_url` is the `browser_download_url`, a direct download link that needs
+no token. `BUNDLE_URL_MODE=download|auto|api` overrides it (`api` gives the API
+asset URL, `auto` picks it only while the repo is private).
 
 ## Local checks
 
