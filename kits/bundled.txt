@@ -1,6 +1,0 @@
-# Kits to bundle into the Docker image at build time.
-# One kit name per line. Lines starting with # are comments.
-#
-# Currently empty: the FOSS image ships with no kits. The launch kit set
-# is being vetted one kit at a time and is installed by the docker-compose
-# first-run hook from the public marketplace at lwm-org/jengakit.
