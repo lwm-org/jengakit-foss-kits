@@ -4,4 +4,4 @@ MANDATORY Dockerfile:
   COPY . /usr/share/nginx/html
   RUN rm -f /usr/share/nginx/html/Dockerfile /usr/share/nginx/html/nginx.conf
   EXPOSE 80
-Rules: nginx:alpine, port 80, K8s Service port 80 targetPort 80. No build step.
+Rules: nginx:alpine, port 80, published port 80 to container port 80. No build step.

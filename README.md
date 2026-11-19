@@ -3,16 +3,15 @@
 The kits for the jengaKIT engine ([lwm-org/jengakit](https://github.com/lwm-org/jengakit)),
 released on their own cadence. Each kit is published as a GitHub release
 `<kit>-v<version>` with one asset, `<kit>.tar.gz`, and listed in `index.json` on
-the rolling `registry-latest` release. The engine's marketplace and the cloud's
-`foss-gh` kit source read that index.
+the rolling `registry-latest` release. The engine's marketplace reads that index.
 
 ## Status: temporary
 
 This repo is private and its name is temporary. Once the vetting in the move
 plan passes, it is renamed in place to its permanent public name (proposed
 `jengakit-kits`), made public and opened to forks. Until then, each install
-points at it by setting its registry URL (`.env` on the engine, chart values on
-the cloud); no engine release ships this name as a default.
+points at it by setting its registry URL (`.env` on the engine); no engine
+release ships this name as a default.
 
 ## Layout
 
@@ -47,7 +46,7 @@ there first, then here, and update `SCHEMA_SOURCE`.
 `index.json` keeps the keys the engine index always had and adds two:
 
 - `kit_min_jengakit_version`: the lowest engine release (the lwm-org/jengakit
-  version line, not the cloud's) the kit works on, copied from its definition
+  version line) the kit works on, copied from its definition
   when declared. An engine older than that should refuse the install.
 - `bundle_download_url`: the asset's `browser_download_url`, served off the
   GitHub API rate limit.

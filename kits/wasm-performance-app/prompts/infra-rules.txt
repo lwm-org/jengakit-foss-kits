@@ -20,4 +20,4 @@ Rules:
 2. Stage 2 MUST use python:3.11-slim (NOT rust image) — the runtime only needs Python to serve static files.
 3. pip install MUST be conditional: only run if requirements.txt is non-empty.
 4. EXPOSE 8080. CMD runs python3 server.py.
-5. Kubernetes Service and Ingress MUST use port 8080 (not 5000). Set both port and targetPort to 8080.
+5. The published port and the public route MUST use port 8080 (not 5000). Set both the published port and the container port to 8080.

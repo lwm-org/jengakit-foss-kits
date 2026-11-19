@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "go-binary",
   "kit_family": "codegen",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "display_name": "Go Binary",
   "description": "A standalone Go program that runs once to completion and prints its results.",
   "category": "api",
@@ -23,7 +23,7 @@
   "ui": {
     "pill_label": "Go Binary",
     "hint": "e.g. compute prime numbers up to 1000 and print each one",
-    "description": "Go CLI \u2014 runs to completion, prints to stdout. No HTTP server. K8s Job (not Deployment). Output captured via kubectl logs."
+    "description": "Go CLI \u2014 runs to completion, prints to stdout. No HTTP server. One-shot container job (not a long-running service). Output captured from the container logs."
   },
   "sample_prompts": [
     "Compute all prime numbers up to 10000 and print them",

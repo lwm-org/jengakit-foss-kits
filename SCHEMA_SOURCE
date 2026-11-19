@@ -8,7 +8,7 @@ engine_release: v0.8.1
 # repo path                        <- engine path (identical unless noted)
 schema/board-descriptor.v1.json    <- lib/schema/board-descriptor.v1.json
 schema/kit-type-definition.v4.json <- lib/schema/kit-type-definition.v4.json
-schema/kit-type-definition.v5.json <- lib/schema/kit-type-definition.v5.json
+schema/kit-type-definition.v5.json <- lib/schema/kit-type-definition.v5.json (descriptions reworded in Docker terms; keys and enums identical)
 schema/persona-spec.v1.json        <- lib/schema/persona-spec.v1.json
 schema/registry-spec.v1.json       <- lib/schema/registry-spec.v1.json
 boards/*.json                      <- lib/boards/*.json

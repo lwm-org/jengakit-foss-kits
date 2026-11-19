@@ -3,7 +3,7 @@
  * Auto-copied by pipeline when database usage is detected.
  * Files named jengakit_* are platform-owned and overwritten on every deploy.
  *
- * Cloud mode (SUPABASE_DB_URL set):
+ * Hosted mode (SUPABASE_DB_URL set):
  *   pg Pool connected to PostgreSQL with per-app schema
  *   subscribe() watches for row changes via Supabase Realtime
  *

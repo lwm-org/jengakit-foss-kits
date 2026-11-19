@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "crossword",
   "kit_family": "codegen",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "display_name": "Crossword",
   "description": "A real crossword you solve from clues, alone, together or head to head. Plays on phone, tablet, desktop and TV, with in-room voice and video chat, timed scoring and a leaderboard.",
   "category": "game",
