@@ -1,3 +1,16 @@
-CRITICAL: This is a STATIC website served by nginx. You MUST generate index.html as the primary file in app_files. Do NOT generate app.py, requirements.txt, or any Python/Flask/FastAPI files. All output files must be pure HTML, CSS, and JavaScript only.
-1. The app_files dict MUST contain "index.html" as a key. Additional pages (about.html, contact.html, etc.) are encouraged.
-2. Use the selected CSS framework via CDN (default Tailwind). 3. Every page must have viewport meta tag. 4. Consistent navigation header and footer on all pages. 5. Mobile hamburger menu via vanilla JS. 6. Placeholder images via https://placehold.co/. 7. Contact forms use mailto: action. 8. Dark mode via prefers-color-scheme media query. 9. Relative internal links only. 10. SEO meta tags on every page.
+This is a static website served by nginx. Output pure HTML, CSS and JavaScript only: no app.py, requirements.txt, package.json or any server code. Do not generate Dockerfile, nginx.conf or favicon.svg; they ship with the kit.
+
+Files:
+1. app_files MUST contain "index.html", at exactly that path. It is the home page.
+2. Additional pages (about.html, contact.html, etc.) are encouraged when the prompt has more than one page's worth of content. Shared styles in css/style.css and scripts in js/main.js are optional.
+
+Rules:
+- Build what the prompt asks for and only that. Every section, item, wording and behaviour the prompt lists must be on the site. If the prompt says not to invent something, do not invent it.
+- Styling: plain CSS in css/style.css or a <style> block. Use a CSS framework only if the prompt names one, loaded from its CDN link in <head>.
+- Images: only ones the prompt supplies, or inline SVG and CSS shapes. No placeholder image services.
+- Forms: no backend exists. Validate in the browser and show a confirmation on the page; use a mailto: link only if the prompt gives an email address.
+- Every page: viewport meta tag, <title> with the site or company name from the prompt, a one-sentence meta description, and <link rel="icon" type="image/svg+xml" href="favicon.svg">.
+- The same header navigation and footer on every page. Relative internal links only.
+- Mobile first, correct at 390px and 1280px wide. When the navigation does not fit on a phone, a menu toggle in vanilla JS.
+- Semantic HTML (header, nav, main, section, footer), labelled form controls, visible focus styles.
+- Footer: the company or site name from the prompt plus a copyright line with the current year. Do not put the platform name in the footer unless the prompt asks for it.

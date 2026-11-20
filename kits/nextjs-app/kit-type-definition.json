@@ -2,7 +2,7 @@
   "schema_version": "5",
   "kit_name": "nextjs-app",
   "kit_family": "codegen",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "display_name": "Next.js App",
   "description": "Next.js 14 app with Tailwind CSS, Lucide icons and Recharts, built from your description. Everything lives in the one page file; for records that are kept between visits, use nextjs-crud.",
   "category": "fullstack",
@@ -64,7 +64,7 @@
     "codegen_rules": "prompts/codegen-rules.txt"
   },
   "estimate": {
-    "cpu_m": 500,
-    "mem_mb": 512
+    "cpu_m": 25,
+    "mem_mb": 128
   }
 }

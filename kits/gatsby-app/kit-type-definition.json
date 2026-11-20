@@ -2,9 +2,9 @@
   "schema_version": "5",
   "kit_name": "gatsby-app",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Gatsby App",
-  "description": "Static site generated with Gatsby 5, React 18, and Tailwind CSS. Builds to static HTML served by Gatsby serve.",
+  "description": "Gatsby 5 site with React and Tailwind CSS, built from your description. The page is generated ahead of time and served by gatsby serve; there is no server code.",
   "category": "frontend",
   "author": "jengakit",
   "kit_min_jengakit_version": "0.1.0",
@@ -24,13 +24,14 @@
   ],
   "ui": {
     "pill_label": "Gatsby",
-    "hint": "e.g. a marketing site, a blog, a portfolio - static site generation with React",
-    "description": "Gatsby 5 + React + Tailwind. Static site generation with React components and Gatsby plugins."
+    "hint": "e.g. a marketing page for a gym, a portfolio site, a pricing page, an about page",
+    "description": "Gatsby page built from your description, generated ahead of time."
   },
   "sample_prompts": [
-    "A marketing landing page for a SaaS product with pricing tiers and feature comparison",
-    "A photography portfolio with gallery grid and lightbox viewer",
-    "A company about page with team profiles, timeline, and contact form"
+    "A marketing page for a gym with class times and a trial sign-up form",
+    "A photography portfolio with a gallery grid and a contact section",
+    "A pricing page with three plans and a FAQ",
+    "A company about page with team profiles and a timeline"
   ],
   "kit_template_dir": "templates",
   "kit_required_files": [
@@ -41,13 +42,27 @@
     "tailwind.config.cjs",
     "tsconfig.json",
     "src/styles/global.css",
+    "src/pages/index.tsx",
+    "gatsby-ssr.js",
+    "static/favicon.svg"
+  ],
+  "kit_template_overlay_exclude": [
     "src/pages/index.tsx"
+  ],
+  "kit_template_overlay_force": [
+    "gatsby-config.js",
+    "gatsby-ssr.js",
+    "tsconfig.json",
+    "src/styles/global.css",
+    "tailwind.config.cjs",
+    "postcss.config.cjs",
+    "static/favicon.svg"
   ],
   "kit_prompts": {
     "codegen_rules": "prompts/codegen-rules.txt"
   },
   "estimate": {
-    "cpu_m": 500,
-    "mem_mb": 512
+    "cpu_m": 25,
+    "mem_mb": 128
   }
 }
