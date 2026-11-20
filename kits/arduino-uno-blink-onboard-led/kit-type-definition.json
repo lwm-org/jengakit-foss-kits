@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "arduino-uno-blink-onboard-led",
   "kit_family": "embedded",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "display_name": "Arduino Uno onboard LED blinker",
   "description": "Canonical Phase 1 embedded kit. Generates an Arduino sketch that blinks the Uno's built-in LED (pin 13) at an interval inferred from the user's prompt. Flashes via Web Serial in the browser — no installer required.",
   "category": "embedded",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.5.3",
+  "kit_min_jengakit_version": "0.10.0",
   "capabilities": ["embedded", "led-onboard", "blink"],
   "ui": {
     "pill_label": "Arduino blink",

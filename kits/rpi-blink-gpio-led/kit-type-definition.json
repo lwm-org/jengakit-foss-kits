@@ -1,18 +1,18 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "rpi-blink-gpio-led",
   "kit_family": "embedded",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "display_name": "Raspberry Pi GPIO LED blinker",
   "description": "Blinks an external LED wired through a 220Ω resistor to GPIO 17 (BCM) on a Raspberry Pi. A small Python program runs on the Pi itself, using the board's own python3.",
   "category": "embedded",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.5.4",
+  "kit_min_jengakit_version": "0.10.0",
   "capabilities": ["embedded", "led-external", "blink", "rpi", "gpio"],
   "ui": {
     "pill_label": "Pi GPIO blink",
     "hint": "e.g. blink GPIO 17 every 200ms, slow pulse",
-    "description": "Triggers an external LED via the Pi's GPIO. ACTUATOR-class kit — the dashboard's safety gate intercepts the flash until you confirm you've wired the LED through a current-limiting resistor."
+    "description": "Lights an external LED from the Pi's GPIO. The dashboard holds the flash until you confirm the LED is wired through a current-limiting resistor."
   },
   "sample_prompts": [
     "Blink the GPIO 17 LED every 200ms",
