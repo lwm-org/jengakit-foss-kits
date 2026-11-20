@@ -177,7 +177,7 @@ def upload_json_asset(release, json_path, asset_name):
 
 
 def load_kit_definitions():
-    """Return {name: index fields} from each kit-type-definition.json (v4/v5).
+    """Return {name: index fields} from each kit-type-definition.json (kit schema 7).
 
     Synthesizes the v3-shaped `runtime` block from kit_language / kit_port /
     kit_base_image so older registry consumers keep reading it.
