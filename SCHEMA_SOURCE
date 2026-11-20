@@ -6,7 +6,7 @@
 # pull request, cut the engine release, then merge dev to main here the same
 # day. Record the engine merge commit and release below.
 engine_repo: lwm-org/jengakit
-engine_commit: e8f64dabfd4e7239fb6f66547972215d84644365
+engine_commit: c855a5b04403361a5575b789dfc6a021b357c1ff
 engine_release: v0.10.0
 
 # repo path                        <- engine path (identical unless noted)
