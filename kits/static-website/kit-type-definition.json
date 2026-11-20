@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "static-website",
   "kit_family": "codegen",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "display_name": "Static Website",
-  "description": "Static website, one page or several, built from your description. Pure HTML, CSS and JavaScript served by nginx; download it and host it anywhere.",
+  "description": "Static website, one page or several, built from your description. Pure HTML, CSS and JavaScript; download it and host it anywhere.",
   "category": "frontend",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "dockerfile-only",
   "kit_base_image": "nginx:alpine",
   "kit_port": 80,
@@ -29,7 +29,7 @@
   "ui": {
     "pill_label": "Website",
     "hint": "e.g. a portfolio site, landing page, restaurant website, or company brochure",
-    "description": "Pure HTML, CSS and JavaScript served by nginx. Download and host anywhere."
+    "description": "Pure HTML, CSS and JavaScript. Download it and host it anywhere."
   },
   "sample_prompts": [
     "A portfolio website for a photographer with a gallery and a contact section",
@@ -53,9 +53,10 @@
     "infra_rules": "prompts/infra-rules.txt"
   },
   "kit_prompt_prefix": "Build a modern, responsive static website using HTML and CSS. ",
-  "estimate": {
-    "cpu_m": 10,
-    "mem_mb": 48
+  "resources": {
+    "cpu": "xs",
+    "memory": "xs",
+    "storage": "none"
   },
   "user_inputs": [
     {
