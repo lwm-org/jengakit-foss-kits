@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Package each kit at its current version and create a GitHub release for it.
 
-For every `kits/<name>/kit-type-definition.json` (v4/v5):
+For every `kits/<name>/kit-type-definition.json` (kit schema 7):
   1. Read `version` from the definition.
   2. If a release tagged `<name>-v<version>` already exists with the expected
      asset AND the kit's content-hash matches the one recorded in the release
@@ -58,7 +58,7 @@ HEADERS = {
 def list_kits():
     """Return [(name, version, kit_dir), ...] for every well-formed kit.
 
-    Reads kit-type-definition.json (v4/v5) only.
+    Reads kit-type-definition.json (kit schema 7) only.
     """
     out = []
     for name in sorted(os.listdir(KITS_DIR)):

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "jengaKIT Kit Type Definition (v5)",
-  "description": "v5 schema. Superset of v4 (any valid v4 kit is a valid v5 kit modulo the schema_version const). Adds the portable `services` block (a kit DECLARES the backing services it needs - postgres, redis, object-storage, email, cron, ai, auth - instead of the platform inferring them; the docker runtime materializes them) and a single reserved, opaque extension object that kits never author and the engine never reads. The embedded/hardware family is unchanged from v4. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
+  "title": "jengaKIT Kit Type Definition (v7)",
+  "description": "v7 schema, the only kit schema this engine runs. Every kit declares its family and the fields that family needs. Container families (codegen, importer, stamped) declare `resources`: named cpu, memory and storage steps; the engine maps a step to its own run limits, so the schema names steps only. The embedded family has no container and declares no `resources`. The portable `services` block declares the backing services a kit needs. `x-host` is a reserved, opaque extension object that kits never author and the engine never reads. Family-specific specs (registry-spec.yaml, persona-spec.yaml) remain separate files validated by their own schemas.",
   "definitions": {
     "kit_name_string": {
       "type": "string",
@@ -85,18 +85,69 @@
         "type": "string"
       }
     },
-    "estimate_object": {
+    "resources_object": {
       "type": "object",
+      "description": "Named size steps for the app container. The engine maps each step to its own limits; a kit names steps, never raw numbers.",
+      "required": [
+        "cpu",
+        "memory",
+        "storage"
+      ],
       "properties": {
-        "cpu_m": {
-          "type": "integer",
-          "minimum": 0
+        "cpu": {
+          "type": "string",
+          "enum": [
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl",
+            "xxl"
+          ]
         },
-        "mem_mb": {
-          "type": "integer",
-          "minimum": 0
+        "memory": {
+          "type": "string",
+          "enum": [
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl",
+            "xxl"
+          ]
+        },
+        "storage": {
+          "type": "string",
+          "enum": [
+            "none",
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "description": "Data the app keeps. `none` means it keeps no data."
         }
-      }
+      },
+      "additionalProperties": false
+    },
+    "stack_object": {
+      "type": "object",
+      "description": "What the app is built with. Display only; the engine never reads it.",
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "framework": {
+          "type": "string"
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "database": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     },
     "user_inputs_array": {
       "type": "array",
@@ -280,7 +331,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "5"
+      "const": "7"
     },
     "kit_name": {
       "$ref": "#/definitions/kit_name_string"
@@ -321,6 +372,11 @@
     "description": {
       "type": "string"
     },
+    "summary": {
+      "type": "string",
+      "maxLength": 140,
+      "description": "One line for a marketplace tile."
+    },
     "category": {
       "type": "string"
     },
@@ -342,15 +398,6 @@
         "private",
         "tenant"
       ]
-    },
-    "targets": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": [
-          "docker"
-        ]
-      }
     },
     "capabilities": {
       "type": "array",
@@ -417,8 +464,11 @@
     "kit_base_image": {
       "type": "string"
     },
-    "estimate": {
-      "$ref": "#/definitions/estimate_object"
+    "resources": {
+      "$ref": "#/definitions/resources_object"
+    },
+    "stack": {
+      "$ref": "#/definitions/stack_object"
     },
     "user_inputs": {
       "$ref": "#/definitions/user_inputs_array"
@@ -566,7 +616,8 @@
         "required": [
           "kit_language",
           "kit_network",
-          "kit_deploy"
+          "kit_deploy",
+          "resources"
         ]
       }
     },
@@ -581,7 +632,8 @@
       "then": {
         "required": [
           "kit_network",
-          "kit_deploy"
+          "kit_deploy",
+          "resources"
         ]
       }
     },
@@ -596,7 +648,8 @@
       "then": {
         "required": [
           "kit_network",
-          "kit_deploy"
+          "kit_deploy",
+          "resources"
         ]
       }
     },
@@ -614,7 +667,12 @@
           "kit_toolchain",
           "kit_flash_methods",
           "kit_safety_class"
-        ]
+        ],
+        "not": {
+          "required": [
+            "resources"
+          ]
+        }
       }
     },
     {

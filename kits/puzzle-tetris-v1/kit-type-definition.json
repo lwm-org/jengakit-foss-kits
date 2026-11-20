@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "puzzle-tetris-v1",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Tetris Puzzle",
   "description": "Tetris-style falling block puzzle with single-player and 1v1 multiplayer mode. Cleared lines send garbage to opponent. 3 difficulty levels, leaderboard, voice chat.",
   "category": "game",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "node",
   "kit_base_image": "node:20-slim",
   "kit_port": 5000,
@@ -51,8 +51,9 @@
     "codegen_rules": "prompts/codegen-rules.txt"
   },
   "kit_prompt_prefix": "Create a TETRIS falling-block puzzle game as a SINGLE HTML file (public/index.html). ALL game code inline in one <script> tag.\n\nPre-loaded scripts (DO NOT recreate): socket.io CDN, audio.js, touch.js, engine.js\n\nengine.js APIs: LEFT(), RIGHT(), UP(), DOWN(), ACTION(), keys[], GameNet, GameRTC, GameState, GameLobby, GameAudio, TouchControls.\n\n=== TETRIS GAME RULES ===\n- 10-column x 20-row grid\n- 7 tetrominoes: I(cyan), O(yellow), T(purple), S(green), Z(red), J(blue), L(orange)\n- Rotation: clockwise on UP() or ACTION(). Wall kick if rotation blocked.\n- Movement: LEFT()/RIGHT() to move, DOWN() for soft drop, hold DOWN for 500ms = hard drop\n- Line clear: completed rows flash then disappear. Score: 1 line=100, 2=300, 3=500, 4(Tetris)=800\n- Speed increases every 10 lines cleared\n- Game over when new piece can't spawn (stack reached top)\n\n=== MODES ===\n- Solo: standard Tetris, play for high score\n- 1v1 Multiplayer: two side-by-side boards. Cleared lines send garbage rows to opponent (gray blocks with one gap). Use GameNet for sync.\n- Lobby: name input, difficulty selector (Easy/Medium/Hard), Solo vs Multiplayer buttons, leaderboard panel\n- Multiplayer flow: GameNet.joinRoom() \u2192 GameLobby.showWaitingRoom() \u2192 game starts when both ready\n\n=== DIFFICULTY ===\n- Easy: slow drop speed, no garbage on start\n- Medium: moderate speed, starts with 2 garbage rows\n- Hard: fast drop, starts with 4 garbage rows, faster speed ramp\n\n=== VISUALS ===\n- Each block type has distinct color with gradient/glow effect\n- Ghost piece (translucent) shows where current piece will land\n- Line clear animation: flash white then collapse\n- Next piece preview (show next 3 pieces)\n- Hold piece display\n- Dark background with grid lines\n\n=== AUDIO ===\nGameAudio.play('land') on piece lock. GameAudio.play('collect') on line clear. GameAudio.play('levelup') on speed increase. GameAudio.play('lose') on game over. GameAudio.play('explode') on Tetris (4 lines). GameAudio.startMusic() for background.\n\n=== LEADERBOARD ===\nPOST {name: GameState.playerName, score, game: 'Tetris'} to /api/leaderboard on game over. Show top 10 in lobby and game over screen.\n\nDO NOT define LEFT/RIGHT/UP/DOWN/ACTION \u2014 engine.js provides them.\nDO NOT call io() \u2014 use GameNet.\nDO NOT create AudioContext \u2014 use GameAudio.",
-  "estimate": {
-    "cpu_m": 200,
-    "mem_mb": 256
+  "resources": {
+    "cpu": "s",
+    "memory": "s",
+    "storage": "s"
   }
 }

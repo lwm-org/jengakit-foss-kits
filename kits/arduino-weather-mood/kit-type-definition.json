@@ -1,8 +1,9 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "arduino-weather-mood",
   "kit_family": "embedded",
-  "version": "1.0.1",
+  "version": "1.0.2",
+  "kit_min_jengakit_version": "0.10.0",
   "display_name": "Arduino weather + mood lamp",
   "description": "Reads a DHT11 temperature/humidity sensor and shows comfort as an RGB LED color (cool=blue, warm=red), printing readings over serial.",
   "category": "embedded",

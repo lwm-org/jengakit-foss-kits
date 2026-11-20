@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "quay-image-importer",
   "kit_family": "importer",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "display_name": "Quay.io Importer",
   "description": "Runs a ready-made app published on Quay.io as a live jengakit app, from its quay.io name. No source code needed.",
   "category": "importer",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_port": 80,
   "kit_network": {
     "ingress_variant": "standard"
@@ -23,16 +23,17 @@
   "ui": {
     "pill_label": "Quay.io",
     "hint": "e.g. deploy quay.io/bitnami/wordpress or quay.io/tnozicka/ttyd",
-    "description": "Pulls a pre-built Quay.io image and deploys it directly. No source code required. Port is auto-detected from image metadata."
+    "description": "Runs a ready-made app published on Quay.io, with no source code needed. The app's web port is found for you."
   },
   "sample_prompts": [
     "Deploy quay.io/organization/my-image",
     "Import a Quay.io container image into jengaKIT",
     "Deploy a Red Hat Quay image as a jengaKIT app"
   ],
-  "estimate": {
-    "cpu_m": 500,
-    "mem_mb": 512
+  "resources": {
+    "cpu": "m",
+    "memory": "m",
+    "storage": "none"
   },
   "user_inputs": [
     {

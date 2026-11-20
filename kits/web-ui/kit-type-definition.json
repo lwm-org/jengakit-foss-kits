@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "web-ui",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Web UI",
   "description": "Single-page React app via Babel CDN, served by Flask. No npm build step.",
   "category": "frontend",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "python3",
   "kit_base_image": "python:3.11-slim",
   "kit_port": 5000,
@@ -45,8 +45,9 @@
     "infra_rules": "prompts/infra-rules.txt"
   },
   "kit_prompt_prefix": "Build a single-page React web UI app served by Flask. The HTML page must be self-contained inside app.py as a Python string (use single triple-quotes), loading React 18, ReactDOM 18, and Babel standalone via CDN. No npm, no build step, no separate template files. The app must",
-  "estimate": {
-    "cpu_m": 200,
-    "mem_mb": 192
+  "resources": {
+    "cpu": "s",
+    "memory": "s",
+    "storage": "none"
   }
 }

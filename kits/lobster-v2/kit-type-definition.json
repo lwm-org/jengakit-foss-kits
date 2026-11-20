@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "lobster-v2",
   "kit_family": "codegen",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "display_name": "Lobster",
   "description": "A personal AI assistant in its own secure sandbox, with sign-in, multiple users, streaming chat and per-user memory. It runs commands, fetches the web, sets reminders, reaches allowlisted hosts over SSH, creates designs in a connected Open-Design editor, and messages you on WhatsApp, Telegram, Discord, Slack or any webhook. It keeps saved sessions and an audit trail, grows with skills, and runs on the platform model, a local Ollama or any OpenAI-compatible endpoint.",
   "category": "ai",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "node",
   "kit_base_image": "node:20-slim",
   "kit_port": 3000,
@@ -44,7 +44,7 @@
   "ui": {
     "pill_label": "Lobster",
     "hint": "e.g. a friendly DevOps assistant, a calm research companion, a witty coding buddy",
-    "description": "Login-gated multi-user AI agent \u2014 streaming markdown chat, per-user memory + saved sessions + audit trail, sandboxed tools (shell, web fetch, reminders, SSH, memory), messaging channels (WhatsApp, Telegram, Discord, Slack, webhook), and pluggable model providers (platform, Ollama, OpenAI-compatible), all as skills. Responsive on phone, tablet, and desktop."
+    "description": "A personal AI assistant behind sign-in, with streaming chat, per-user memory, saved sessions and an audit trail. Its skills run commands, fetch the web, set reminders and reach allowlisted hosts over SSH. It talks on WhatsApp, Telegram, Discord, Slack or a webhook, and works with the platform model, a local Ollama or any OpenAI-compatible service. Fits phone, tablet and desktop."
   },
   "sample_prompts": [
     "A friendly DevOps assistant that runs diagnostics over SSH and reaches me on Slack",
@@ -88,8 +88,9 @@
     "interpret_hints": "prompts/interpret-hints.txt"
   },
   "user_inputs": [],
-  "estimate": {
-    "cpu_m": 250,
-    "mem_mb": 320
+  "resources": {
+    "cpu": "s",
+    "memory": "s",
+    "storage": "s"
   }
 }

@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "vite-vue-app",
   "kit_family": "codegen",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "display_name": "Vue App (Vite)",
   "description": "Vue app styled with Tailwind CSS, built from your description. Everything lives in the one page file.",
   "category": "frontend",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "node",
   "kit_base_image": "node:20-slim",
   "kit_port": 80,
@@ -63,8 +63,9 @@
   "kit_prompts": {
     "codegen_rules": "prompts/codegen-rules.txt"
   },
-  "estimate": {
-    "cpu_m": 10,
-    "mem_mb": 48
+  "resources": {
+    "cpu": "xs",
+    "memory": "xs",
+    "storage": "none"
   }
 }
