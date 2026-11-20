@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "rust-low-mem-api",
   "kit_family": "codegen",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "display_name": "Rust Low-Memory API",
   "description": "High-performance Rust API using Axum, optimized for minimal memory footprint and fast startup.",
   "category": "api",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "rust",
   "kit_base_image": "alpine:latest",
   "kit_port": 8080,
@@ -45,8 +45,9 @@
     "infra_rules": "prompts/infra-rules.txt"
   },
   "kit_prompt_prefix": "Create a high-performance, low-memory Rust API using Axum.",
-  "estimate": {
-    "cpu_m": 100,
-    "mem_mb": 64
+  "resources": {
+    "cpu": "xs",
+    "memory": "xs",
+    "storage": "none"
   }
 }

@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
-"""Validate jengaKIT kits against the vendored v4/v5 schemas.
+"""Validate jengaKIT kits against the vendored kit schema (version 7).
 
 Validates:
-  - kit-type-definition.json against schema/kit-type-definition.v4.json or .v5.json
+  - kit-type-definition.json against schema/kit-type-definition.v7.json
+  - schema_version is "7"; the retired keys (`estimate`, `targets`) and any
+    `x-` extension key are refused, each with one sentence naming the file
+  - `resources` is declared by every container family (codegen, importer,
+    stamped) and absent from embedded kits
+  - `description` and `ui.description` say what the app does for its users:
+    no implementation words (see IMPLEMENTATION_WORDS) and a first sentence
+    of at most DESCRIPTION_LEAD_MAX characters
   - registry-spec.yaml (importer kits) against schema/registry-spec.v1.json
   - persona-spec.yaml (stamped kits) against schema/persona-spec.v1.json
   - an embedded kit's kit_target.platform against the board descriptors in boards/
@@ -32,7 +39,12 @@ if REPO_ROOT not in sys.path:
 
 import re  # noqa: E402
 
-from tools.schema_versions import is_supported_schema  # noqa: E402
+from tools.schema_versions import (  # noqa: E402
+    LATEST_SCHEMA_VERSION,
+    RETIRED_KEYS,
+    is_supported_schema,
+    supported_versions_text,
+)
 
 # The board registry is imported at module load on purpose: a missing or
 # malformed boards/ folder stops the run here instead of letting embedded
@@ -40,15 +52,60 @@ from tools.schema_versions import is_supported_schema  # noqa: E402
 from tools.board_registry import known_platform_ids  # noqa: E402
 
 SCHEMA_DIR = os.path.join(REPO_ROOT, "schema")
-V4_SCHEMA = os.path.join(SCHEMA_DIR, "kit-type-definition.v4.json")
-V5_SCHEMA = os.path.join(SCHEMA_DIR, "kit-type-definition.v5.json")
+V7_SCHEMA = os.path.join(SCHEMA_DIR, "kit-type-definition.v7.json")
 REGISTRY_SCHEMA = os.path.join(SCHEMA_DIR, "registry-spec.v1.json")
 PERSONA_SCHEMA = os.path.join(SCHEMA_DIR, "persona-spec.v1.json")
 
 _VERSION_FLOOR_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
 # Map each supported schema_version to its JSON Schema file.
-_SCHEMA_BY_VERSION = {"4": V4_SCHEMA, "5": V5_SCHEMA}
+_SCHEMA_BY_VERSION = {"7": V7_SCHEMA}
+
+# Families that run as an app container and so name their size in `resources`.
+CONTAINER_FAMILIES = ("codegen", "importer", "stamped")
+
+# The first sentence of a description is the headline a kit page sets in its
+# display size, so it is held to a headline's length.
+DESCRIPTION_LEAD_MAX = 160
+
+# Words a kit's description may not carry: how a kit is built, stored or
+# shipped, never what it does for the people who use it. Matched whole-word,
+# case-blind, plural included. Orchestrator names are not listed here because
+# scripts/check-forbidden-words.py already refuses them in every file.
+IMPLEMENTATION_WORDS = (
+    "server",
+    "backend",
+    "database",
+    "SQLite",
+    "Postgres",
+    "PostgreSQL",
+    "MongoDB",
+    "Redis",
+    "Supabase",
+    "Socket.io",
+    "container",
+    "image",
+    "Docker",
+    "nginx",
+    "process",
+    "rendered",
+    "SSR",
+    "deploy",
+    "deployment",
+    "provision",
+    "provisioned",
+    "ingress",
+    "pod",
+    "namespace",
+    "relay",
+    "trigger",
+    "secret",
+    "env var",
+)
+_WORD_PATTERNS = tuple(
+    (w, re.compile(rf"\b{re.escape(w)}(?:e?s)?\b", re.IGNORECASE)) for w in IMPLEMENTATION_WORDS
+)
+_SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
 
 
 def _load_validator(path: str) -> Draft7Validator:
@@ -93,6 +150,65 @@ def _version_floor_errors(defn: dict) -> List[str]:
     if not isinstance(floor, str) or not _VERSION_FLOOR_RE.match(floor):
         return [f"kit_min_jengakit_version {floor!r} is not a MAJOR.MINOR.PATCH version"]
     return []
+
+
+def _retired_key_errors(defn: dict, def_path: str) -> List[str]:
+    """One sentence per key kit schema 7 removed or a public kit may not carry."""
+    errors: List[str] = []
+    for key in RETIRED_KEYS:
+        if key in defn:
+            hint = " Declare `resources` instead." if key == "estimate" else ""
+            errors.append(f"{def_path} uses `{key}`, which kit schema {LATEST_SCHEMA_VERSION} removed.{hint}")
+    for key in sorted(k for k in defn if isinstance(k, str) and k.startswith("x-")):
+        errors.append(
+            f"{def_path} carries the extension key `{key}`; kits published here stay neutral, so remove it."
+        )
+    return errors
+
+
+def _resources_errors(defn: dict, def_path: str) -> List[str]:
+    """Container families name their size; embedded kits have no container to size."""
+    fam = defn.get("kit_family")
+    if fam in CONTAINER_FAMILIES and "resources" not in defn:
+        return [f"{def_path} declares no `resources`; every {fam} kit names its cpu, memory and storage steps."]
+    if fam == "embedded" and "resources" in defn:
+        return [f"{def_path} declares `resources`, but an embedded kit runs on a board and has nothing to size."]
+    return []
+
+
+def _first_sentence(text: str) -> str:
+    flat = " ".join(text.split())
+    end = _SENTENCE_END.search(flat)
+    return flat[: end.end()] if end else flat
+
+
+def implementation_words(text: object) -> List[str]:
+    """The implementation words `text` names, in list order."""
+    if not isinstance(text, str):
+        return []
+    return [w for w, rx in _WORD_PATTERNS if rx.search(text)]
+
+
+def _prose_errors(defn: dict, def_path: str) -> List[str]:
+    """`description` and `ui.description` say what the app does, in plain words."""
+    errors: List[str] = []
+    ui = defn.get("ui") if isinstance(defn.get("ui"), dict) else {}
+    for field, value in (("description", defn.get("description")), ("ui.description", ui.get("description"))):
+        if not isinstance(value, str):
+            continue
+        hits = implementation_words(value)
+        if hits:
+            names = ", ".join(repr(h) for h in hits)
+            errors.append(
+                f"{def_path} {field} names {names}; say what the app does for its users, not how it is built or run."
+            )
+        lead = _first_sentence(value)
+        if len(lead) > DESCRIPTION_LEAD_MAX:
+            errors.append(
+                f"{def_path} {field} opens with a {len(lead)}-character sentence; "
+                f"keep the first sentence to {DESCRIPTION_LEAD_MAX} characters."
+            )
+    return errors
 
 
 def _validate_metadata(kit_dir: str, defn: dict) -> List[str]:
@@ -192,17 +308,23 @@ def validate_kit(kit_dir: str) -> List[str]:
     except Exception as e:
         return [f"kit-type-definition.json: invalid JSON: {e}"]
 
+    rel_path = os.path.relpath(def_path, REPO_ROOT)
     if not is_supported_schema(defn):
-        return [f"unknown or unsupported schema_version {defn.get('schema_version')!r} (expected one of '4', '5')"]
+        found = defn.get("schema_version")
+        named = "names no schema_version" if found in (None, "") else f"uses kit schema {found!r}"
+        return [f"{rel_path} {named}; kits here are on schema {supported_versions_text()} only, so set \"schema_version\": \"{LATEST_SCHEMA_VERSION}\"."]
 
     errors: List[str] = []
+    errors.extend(_retired_key_errors(defn, rel_path))
+    errors.extend(_resources_errors(defn, rel_path))
+    errors.extend(_prose_errors(defn, rel_path))
     errors.extend(_validate_metadata(kit_dir, defn))
     errors.extend(_file_existence_errors(kit_dir, defn))
     return errors
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate jengaKIT kits (v4/v5)")
+    parser = argparse.ArgumentParser(description="Validate jengaKIT kits (kit schema 7)")
     parser.add_argument(
         "paths",
         nargs="*",

@@ -1,14 +1,17 @@
 # Engine files vendored into this repo. The engine (lwm-org/jengakit) is the
-# source of record; update these copies in a pull request here after the engine
-# change merges, and record the new engine commit below.
+# source of record, and its "Kits repo copies" check compares these copies with
+# the engine's files on this repo's dev branch. A change to a copied file lands
+# in this order: open both pull requests together, merge this repo's one into
+# dev first (do not release it), re-run the engine check and merge the engine
+# pull request, cut the engine release, then merge dev to main here the same
+# day. Record the engine merge commit and release below.
 engine_repo: lwm-org/jengakit
-engine_commit: e8f64dabfd4e7239fb6f66547972215d84644365
-engine_release: v0.8.1
+engine_commit: c855a5b04403361a5575b789dfc6a021b357c1ff
+engine_release: v0.10.0
 
 # repo path                        <- engine path (identical unless noted)
 schema/board-descriptor.v1.json    <- lib/schema/board-descriptor.v1.json
-schema/kit-type-definition.v4.json <- lib/schema/kit-type-definition.v4.json
-schema/kit-type-definition.v5.json <- lib/schema/kit-type-definition.v5.json
+schema/kit-type-definition.v7.json <- lib/schema/kit-type-definition.v7.json
 schema/persona-spec.v1.json        <- lib/schema/persona-spec.v1.json
 schema/registry-spec.v1.json       <- lib/schema/registry-spec.v1.json
 boards/*.json                      <- lib/boards/*.json

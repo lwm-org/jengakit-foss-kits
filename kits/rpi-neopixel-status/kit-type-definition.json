@@ -1,8 +1,9 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "rpi-neopixel-status",
   "kit_family": "embedded",
-  "version": "1.0.1",
+  "version": "1.0.2",
+  "kit_min_jengakit_version": "0.10.0",
   "display_name": "Pi NeoPixel ambient status",
   "description": "Drives a WS2812/NeoPixel strip as an ambient status light \u2014 a color wash you can drive from weather, system, or CI state.",
   "category": "embedded",

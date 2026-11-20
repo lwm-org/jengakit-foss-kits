@@ -1,5 +1,5 @@
 """Services-demo app — reports live connectivity to the platform-provisioned
-backing services (declared via the kit's v5 `services:` block).
+backing services (declared via the kit's `services:` block).
 
 The platform injects DATABASE_URL + REDIS_URL; this app connects to each on
 every request and serves the status at `/`. It always returns 200 (so the deploy
