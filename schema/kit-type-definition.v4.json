@@ -143,7 +143,7 @@
     "author":                     { "type": "string" },
     "tier_min":                   { "type": "string", "enum": ["free", "business", "enterprise"] },
     "visibility":                 { "type": "string", "enum": ["public", "private", "tenant"] },
-    "targets":                    { "type": "array", "items": { "type": "string", "enum": ["docker", "k8s"] } },
+    "targets":                    { "type": "array", "items": { "type": "string", "enum": ["docker"] } },
     "capabilities":               { "type": "array", "items": { "type": "string" }, "minItems": 1 },
     "ui":                         { "$ref": "#/definitions/ui_object" },
     "sample_prompts":             { "type": "array", "items": { "type": "string" } },
