@@ -29,11 +29,7 @@ const PORT = parseInt(process.env.PORT || '3000', 10);
 function resolveUrl(raw) {
   if (!raw) return '';
   try {
-    const u = new URL(raw);
-    if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(u.hostname)) {
-      u.hostname = 'jengakit-ui.jengakit-system.svc.cluster.local';
-    }
-    return u.toString();
+    return new URL(raw).toString();
   } catch (_) { return raw; }
 }
 
