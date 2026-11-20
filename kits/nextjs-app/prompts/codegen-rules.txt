@@ -1,71 +1,26 @@
-CRITICAL: Generate ONLY these two files. Nothing else:
-1. app/page.js — The entire application UI as a single React component
-2. app/globals.css — Tailwind directives + custom theme CSS
+Generate exactly these two files, at exactly these paths, and nothing else:
+1. app/page.jsx: the whole application UI as one React component
+2. app/globals.css: Tailwind directives plus the theme CSS
 
-DO NOT generate: package.json, Dockerfile, next.config.js, layout.js, lib/db.js, jsconfig.json, tailwind.config.js, postcss.config.js, or any other file.
+Do not generate package.json, Dockerfile, next.config.js, app/layout.jsx, jsconfig.json, tailwind.config.js, postcss.config.js or any other file. They ship with the kit.
 
-=== app/page.js RULES ===
-
-The file MUST start with the EXACT directive (use double quotes — JSON-safe round-trip): "use client";
-
-Structure:
+=== app/page.jsx ===
+- First line, exactly (double quotes): "use client";
 - One default export: export default function Home() { ... }
-- ALL application logic in this single component
-- Use useState for: active tab/page, form data, modal visibility, selected items
-- Use sidebar navigation to switch between different "pages" (views) within the component
+- All logic lives in this one component. Use useState for interactive state (open menu, form fields, validation messages, active view).
+- Installed packages: react, lucide-react, recharts, tailwindcss. Import only what the page uses. Import nothing else.
+- There is no backend. No fetch, no API routes, no database. Data the page shows is constants in this file.
+- Build what the prompt asks for and only that. A landing page is a landing page, a dashboard is a dashboard, a store is a store. Do not add a sidebar, stat cards, data tables, charts, tabs or admin screens unless the prompt asks for them.
+- Every section, item, wording and behaviour the prompt lists must be on the page. If the prompt says to include something, include it. If the prompt says not to invent something, do not invent it.
+- Mobile first, Tailwind utility classes only, correct at 390px and 1280px wide.
+- Semantic HTML (header, nav, main, section, footer), labelled form controls, visible focus styles.
+- Page metadata: the layout does not know the page's name. In a useEffect, set document.title to the site or app name from the prompt and set the meta description (create the tag if missing) to one sentence about the page.
+- Footer: the company or app name from the prompt plus a copyright line with the current year. Do not put the platform name in the footer unless the prompt asks for it.
 
-Required imports (these packages are pre-installed):
-- import { useState } from 'react';
-- import { IconName } from 'lucide-react';  (LayoutDashboard, Users, FileText, Clock, DollarSign, Settings, Plus, Search, Edit, Trash2, ChevronRight, etc.)
-- import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-
-Layout structure:
-- Left sidebar (w-64, dark background matching theme) with:
-  - Business name/logo at top
-  - Navigation items with Lucide icons
-  - Active item highlighted
-- Main content area (flex-1) with:
-  - Page title header with action buttons
-  - Content specific to active tab
-
-EVERY tab/section MUST include:
-- Stat cards row (3-4 cards with label, value, icon)
-- Data table with realistic sample rows (8-15 rows)
-- Action buttons (Add New, Edit, Delete)
-- Search/filter input
-- At least one modal/form for creating/editing entries
-
-Sample data:
-- Define realistic sample data as const arrays INSIDE the component or at module level
-- Use business-appropriate names, amounts, dates
-- Include 8-15 entries per data type
-- Dates should use readable format: "Jan 15, 2024"
-- Currency should be formatted: "$2,450.00"
-
-Charts:
-- Include at least 2 Recharts visualizations on the dashboard/overview tab
-- Use ResponsiveContainer with width="100%" height={300}
-- Use theme-appropriate colors for chart elements
-
-Forms and interactions:
-- Add New button opens a form section or inline form
-- Form fields with labels, inputs, selects
-- useState to track form state
-- Save/Cancel buttons on forms
-
-=== app/globals.css RULES ===
-
-Must include:
+=== app/globals.css ===
+Must start with:
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-Add custom CSS variables for the theme colors requested by the user.
-Example for black/white/gold theme:
-:root {
-  --primary: #D4AF37;
-  --bg-dark: #000000;
-  --bg-light: #FFFFFF;
-}
-
-Style the scrollbar, selection colors, and any custom utility classes.
+Then CSS variables on :root for the palette the prompt asks for, and any custom styles the page needs.

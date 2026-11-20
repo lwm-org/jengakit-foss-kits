@@ -2,9 +2,9 @@
   "schema_version": "5",
   "kit_name": "nextjs-app",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "display_name": "Next.js App",
-  "description": "Full-stack business application using Next.js 14, Tailwind CSS, Lucide Icons, Recharts, and SQLite. Template-first \u2014 guaranteed to build.",
+  "description": "Next.js 14 app with Tailwind CSS, Lucide icons and Recharts, built from your description. Everything lives in the one page file; for records that are kept between visits, use nextjs-crud.",
   "category": "fullstack",
   "author": "jengakit",
   "kit_min_jengakit_version": "0.1.0",
@@ -23,15 +23,15 @@
     "ingress"
   ],
   "ui": {
-    "pill_label": "Business App",
-    "hint": "e.g. an invoicing app for a construction business, a CRM with dashboards, a project tracker",
-    "description": "Full-stack Next.js business app with sidebar, tabs, charts, forms, tables, and SQLite database. Guaranteed build."
+    "pill_label": "Next.js App",
+    "hint": "e.g. a landing page for a towing company, a portfolio site, a pricing page, a product tour",
+    "description": "Next.js page built from your description."
   },
   "sample_prompts": [
-    "An invoicing app for a construction business with customer tracking and bookkeeping",
-    "A project management app with kanban boards, team members, and due dates",
-    "A CRM for a real estate agency with property listings and client management",
-    "A clinic management system with appointments, patients, and billing"
+    "A landing page for a towing company with a request form",
+    "A portfolio site for a photographer with a contact section",
+    "A pricing page with three plans and a FAQ",
+    "A product tour page with feature sections and a sign-up form"
   ],
   "kit_template_dir": "templates",
   "kit_required_files": [
@@ -40,11 +40,25 @@
     "next.config.js",
     "tailwind.config.js",
     "postcss.config.js",
-    "app/layout.js",
-    "app/page.js",
+    "app/layout.jsx",
+    "app/page.jsx",
     "app/globals.css",
     "jsconfig.json",
-    "components.json"
+    "components.json",
+    "app/icon.svg"
+  ],
+  "kit_template_overlay_exclude": [
+    "app/page.jsx",
+    "app/globals.css"
+  ],
+  "kit_template_overlay_force": [
+    "app/layout.jsx",
+    "next.config.js",
+    "tailwind.config.js",
+    "postcss.config.js",
+    "jsconfig.json",
+    "components.json",
+    "app/icon.svg"
   ],
   "kit_prompts": {
     "codegen_rules": "prompts/codegen-rules.txt"
