@@ -1,5 +1,3 @@
 # Lines allowed to keep a forbidden pattern. Format: path<TAB>regex searched in the line.
 # Every entry needs a reason. An entry that matches nothing fails the check.
 
-# Runtime code: the LLM URL rewrite is behaviour, not prose, and changes only with a kit fix.
-kits/lobster/templates/server.js	u\.hostname = 'jengakit-ui\.jengakit-system\.svc\.cluster\.local'
