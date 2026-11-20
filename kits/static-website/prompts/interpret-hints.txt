@@ -1,5 +1,5 @@
 ## Detection
-- IMPORTANT: if the user asks for a website, landing page, portfolio, blog, brochure site, multi-page site, static site, HTML website, company website, personal website, marketing page, restaurant website, or any application that is primarily content pages without a backend/database, set framework to "html", runtime to "html", app_category to "static-website"
+- IMPORTANT: if the user asks for a website, landing page, portfolio, blog, brochure site, multi-page site, static site, HTML website, company website, personal website, marketing page, restaurant website, or any application that is primarily content pages without a backend, set framework to "html", runtime to "html", app_category to "static-website"
 
 ## normalized_description note
-- For static-website apps: specify it must be pure HTML/CSS/JS with no server-side code, served by nginx:alpine, using the selected CSS framework via CDN, responsive mobile-first design, semantic HTML5, consistent navigation across pages, placeholder images via placehold.co. Port 80.
+- For static-website apps: specify it must be pure HTML/CSS/JS with no server-side code, served by nginx:alpine, responsive mobile-first design, semantic HTML5, consistent navigation across pages, and every section and item the user listed. Port 80.
