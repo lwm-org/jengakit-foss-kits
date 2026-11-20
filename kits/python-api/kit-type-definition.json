@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "python-api",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Python API",
   "description": "Minimal Flask REST API returning JSON. Single-file, no frontend.",
   "category": "api",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "python3",
   "kit_base_image": "python:3.11-slim",
   "kit_port": 5000,
@@ -25,7 +25,7 @@
   "ui": {
     "pill_label": "Python API",
     "hint": "e.g. a REST API that returns weather data as JSON",
-    "description": "Flask REST API \u2014 Python 3.11, returns JSON, port 5000. Single container."
+    "description": "A Flask REST API in Python that answers with JSON. One file, no web page."
   },
   "sample_prompts": [
     "A REST API that returns current weather data for any city as JSON",
@@ -45,8 +45,9 @@
     "infra_rules": "prompts/infra-rules.txt"
   },
   "kit_prompt_prefix": "Build a minimal Python Flask REST API.",
-  "estimate": {
-    "cpu_m": 250,
-    "mem_mb": 256
+  "resources": {
+    "cpu": "s",
+    "memory": "s",
+    "storage": "none"
   }
 }
