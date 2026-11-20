@@ -348,8 +348,7 @@
       "items": {
         "type": "string",
         "enum": [
-          "docker",
-          "k8s"
+          "docker"
         ]
       }
     },
@@ -433,10 +432,10 @@
         "$ref": "#/definitions/service_object"
       }
     },
-    "x-jengakit-cloud": {
+    "x-host": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Reserved extension object. Kits never author it; the validator accepts it as opaque and the engine never reads it."
+      "description": "Reserved host-specific extension object. Kits never author it; the validator accepts it as opaque and the engine never reads it."
     },
     "kit_target": {
       "$ref": "#/definitions/kit_target_object"
