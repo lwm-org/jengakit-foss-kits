@@ -1,13 +1,13 @@
 {
-  "schema_version": "5",
+  "schema_version": "7",
   "kit_name": "crossword-v2",
   "kit_family": "codegen",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "display_name": "Crossword",
   "description": "A real crossword you solve from clues, alone, together or head to head. Plays on phone, tablet, desktop and TV, with in-room voice and video chat, timed scoring and a leaderboard.",
   "category": "game",
   "author": "jengakit",
-  "kit_min_jengakit_version": "0.1.0",
+  "kit_min_jengakit_version": "0.10.0",
   "kit_language": "node",
   "kit_base_image": "node:20-slim",
   "kit_port": 5000,
@@ -62,8 +62,9 @@
     "codegen_rules": "prompts/codegen-rules.txt",
     "interpret_hints": "prompts/interpret-hints.txt"
   },
-  "estimate": {
-    "cpu_m": 200,
-    "mem_mb": 256
+  "resources": {
+    "cpu": "s",
+    "memory": "s",
+    "storage": "s"
   }
 }
