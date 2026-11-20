@@ -1,29 +1,19 @@
-CRITICAL: Generate ONLY src/App.vue — nothing else.
+Generate exactly this one file, at exactly this path, and nothing else:
+1. src/App.vue: the whole application UI as one Vue single-file component
 
-This is a Vite + Vue 3 app. Do NOT use React imports, JSX, or Next.js imports.
+Do not generate package.json, Dockerfile, index.html, src/main.ts, src/style.css, vite.config.ts, nginx.conf, tailwind.config.cjs, postcss.config.cjs or any other file. They ship with the kit.
 
-DO NOT generate: package.json, Dockerfile, vite.config.ts, main.ts, style.css, index.html, nginx.conf, tailwind.config, postcss.config, or any config file.
+This is Vite + Vue 3: no React, no JSX, no Next.js imports.
 
-=== src/App.vue RULES ===
-
-Structure:
-- Use <script setup lang="ts">, <template>, and <style scoped> sections
-- ALL application logic in this single component
-- Use ref() and reactive() for state management
-- Use vue-router for navigation if needed (already in package.json)
-- Use @vueuse/core composables where helpful
-
-Imports (all pre-installed):
-- import { ref, reactive, computed } from 'vue';
-- import { useLocalStorage, useDark } from '@vueuse/core';
-
-Layout:
-- Left sidebar (w-56) with business name and navigation items
-- Main content area with page title and content
-- Tailwind CSS classes for ALL styling
-
-Content:
-- Stat cards (3-4 per section)
-- Data tables with 8-15 realistic sample rows
-- Forms with inputs, selects, action buttons
-- Theme colors via Tailwind utility classes
+=== src/App.vue ===
+- Sections: <script setup lang="ts">, <template>, and <style scoped> only if needed.
+- All logic lives in this one component. Import ref, reactive, computed and onMounted from 'vue'.
+- Installed packages: vue, vue-router, @vueuse/core. Import only what the page uses. Import nothing else.
+- src/style.css already loads Tailwind. Style with Tailwind utility classes.
+- The site is static files. No backend, no fetch to an API, no database. Data the page shows is constants in this file.
+- Build what the prompt asks for and only that. A landing page is a landing page, a dashboard is a dashboard, a store is a store. Do not add a sidebar, stat cards, data tables, charts, tabs or admin screens unless the prompt asks for them.
+- Every section, item, wording and behaviour the prompt lists must be on the page. If the prompt says to include something, include it. If the prompt says not to invent something, do not invent it.
+- Mobile first, correct at 390px and 1280px wide.
+- Semantic HTML (header, nav, main, section, footer), labelled form controls, visible focus styles.
+- Page metadata: index.html does not know the page's name. In onMounted, set document.title to the site or app name from the prompt and set the meta description (create the tag if missing) to one sentence about the page.
+- Footer: the company or app name from the prompt plus a copyright line with the current year. Do not put the platform name in the footer unless the prompt asks for it.
