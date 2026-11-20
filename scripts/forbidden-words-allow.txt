@@ -1,13 +1,5 @@
 # Lines allowed to keep a forbidden pattern. Format: path<TAB>regex searched in the line.
 # Every entry needs a reason. An entry that matches nothing fails the check.
 
-# The schema key name is read by the validator; renaming it changes which kits validate.
-schema/kit-type-definition.v5.json	"x-jengakit-cloud": \{
-
 # Runtime code: the LLM URL rewrite is behaviour, not prose, and changes only with a kit fix.
 kits/lobster/templates/server.js	u\.hostname = 'jengakit-ui\.jengakit-system\.svc\.cluster\.local'
-
-# Schema enum value read by the validator; the engine schema is the source of record, so it
-# leaves only with an engine schema change (no kit here declares it).
-schema/kit-type-definition.v4.json	"enum": \["docker", "k8s"\]
-schema/kit-type-definition.v5.json	^\s*"k8s"$

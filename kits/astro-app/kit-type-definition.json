@@ -2,9 +2,9 @@
   "schema_version": "5",
   "kit_name": "astro-app",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Astro App",
-  "description": "Static site built with Astro 4, React islands, and Tailwind CSS. Builds to static files served by nginx.",
+  "description": "Astro 4 site with React islands and Tailwind CSS, built from your description. Builds to static files served by nginx; there is no server code.",
   "category": "frontend",
   "author": "jengakit",
   "kit_min_jengakit_version": "0.1.0",
@@ -24,13 +24,13 @@
   ],
   "ui": {
     "pill_label": "Astro",
-    "hint": "e.g. a content site, a blog, a portfolio - static-first with React islands for interactivity",
-    "description": "Astro 4 + React islands + Tailwind. Static-first with interactive React components where needed."
+    "hint": "e.g. a content site, a portfolio, a product landing page",
+    "description": "Astro page built from your description, with React only where it needs to be interactive."
   },
   "sample_prompts": [
-    "A developer portfolio with project cards, skills section, and contact form",
-    "A product landing page with feature sections, testimonials, and pricing",
-    "A travel blog with destination cards, photo galleries, and trip timeline"
+    "A developer portfolio with project cards, a skills section and a contact form",
+    "A product landing page with feature sections, testimonials and pricing",
+    "A travel blog home page with destination cards and a trip timeline"
   ],
   "kit_template_dir": "templates",
   "kit_required_files": [
@@ -41,13 +41,25 @@
     "tailwind.config.cjs",
     "nginx.conf",
     "src/layouts/Layout.astro",
+    "src/pages/index.astro",
+    "public/favicon.svg"
+  ],
+  "kit_template_overlay_exclude": [
     "src/pages/index.astro"
+  ],
+  "kit_template_overlay_force": [
+    "src/layouts/Layout.astro",
+    "astro.config.mjs",
+    "tailwind.config.cjs",
+    "postcss.config.cjs",
+    "nginx.conf",
+    "public/favicon.svg"
   ],
   "kit_prompts": {
     "codegen_rules": "prompts/codegen-rules.txt"
   },
   "estimate": {
-    "cpu_m": 300,
-    "mem_mb": 256
+    "cpu_m": 10,
+    "mem_mb": 48
   }
 }

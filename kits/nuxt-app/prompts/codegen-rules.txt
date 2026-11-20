@@ -1,24 +1,19 @@
-CRITICAL: Generate ONLY pages/index.vue — nothing else.
+Generate exactly this one file, at exactly this path, and nothing else:
+1. pages/index.vue: the whole application UI as one Vue single-file component
 
-This is a Nuxt 3 app with Vue 3. Do NOT use React imports, JSX, or Next.js imports.
+Do not generate package.json, Dockerfile, nuxt.config.ts, app.vue, tailwind.config.cjs or any other file. They ship with the kit.
 
-DO NOT generate: package.json, Dockerfile, nuxt.config.ts, app.vue, tailwind.config, or any config file.
+This is Nuxt 3 with Vue 3: no React, no JSX, no Next.js imports.
 
-=== pages/index.vue RULES ===
-
-Structure:
-- Use <script setup lang="ts">, <template>, and <style scoped> sections
-- ALL application logic in this single component
-- Nuxt auto-imports ref, reactive, computed — no need to import from vue
-- Use NuxtLink for navigation if needed
-
-Layout:
-- Left sidebar (w-56) with business name and navigation items
-- Main content area with page title and content
-- Tailwind CSS classes for ALL styling
-
-Content:
-- Stat cards (3-4 per section)
-- Data tables with 8-15 realistic sample rows
-- Forms with inputs, selects, action buttons
-- Theme colors via Tailwind utility classes
+=== pages/index.vue ===
+- Sections: <script setup lang="ts">, <template>, and <style scoped> only if needed.
+- All logic lives in this one component. Nuxt auto-imports ref, reactive, computed, useHead and useSeoMeta; do not import them from vue.
+- Installed packages: nuxt and @nuxtjs/tailwindcss. Import nothing else.
+- Style with Tailwind utility classes (the Tailwind module is already loaded).
+- There is no backend. No fetch, no server routes, no database. Data the page shows is constants in this file.
+- Build what the prompt asks for and only that. A landing page is a landing page, a dashboard is a dashboard, a store is a store. Do not add a sidebar, stat cards, data tables, charts, tabs or admin screens unless the prompt asks for them.
+- Every section, item, wording and behaviour the prompt lists must be on the page. If the prompt says to include something, include it. If the prompt says not to invent something, do not invent it.
+- Mobile first, correct at 390px and 1280px wide.
+- Semantic HTML (header, nav, main, section, footer), labelled form controls, visible focus styles.
+- Page metadata: call useSeoMeta({ title, description }) with the site or app name from the prompt and one sentence about the page.
+- Footer: the company or app name from the prompt plus a copyright line with the current year. Do not put the platform name in the footer unless the prompt asks for it.

@@ -2,9 +2,9 @@
   "schema_version": "5",
   "kit_name": "vite-vue-app",
   "kit_family": "codegen",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "display_name": "Vue App (Vite)",
-  "description": "Static Vue 3 SPA using Vite, Tailwind CSS, and Vue Router. Builds to static files served by nginx.",
+  "description": "Single-page Vue 3 app built with Vite and Tailwind CSS, from your description. Builds to static files served by nginx; there is no server code.",
   "category": "frontend",
   "author": "jengakit",
   "kit_min_jengakit_version": "0.1.0",
@@ -24,13 +24,14 @@
   ],
   "ui": {
     "pill_label": "Vue (Vite)",
-    "hint": "e.g. a portfolio site, a dashboard, a business app - all client-side with Vue",
-    "description": "Vite + Vue 3 + Tailwind. Builds to static HTML/CSS/JS served by nginx. No server-side rendering."
+    "hint": "e.g. a landing page for a florist, a portfolio site, a pricing page, a product tour",
+    "description": "Vue page built from your description, served as static files."
   },
   "sample_prompts": [
-    "A project management dashboard with kanban board and team overview",
-    "An inventory management app for a small warehouse with stock tracking",
-    "A personal finance tracker with charts and expense categories"
+    "A landing page for a florist with seasonal bouquets and an order form",
+    "A portfolio site for a designer with a project gallery and contact section",
+    "A pricing page with three plans and a FAQ",
+    "A product tour page with feature sections and a sign-up form"
   ],
   "kit_template_dir": "templates",
   "kit_required_files": [
@@ -43,13 +44,27 @@
     "index.html",
     "src/main.ts",
     "src/style.css",
+    "src/App.vue",
+    "public/favicon.svg"
+  ],
+  "kit_template_overlay_exclude": [
     "src/App.vue"
+  ],
+  "kit_template_overlay_force": [
+    "index.html",
+    "src/main.ts",
+    "src/style.css",
+    "vite.config.ts",
+    "tailwind.config.cjs",
+    "postcss.config.cjs",
+    "nginx.conf",
+    "public/favicon.svg"
   ],
   "kit_prompts": {
     "codegen_rules": "prompts/codegen-rules.txt"
   },
   "estimate": {
-    "cpu_m": 300,
-    "mem_mb": 256
+    "cpu_m": 10,
+    "mem_mb": 48
   }
 }

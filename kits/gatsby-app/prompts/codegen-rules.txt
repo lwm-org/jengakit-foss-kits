@@ -1,32 +1,20 @@
-CRITICAL: Generate ONLY src/pages/index.tsx — nothing else.
+Generate exactly this one file, at exactly this path, and nothing else:
+1. src/pages/index.tsx: the whole page as one React component
 
-This is a Gatsby 5 app with React. Do NOT use Next.js imports (no next/link, next/router, next/image, no 'use client' directive).
+Do not generate package.json, Dockerfile, gatsby-config.js, gatsby-ssr.js, tsconfig.json, src/styles/global.css, tailwind.config.cjs, postcss.config.cjs or any other file. They ship with the kit.
 
-DO NOT generate: package.json, Dockerfile, gatsby-config.ts, tsconfig.json, global.css, tailwind.config, postcss.config, or any config file.
+This is Gatsby 5 with React, not Next.js: no next/* imports and no "use client" directive.
 
-=== src/pages/index.tsx RULES ===
-
-Structure:
-- One default export: export default function IndexPage()
-- Export Head component: export const Head: HeadFC = () => <title>Page Title</title>
-- Import global.css: import "../styles/global.css"
-- ALL application logic in this single component
-- Use React.useState for state management
-
-Imports (all pre-installed):
-- import * as React from 'react';
-- import type { HeadFC } from 'gatsby';
-- import { IconName } from 'lucide-react';
-- import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
-Layout:
-- Left sidebar (w-56) with business name and navigation items
-- Main content area with page title and content
-- Tailwind CSS classes for ALL styling
-
-Content:
-- Stat cards (3-4 per section)
-- Data tables with 8-15 realistic sample rows
-- Charts using Recharts with sample data
-- Forms with inputs, selects, action buttons
-- Theme colors via Tailwind utility classes
+=== src/pages/index.tsx ===
+- First lines: import * as React from "react"; and import "../styles/global.css";
+- One default export: export default function IndexPage() { ... }
+- All logic lives in this one component. Use React.useState for interactive state (open menu, form fields, validation messages, active view).
+- Installed packages: gatsby, react, react-dom, lucide-react, recharts. Import only what the page uses. Import nothing else.
+- global.css already loads Tailwind. Style with Tailwind utility classes only.
+- The site is built to static pages. No backend, no fetch, no GraphQL queries, no database. Data the page shows is constants in this file.
+- Build what the prompt asks for and only that. A landing page is a landing page, a dashboard is a dashboard, a store is a store. Do not add a sidebar, stat cards, data tables, charts, tabs or admin screens unless the prompt asks for them.
+- Every section, item, wording and behaviour the prompt lists must be on the page. If the prompt says to include something, include it. If the prompt says not to invent something, do not invent it.
+- Mobile first, correct at 390px and 1280px wide.
+- Semantic HTML (header, nav, main, section, footer), labelled form controls, visible focus styles.
+- Page metadata: export function Head() returning <title> with the site or app name from the prompt and <meta name="description"> with one sentence about the page.
+- Footer: the company or app name from the prompt plus a copyright line with the current year. Do not put the platform name in the footer unless the prompt asks for it.

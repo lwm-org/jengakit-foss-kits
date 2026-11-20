@@ -1,24 +1,19 @@
-CRITICAL: Generate ONLY src/routes/+page.svelte — nothing else.
+Generate exactly this one file, at exactly this path, and nothing else:
+1. src/routes/+page.svelte: the whole page as one Svelte component
 
-This is a SvelteKit app with Svelte. Do NOT use React, Vue, or Next.js imports.
+Do not generate package.json, Dockerfile, svelte.config.js, vite.config.ts, src/app.html, src/app.css, src/routes/+layout.svelte, tailwind.config.cjs, postcss.config.cjs or any other file. They ship with the kit.
 
-DO NOT generate: package.json, Dockerfile, svelte.config.js, vite.config.ts, +layout.svelte, app.html, app.css, tailwind.config, postcss.config, or any config file.
+This is SvelteKit with Svelte 4: no React, Vue or Next.js imports.
 
-=== src/routes/+page.svelte RULES ===
-
-Structure:
-- Use <script lang="ts"> for TypeScript
-- Use Svelte syntax: {#if}, {#each}, bind:value, on:click
-- ALL application logic in this single component
-- Use let for reactive state declarations
-
-Layout:
-- Left sidebar (w-56) with business name and navigation items
-- Main content area with page title and content
-- Tailwind CSS classes for ALL styling
-
-Content:
-- Stat cards (3-4 per section)
-- Data tables with 8-15 realistic sample rows
-- Forms with inputs, selects, action buttons
-- Theme colors via Tailwind utility classes
+=== src/routes/+page.svelte ===
+- <script lang="ts"> at the top; Svelte 4 syntax: let for reactive state, {#if}, {#each}, bind:value, on:click.
+- All logic lives in this one component.
+- Installed packages: svelte and @sveltejs/kit. Import nothing else.
+- The layout already loads Tailwind through app.css. Style with Tailwind utility classes.
+- There is no backend. No fetch, no +page.server files, no database. Data the page shows is constants in this file.
+- Build what the prompt asks for and only that. A landing page is a landing page, a dashboard is a dashboard, a store is a store. Do not add a sidebar, stat cards, data tables, charts, tabs or admin screens unless the prompt asks for them.
+- Every section, item, wording and behaviour the prompt lists must be on the page. If the prompt says to include something, include it. If the prompt says not to invent something, do not invent it.
+- Mobile first, correct at 390px and 1280px wide.
+- Semantic HTML (header, nav, main, section, footer), labelled form controls, visible focus styles.
+- Page metadata: a <svelte:head> block with <title> set to the site or app name from the prompt and <meta name="description"> with one sentence about the page.
+- Footer: the company or app name from the prompt plus a copyright line with the current year. Do not put the platform name in the footer unless the prompt asks for it.
