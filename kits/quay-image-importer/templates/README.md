@@ -9,8 +9,8 @@ This application was automatically imported from Quay.io by jengakit.
 
 ## Deployment
 Deployed via jengakit using the pre-built Quay.io image.
-No application source code was generated — the image is pulled and re-tagged for
-the local MicroK8s registry.
+No application source code was generated. The image is pulled and re-tagged for
+the local registry.
 
 ## Lifecycle
 Use the jengakit UI or CLI to inspect, restart, stop, or delete this app:
